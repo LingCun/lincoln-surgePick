@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#020617" />
+  <title>surgePick — POC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { pick: '#2563eb', mood: '#f59e0b' },
+            fear: {
+              extremeGreed: '#dc2626',
+              greed: '#f97316',
+              neutral: '#facc15',
+              fear: '#3b82f6',
+              extremeFear: '#7c3aed',
+            },
+            horizon: {
+              short: '#facc15',
+              mid: '#3b82f6',
+              long: '#10b981',
+            },
+          },
+          fontFamily: {
+            sans: ['Pretendard', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Hide scrollbar but keep functionality on theme carousels */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased">
+
+<!-- ============== HEADER ============== -->
+<header class="px-4 pt-6 pb-4 flex items-baseline justify-between max-w-screen-md mx-auto">
+  <button onclick="goView('home')" class="text-2xl font-bold tracking-tight">surgePick</button>
+  <span class="text-xs text-slate-400" id="asOfLabel">2026/05/26 16:30 기준</span>
+</header>
+
+<!-- ============== VIEW: HOME ============== -->
+<main id="view-home" class="px-4 pb-12 max-w-screen-md mx-auto">
+
+  <!-- Two big toggle buttons -->
+  <div class="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0 mb-6">
+    <button
+      type="button"
+      data-target="picks"
+      onclick="toggleSection('picks')"
+      class="action-btn w-full min-h-[64px] rounded-2xl px-6 py-4 text-lg font-bold text-white shadow-lg active:scale-[0.98] transition-transform flex items-center justify-center gap-3 bg-brand-pick"
+      aria-expanded="false"
+      aria-controls="section-picks"
+    >
+      <span class="text-2xl">📈</span>
+      <span>오늘의 급등픽</span>
+    </button>
+    <button
+      type="button"
+      data-target="mood"
+      onclick="toggleSection('mood')"
+      class="action-btn w-full min-h-[64px] rounded-2xl px-6 py-4 text-lg font-bold text-white shadow-lg active:scale-[0.98] transition-transform flex items-center justify-center gap-3 bg-brand-mood"
+      aria-expanded="false"
+      aria-controls="section-mood"
+    >
+      <span class="text-2xl">🌡️</span>
+      <span>지금 시장 어때?</span>
+    </button>
+  </div>
+
+  <!-- =========== SECTION: PICKS =========== -->
+  <section id="section-picks" hidden class="space-y-6">
+    <div class="space-y-3">
+      <h2 class="text-sm uppercase tracking-wider text-slate-400">🇰🇷 한국</h2>
+      <article class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3">
+        <header class="flex items-baseline justify-between">
+          <div>
+            <h3 class="text-base font-semibold">삼성전자</h3>
+            <p class="text-xs text-slate-400">005930.KS</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-horizon-short/20 text-horizon-short">단기 · 14일</span>
+            <span class="text-sm font-medium text-brand-pick">score 78</span>
+          </div>
+        </header>
+        <!-- inline 30d sparkline -->
+        <svg viewBox="0 0 300 60" preserveAspectRatio="none" class="w-full h-[60px]">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.4" />
+              <stop offset="100%" stop-color="#60a5fa" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <path d="M0,60 L0.0,55.5 L10.3,54.0 L20.7,52.0 L31.0,51.2 L41.4,48.3 L51.7,47.5 L62.1,46.9 L72.4,44.1 L82.8,42.5 L93.1,41.0 L103.4,39.8 L113.8,38.2 L124.1,36.9 L134.5,34.5 L144.8,32.0 L155.2,30.3 L165.5,28.8 L175.9,26.0 L186.2,25.2 L196.6,23.5 L206.9,22.0 L217.2,20.4 L227.6,18.9 L237.9,17.3 L248.3,15.0 L258.6,13.8 L269.0,12.0 L279.3,10.5 L289.7,8.2 L300,7.0 L300,60 Z" fill="url(#g1)" />
+          <polyline points="0.0,55.5 10.3,54.0 20.7,52.0 31.0,51.2 41.4,48.3 51.7,47.5 62.1,46.9 72.4,44.1 82.8,42.5 93.1,41.0 103.4,39.8 113.8,38.2 124.1,36.9 134.5,34.5 144.8,32.0 155.2,30.3 165.5,28.8 175.9,26.0 186.2,25.2 196.6,23.5 206.9,22.0 217.2,20.4 227.6,18.9 237.9,17.3 248.3,15.0 258.6,13.8 269.0,12.0 279.3,10.5 289.7,8.2 300,7.0" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-linejoin="round" />
+          <circle cx="300" cy="7" r="3" fill="#60a5fa" />
+        </svg>
+        <p class="text-sm leading-relaxed text-slate-200">30일간 천천히 우상향, 거래량 1.6배 증가. 누군가 조용히 모으는 중.</p>
+        <button onclick="goView('detail', 'kr-2026-05-26-005930')" class="w-full text-sm text-brand-pick font-medium py-2 rounded-lg border border-slate-700 hover:bg-slate-800">상세보기 →</button>
+      </article>
+    </div>
+
+    <div class="space-y-3">
+      <h2 class="text-sm uppercase tracking-wider text-slate-400">🇺🇸 미국</h2>
+      <article class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3">
+        <header class="flex items-baseline justify-between">
+          <div>
+            <h3 class="text-base font-semibold">NVIDIA</h3>
+            <p class="text-xs text-slate-400">NVDA</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-horizon-mid/20 text-horizon-mid">중기 · 90일</span>
+            <span class="text-sm font-medium text-brand-pick">score 72</span>
+          </div>
+        </header>
+        <svg viewBox="0 0 300 60" preserveAspectRatio="none" class="w-full h-[60px]">
+          <defs>
+            <linearGradient id="g2" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.4" />
+              <stop offset="100%" stop-color="#60a5fa" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <path d="M0,60 L0,52 L10,50 L21,51 L31,48 L41,47 L52,45 L62,46 L72,43 L83,42 L93,40 L103,42 L114,38 L124,36 L134,38 L145,33 L155,31 L165,32 L176,28 L186,26 L197,28 L207,24 L217,22 L228,23 L238,19 L248,18 L259,16 L269,14 L279,15 L290,12 L300,10 L300,60 Z" fill="url(#g2)" />
+          <polyline points="0,52 10,50 21,51 31,48 41,47 52,45 62,46 72,43 83,42 93,40 103,42 114,38 124,36 134,38 145,33 155,31 165,32 176,28 186,26 197,28 207,24 217,22 228,23 238,19 248,18 259,16 269,14 279,15 290,12 300,10" fill="none" stroke="#60a5fa" stroke-width="1.5" stroke-linejoin="round" />
+          <circle cx="300" cy="10" r="3" fill="#60a5fa" />
+        </svg>
+        <p class="text-sm leading-relaxed text-slate-200">바닥권에서 거래량 증가 — 매집 신호. 안정적 흐름.</p>
+        <button onclick="goView('detail', 'us-2026-05-26-NVDA')" class="w-full text-sm text-brand-pick font-medium py-2 rounded-lg border border-slate-700 hover:bg-slate-800">상세보기 →</button>
+      </article>
+    </div>
+
+    <button onclick="goView('history')" class="w-full rounded-2xl bg-slate-900 border border-slate-800 p-4 flex items-center justify-between hover:bg-slate-800">
+      <span class="flex items-center gap-2 text-base font-semibold"><span>📊</span>히스토리 보기</span>
+      <span class="text-xs text-slate-400">32건 →</span>
+    </button>
+  </section>
+
+  <!-- =========== SECTION: MOOD =========== -->
+  <section id="section-mood" hidden class="space-y-4">
+
+    <!-- Fear gauge card -->
+    <article class="rounded-2xl bg-slate-900 border border-slate-800 p-5 space-y-3">
+      <header class="flex items-center justify-between">
+        <h3 class="text-sm uppercase tracking-wider text-slate-400">🌡️ 공포지수</h3>
+        <span class="text-xs text-slate-500">VIX</span>
+      </header>
+      <div class="flex items-baseline gap-3">
+        <span class="text-4xl font-bold">14.2</span>
+        <span class="text-lg font-semibold text-fear-greed">탐욕</span>
+      </div>
+      <div class="flex gap-2">
+        <span class="h-2 flex-1 rounded-full bg-fear-greed"></span>
+        <span class="h-2 flex-1 rounded-full bg-fear-greed"></span>
+        <span class="h-2 flex-1 rounded-full bg-slate-700"></span>
+        <span class="h-2 flex-1 rounded-full bg-slate-700"></span>
+        <span class="h-2 flex-1 rounded-full bg-slate-700"></span>
+      </div>
+      <p class="text-sm text-slate-200 leading-relaxed">분위기 좋음. 위험 자산 강세.</p>
+    </article>
+
+    <!-- KOSPI -->
+    <article class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3">
+      <header class="flex items-center justify-between">
+        <h3 class="text-base font-semibold flex items-center gap-2"><span>🇰🇷</span>KOSPI</h3>
+        <span class="text-sm font-semibold text-teal-400">분할매수 · 70%</span>
+      </header>
+      <svg viewBox="0 0 320 80" preserveAspectRatio="none" class="w-full h-[80px]">
+        <defs><linearGradient id="gK" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#60a5fa" stop-opacity="0.3"/><stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/></linearGradient></defs>
+        <polyline points="0,70 5,68 10,65 16,67 22,64 28,60 33,62 39,58 45,55 51,57 56,53 62,50 68,52 74,48 80,45 85,47 91,43 97,40 103,42 109,38 114,35 120,37 126,33 132,30 138,32 143,28 149,25 155,28 161,24 166,22 172,25 178,20 184,18 190,22 195,20 201,18 207,15 213,20 219,17 224,15 230,18 236,14 242,12 248,16 253,14 259,12 265,10 271,14 277,12 282,10 288,8 294,12 300,10 306,8 312,6 318,10 320,8" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.6" />
+        <polyline points="0,68 5,66 10,64 16,65 22,63 28,60 33,61 39,58 45,56 51,57 56,54 62,52 68,53 74,50 80,48 85,49 91,46 97,44 103,45 109,42 114,40 120,41 126,38 132,36 138,37 143,34 149,32 155,34 161,31 166,29 172,31 178,27 184,25 190,28 195,26 201,24 207,22 213,25 219,23 224,21 230,23 236,20 242,18 248,21 253,19 259,17 265,15 271,18 277,16 282,14 288,12 294,15 300,13 306,11 312,9 318,12 320,11" fill="none" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 3" opacity="0.8" />
+        <path d="M0,80 L0,55 L10,52 L20,50 L30,48 L40,46 L50,44 L60,42 L70,40 L80,38 L90,36 L100,34 L110,32 L120,30 L130,28 L140,26 L150,24 L160,22 L170,20 L180,22 L190,18 L200,16 L210,18 L220,14 L230,12 L240,14 L250,10 L260,8 L270,10 L280,6 L290,8 L300,4 L310,6 L320,4 L320,80 Z" fill="url(#gK)" />
+        <polyline points="0,55 10,52 20,50 30,48 40,46 50,44 60,42 70,40 80,38 90,36 100,34 110,32 120,30 130,28 140,26 150,24 160,22 170,20 180,22 190,18 200,16 210,18 220,14 230,12 240,14 250,10 260,8 270,10 280,6 290,8 300,4 310,6 320,4" fill="none" stroke="#60a5fa" stroke-width="1.5" />
+        <circle cx="320" cy="4" r="3" fill="#60a5fa" />
+      </svg>
+      <div class="flex gap-3 text-[10px] text-slate-500">
+        <span class="flex items-center gap-1"><span class="inline-block w-3 h-[2px] bg-blue-400"></span>지수</span>
+        <span class="flex items-center gap-1"><span class="inline-block w-3 h-[2px] bg-amber-400 border-b border-dashed"></span>MA50</span>
+        <span class="flex items-center gap-1"><span class="inline-block w-3 h-[2px] bg-slate-400"></span>MA200</span>
+      </div>
+      <p class="text-sm text-slate-200 leading-relaxed">방향은 위지만 흔들림 있음. 한 번에 다 넣지 말고 나눠서.</p>
+    </article>
+
+    <!-- KOSDAQ -->
+    <article class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3">
+      <header class="flex items-center justify-between">
+        <h3 class="text-base font-semibold flex items-center gap-2"><span>🇰🇷</span>KOSDAQ</h3>
+        <span class="text-sm font-semibold text-amber-400">관망 · 50%</span>
+      </header>
+      <svg viewBox="0 0 320 80" preserveAspectRatio="none" class="w-full h-[80px]">
+        <defs><linearGradient id="gQ" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#60a5fa" stop-opacity="0.3"/><stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/></linearGradient></defs>
+        <polyline points="0,40 320,40" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.6" />
+        <polyline points="0,42 320,42" fill="none" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 3" opacity="0.8" />
+        <path d="M0,80 L0,42 L20,38 L40,45 L60,40 L80,48 L100,42 L120,50 L140,38 L160,45 L180,40 L200,48 L220,42 L240,45 L260,40 L280,48 L300,42 L320,45 L320,80 Z" fill="url(#gQ)" />
+        <polyline points="0,42 20,38 40,45 60,40 80,48 100,42 120,50 140,38 160,45 180,40 200,48 220,42 240,45 260,40 280,48 300,42 320,45" fill="none" stroke="#60a5fa" stroke-width="1.5" />
+        <circle cx="320" cy="45" r="3" fill="#60a5fa" />
+      </svg>
+      <p class="text-sm text-slate-200 leading-relaxed">방향 애매. 무리해서 사지도 팔지도 말고 가만히.</p>
+    </article>
+
+    <!-- S&P 500 -->
+    <article class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3">
+      <header class="flex items-center justify-between">
+        <h3 class="text-base font-semibold flex items-center gap-2"><span>🇺🇸</span>S&P 500</h3>
+        <span class="text-sm font-semibold text-emerald-400">풀매수 · 95%</span>
+      </header>
+      <svg viewBox="0 0 320 80" preserveAspectRatio="none" class="w-full h-[80px]">
+        <defs><linearGradient id="gS" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#60a5fa" stop-opacity="0.3"/><stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/></linearGradient></defs>
+        <polyline points="0,65 320,30" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.6" />
+        <polyline points="0,62 320,20" fill="none" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 3" opacity="0.8" />
+        <path d="M0,80 L0,60 L20,55 L40,52 L60,48 L80,50 L100,45 L120,42 L140,45 L160,38 L180,35 L200,38 L220,30 L240,28 L260,32 L280,22 L300,18 L320,12 L320,80 Z" fill="url(#gS)" />
+        <polyline points="0,60 20,55 40,52 60,48 80,50 100,45 120,42 140,45 160,38 180,35 200,38 220,30 240,28 260,32 280,22 300,18 320,12" fill="none" stroke="#60a5fa" stroke-width="1.5" />
+        <circle cx="320" cy="12" r="3" fill="#60a5fa" />
+      </svg>
+      <p class="text-sm text-slate-200 leading-relaxed">추세 강하고 변동성 작음. 지금은 적극 들고 가도 됨.</p>
+    </article>
+
+    <!-- NASDAQ -->
+    <article class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3">
+      <header class="flex items-center justify-between">
+        <h3 class="text-base font-semibold flex items-center gap-2"><span>🇺🇸</span>NASDAQ</h3>
+        <span class="text-sm font-semibold text-emerald-400">풀매수 · 95%</span>
+      </header>
+      <svg viewBox="0 0 320 80" preserveAspectRatio="none" class="w-full h-[80px]">
+        <defs><linearGradient id="gN" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#60a5fa" stop-opacity="0.3"/><stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/></linearGradient></defs>
+        <polyline points="0,70 320,25" fill="none" stroke="#94a3b8" stroke-width="1" opacity="0.6" />
+        <polyline points="0,65 320,15" fill="none" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 3" opacity="0.8" />
+        <path d="M0,80 L0,65 L20,58 L40,55 L60,50 L80,52 L100,45 L120,40 L140,42 L160,35 L180,30 L200,32 L220,25 L240,22 L260,25 L280,18 L300,12 L320,8 L320,80 Z" fill="url(#gN)" />
+        <polyline points="0,65 20,58 40,55 60,50 80,52 100,45 120,40 140,42 160,35 180,30 200,32 220,25 240,22 260,25 280,18 300,12 320,8" fill="none" stroke="#60a5fa" stroke-width="1.5" />
+        <circle cx="320" cy="8" r="3" fill="#60a5fa" />
+      </svg>
+      <p class="text-sm text-slate-200 leading-relaxed">기술주 주도. 모멘텀 강함. 분할 진입도 OK.</p>
+    </article>
+
+    <!-- Overall -->
+    <article class="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 p-5 space-y-2">
+      <header class="flex items-center gap-2">
+        <span class="text-lg">💡</span>
+        <h3 class="text-sm uppercase tracking-wider text-slate-300">종합 권장 비중</h3>
+      </header>
+      <p class="text-2xl font-bold text-brand-mood">80~95%</p>
+      <p class="text-sm text-slate-200 leading-relaxed">글로벌 분위기 강세. 적극 비중 유지.</p>
+    </article>
+
+    <hr class="border-slate-800 my-6" />
+
+    <h2 class="text-base font-semibold flex items-center gap-2">
+      <span>📊</span>테마 분위기
+    </h2>
+
+    <!-- KR Themes -->
+    <div class="space-y-2">
+      <h3 class="text-xs uppercase tracking-wider text-slate-400">🇰🇷 한국</h3>
+      <div class="flex gap-1 mb-2" data-group="kr" role="tablist">
+        <button onclick="switchTab('kr','popular')" class="theme-tab flex-1 py-2 rounded-lg text-sm font-medium bg-orange-500 text-white" data-tab="popular">🔥 인기</button>
+        <button onclick="switchTab('kr','value')" class="theme-tab flex-1 py-2 rounded-lg text-sm font-medium bg-slate-800 text-slate-300" data-tab="value">💎 투자가치</button>
+      </div>
+
+      <div data-pane="popular" data-pane-group="kr">
+        <div class="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 -mx-4 px-4">
+          <!-- 8 popular cards -->
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🧠</span><h4 class="text-sm font-semibold truncate">반도체</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,25 10,23 20,22 30,20 40,18 50,17 60,15 70,13 80,11 90,9 100,7" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-emerald-400">풀매수 · 95%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">반도체: 한 달 +12.4%, 추세 강함. 적극 비중.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🔋</span><h4 class="text-sm font-semibold truncate">2차전지</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,20 10,22 20,18 30,21 40,17 50,15 60,18 70,13 80,12 90,10 100,11" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 70%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">2차전지: 한 달 +6.8%, 추세 양호. 분할매수.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🤖</span><h4 class="text-sm font-semibold truncate">AI</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,28 10,25 20,23 30,20 40,18 50,15 60,12 70,10 80,8 90,6 100,5" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-emerald-400">풀매수 · 95%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">AI: 한 달 +18.2%, 추세 강함. 적극 비중.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🧬</span><h4 class="text-sm font-semibold truncate">바이오</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,18 10,16 20,18 30,15 40,17 50,14 60,16 70,12 80,14 90,11 100,13" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 70%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">바이오: 한 달 +5.1%, 흔들림 있음. 분할매수.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🎤</span><h4 class="text-sm font-semibold truncate">K-pop·엔터</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,22 10,20 20,18 30,15 40,17 50,12 60,14 70,9 80,11 90,7 100,6" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-emerald-400">풀매수 · 90%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">K-pop: 한 달 +9.8%, 추세 강함. 적극 비중.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🛡️</span><h4 class="text-sm font-semibold truncate">방산</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,24 10,22 20,20 30,18 40,16 50,15 60,13 70,12 80,11 90,10 100,9" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 75%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">방산: 한 달 +7.2%, 추세 양호. 분할매수.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">⚛️</span><h4 class="text-sm font-semibold truncate">원전</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,26 10,23 20,21 30,18 40,17 50,14 60,12 70,11 80,9 90,8 100,7" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-emerald-400">풀매수 · 90%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">원전: 한 달 +11.5%, 모멘텀 강함. 적극.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🦾</span><h4 class="text-sm font-semibold truncate">로봇</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,20 10,17 20,15 30,13 40,11 50,10 60,8 70,7 80,6 90,5 100,4" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-emerald-400">풀매수 · 95%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">로봇: 한 달 +15.3%, 추세 강함. 적극.</p>
+          </article>
+        </div>
+      </div>
+
+      <div data-pane="value" data-pane-group="kr" hidden>
+        <div class="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 -mx-4 px-4">
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🏦</span><h4 class="text-sm font-semibold truncate">은행·금융</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,20 10,19 20,19 30,18 40,18 50,17 60,17 70,16 80,16 90,15 100,15" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 70%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">은행: 한 달 +2.1%, 변동성 작고 꾸준. 안정.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">📡</span><h4 class="text-sm font-semibold truncate">통신</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,22 10,21 20,22 30,21 40,20 50,21 60,20 70,19 80,20 90,18 100,19" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 65%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">통신: 한 달 +1.5%, 안정적. 배당 매력.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🍱</span><h4 class="text-sm font-semibold truncate">식품·음식료</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,21 10,20 20,21 30,19 40,20 50,18 60,19 70,17 80,18 90,16 100,17" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 70%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">식품: 한 달 +2.8%, 꾸준한 흐름.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">⚡</span><h4 class="text-sm font-semibold truncate">유틸리티</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,22 10,22 20,21 30,21 40,20 50,20 60,19 70,19 80,18 90,18 100,17" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 65%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">유틸: 한 달 +1.2%, 변동성 최저. 방어주.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🛟</span><h4 class="text-sm font-semibold truncate">보험</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,20 10,20 20,19 30,19 40,18 50,18 60,17 70,17 80,16 90,16 100,15" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 70%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">보험: 한 달 +2.4%, 꾸준. 금리 수혜.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🚗</span><h4 class="text-sm font-semibold truncate">자동차</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,22 10,21 20,20 30,20 40,19 50,18 60,18 70,17 80,16 90,15 100,14" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 75%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">자동차: 한 달 +3.6%, 추세 양호.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🏗️</span><h4 class="text-sm font-semibold truncate">건설</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,20 10,21 20,19 30,20 40,18 50,19 60,17 70,18 80,16 90,17 100,15" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 60%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">건설: 한 달 +1.8%, 흔들림 있으나 양호.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">⚗️</span><h4 class="text-sm font-semibold truncate">화학</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,21 10,20 20,21 30,19 40,20 50,18 60,19 70,17 80,18 90,16 100,17" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 65%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">화학: 한 달 +2.1%, 꾸준.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <!-- US Themes -->
+    <div class="space-y-2">
+      <h3 class="text-xs uppercase tracking-wider text-slate-400">🇺🇸 미국</h3>
+      <div class="flex gap-1 mb-2" data-group="us" role="tablist">
+        <button onclick="switchTab('us','popular')" class="theme-tab flex-1 py-2 rounded-lg text-sm font-medium bg-orange-500 text-white" data-tab="popular">🔥 인기</button>
+        <button onclick="switchTab('us','value')" class="theme-tab flex-1 py-2 rounded-lg text-sm font-medium bg-slate-800 text-slate-300" data-tab="value">💎 투자가치</button>
+      </div>
+
+      <div data-pane="popular" data-pane-group="us">
+        <div class="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 -mx-4 px-4">
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🤖</span><h4 class="text-sm font-semibold truncate">AI</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,28 10,24 20,21 30,18 40,15 50,12 60,10 70,8 80,7 90,5 100,4" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-emerald-400">풀매수 · 95%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">AI: 한 달 +22.1%, 추세 강함. 적극.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🧠</span><h4 class="text-sm font-semibold truncate">반도체</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,26 10,22 20,20 30,17 40,14 50,11 60,9 70,7 80,6 90,5 100,4" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-emerald-400">풀매수 · 95%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">반도체: 한 달 +18.7%, 적극.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🔌</span><h4 class="text-sm font-semibold truncate">EV</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,18 10,20 20,17 30,21 40,15 50,18 60,13 70,16 80,11 90,14 100,9" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 70%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">EV: 한 달 +9.2%, 흔들림. 분할매수.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">☁️</span><h4 class="text-sm font-semibold truncate">클라우드</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,24 10,21 20,19 30,16 40,14 50,12 60,10 70,8 80,7 90,6 100,5" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-emerald-400">풀매수 · 90%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">클라우드: 한 달 +13.4%, 추세 강함.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🛡️</span><h4 class="text-sm font-semibold truncate">사이버보안</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,22 10,20 20,19 30,17 40,15 50,14 60,12 70,11 80,9 90,8 100,7" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-emerald-400">풀매수 · 90%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">사이버보안: 한 달 +11.6%, 강세.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🌀</span><h4 class="text-sm font-semibold truncate">양자컴퓨팅</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,26 10,20 20,24 30,15 40,18 50,10 60,14 70,7 80,11 90,5 100,8" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-emerald-400">풀매수 · 85%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">양자: 한 달 +28.3%, 변동성 큼.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🚀</span><h4 class="text-sm font-semibold truncate">우주항공</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,24 10,22 20,20 30,18 40,16 50,15 60,13 70,11 80,10 90,9 100,8" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-emerald-400">풀매수 · 90%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">우주: 한 달 +14.2%, 추세 강함.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-orange-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">💊</span><h4 class="text-sm font-semibold truncate">GLP-1·비만</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,22 10,20 20,21 30,18 40,17 50,15 60,14 70,12 80,11 90,9 100,8" fill="none" stroke="#fb923c" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 75%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">GLP-1: 한 달 +8.4%, 양호.</p>
+          </article>
+        </div>
+      </div>
+
+      <div data-pane="value" data-pane-group="us" hidden>
+        <div class="flex gap-2 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 -mx-4 px-4">
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🏦</span><h4 class="text-sm font-semibold truncate">빅뱅크</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,20 10,19 20,19 30,18 40,18 50,17 60,16 70,16 80,15 90,15 100,14" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 75%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">빅뱅크: 한 달 +3.2%, 꾸준.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🏢</span><h4 class="text-sm font-semibold truncate">REIT</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,22 10,21 20,22 30,20 40,21 50,19 60,20 70,18 80,19 90,17 100,18" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 65%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">REIT: 한 달 +1.9%, 안정. 배당 매력.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">⚡</span><h4 class="text-sm font-semibold truncate">유틸리티</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,21 10,21 20,20 30,20 40,19 50,19 60,18 70,18 80,17 90,17 100,16" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 70%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">유틸: 한 달 +1.4%, 방어주.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🏥</span><h4 class="text-sm font-semibold truncate">헬스케어</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,20 10,20 20,19 30,19 40,18 50,18 60,17 70,17 80,16 90,16 100,15" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 70%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">헬스: 한 달 +2.8%, 꾸준.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🛒</span><h4 class="text-sm font-semibold truncate">필수소비재</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,21 10,20 20,20 30,19 40,19 50,18 60,18 70,17 80,17 90,16 100,16" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 65%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">소비재: 한 달 +1.7%, 안정.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🛢️</span><h4 class="text-sm font-semibold truncate">에너지</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,20 10,21 20,19 30,20 40,18 50,19 60,17 70,18 80,16 90,17 100,15" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 60%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">에너지: 한 달 +2.2%, 변동성 보통.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">🏭</span><h4 class="text-sm font-semibold truncate">산업재</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,21 10,20 20,19 30,19 40,18 50,17 60,17 70,16 80,15 90,15 100,14" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 70%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">산업재: 한 달 +3.4%, 양호.</p>
+          </article>
+          <article class="shrink-0 w-[42vw] sm:w-[180px] rounded-2xl bg-slate-900 border border-slate-800 border-l-4 border-l-teal-500 p-3 space-y-2 snap-start">
+            <header class="flex items-center gap-2"><span class="text-base">📡</span><h4 class="text-sm font-semibold truncate">통신</h4></header>
+            <svg viewBox="0 0 100 32" preserveAspectRatio="none" class="w-full h-[32px]"><polyline points="0,22 10,21 20,22 30,21 40,21 50,20 60,20 70,19 80,19 90,18 100,18" fill="none" stroke="#2dd4bf" stroke-width="1.5"/></svg>
+            <div class="text-[11px] font-semibold text-teal-400">분할매수 · 65%</div>
+            <p class="text-[11px] text-slate-300 leading-snug line-clamp-2">통신: 한 달 +1.6%, 안정·배당.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============== VIEW: HISTORY ============== -->
+<main id="view-history" hidden class="px-4 pb-12 max-w-screen-md mx-auto">
+  <div class="mb-4">
+    <button onclick="goView('home')" class="text-sm text-slate-400 hover:text-slate-200">← 홈</button>
+  </div>
+  <h1 class="text-xl font-bold mb-1">픽 히스토리</h1>
+  <p class="text-xs text-slate-400 mb-4">총 32건 · 보유중 18 · 매도완료 14</p>
+
+  <div class="flex gap-1 mb-3 text-sm">
+    <button class="px-3 py-1.5 rounded-lg bg-slate-700 text-white">전체</button>
+    <button class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">보유중 18</button>
+    <button class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">매도완료 14</button>
+  </div>
+  <div class="flex gap-1 mb-4 text-xs">
+    <span class="px-2 py-1 rounded-full bg-horizon-short/20 text-horizon-short">단기 14</span>
+    <span class="px-2 py-1 rounded-full bg-horizon-mid/20 text-horizon-mid">중기 12</span>
+    <span class="px-2 py-1 rounded-full bg-horizon-long/20 text-horizon-long">장기 6</span>
+  </div>
+
+  <div class="space-y-3">
+
+    <article onclick="goView('detail','kr-2026-05-25-005930')" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-2 cursor-pointer hover:bg-slate-800">
+      <header class="flex items-center justify-between text-xs">
+        <span class="text-slate-400">2026-05-25</span>
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded-full bg-horizon-short/20 text-horizon-short font-semibold">단기</span>
+          <span class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 font-semibold">보유중</span>
+        </div>
+      </header>
+      <h3 class="text-base font-semibold flex items-center gap-2"><span>🇰🇷</span>삼성전자 <span class="text-xs text-slate-400 font-normal">005930.KS</span></h3>
+      <div class="flex items-baseline justify-between">
+        <span class="text-sm text-slate-300">74,500 → 76,200</span>
+        <span class="text-lg font-bold text-emerald-400">+2.28%</span>
+      </div>
+      <p class="text-[11px] text-slate-500">D-13 · 만기 2026-06-08</p>
+    </article>
+
+    <article onclick="goView('detail','us-2026-05-25-NVDA')" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-2 cursor-pointer hover:bg-slate-800">
+      <header class="flex items-center justify-between text-xs">
+        <span class="text-slate-400">2026-05-25</span>
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded-full bg-horizon-mid/20 text-horizon-mid font-semibold">중기</span>
+          <span class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 font-semibold">보유중</span>
+        </div>
+      </header>
+      <h3 class="text-base font-semibold flex items-center gap-2"><span>🇺🇸</span>NVIDIA <span class="text-xs text-slate-400 font-normal">NVDA</span></h3>
+      <div class="flex items-baseline justify-between">
+        <span class="text-sm text-slate-300">$142.30 → $148.10</span>
+        <span class="text-lg font-bold text-emerald-400">+4.08%</span>
+      </div>
+      <p class="text-[11px] text-slate-500">D-87 · 만기 2026-08-23</p>
+    </article>
+
+    <article onclick="goView('detail','kr-2026-02-15-000660')" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-2 cursor-pointer hover:bg-slate-800">
+      <header class="flex items-center justify-between text-xs">
+        <span class="text-slate-400">2026-02-15</span>
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded-full bg-horizon-long/20 text-horizon-long font-semibold">장기</span>
+          <span class="px-2 py-0.5 rounded-full bg-teal-500/30 text-teal-300 font-semibold">매도완료</span>
+        </div>
+      </header>
+      <h3 class="text-base font-semibold flex items-center gap-2"><span>🇰🇷</span>SK하이닉스 <span class="text-xs text-slate-400 font-normal">000660.KS</span></h3>
+      <div class="flex items-baseline justify-between">
+        <span class="text-sm text-slate-300">178,000 → 195,500</span>
+        <span class="text-lg font-bold text-emerald-400">+9.83%</span>
+      </div>
+      <p class="text-[11px] text-slate-500">2026-05-15 매도 (확정)</p>
+    </article>
+
+    <article onclick="goView('detail','us-2026-01-08-META')" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-2 cursor-pointer hover:bg-slate-800">
+      <header class="flex items-center justify-between text-xs">
+        <span class="text-slate-400">2026-01-08</span>
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded-full bg-horizon-short/20 text-horizon-short font-semibold">단기</span>
+          <span class="px-2 py-0.5 rounded-full bg-teal-500/30 text-teal-300 font-semibold">매도완료</span>
+        </div>
+      </header>
+      <h3 class="text-base font-semibold flex items-center gap-2"><span>🇺🇸</span>META <span class="text-xs text-slate-400 font-normal">META</span></h3>
+      <div class="flex items-baseline justify-between">
+        <span class="text-sm text-slate-300">$385.20 → $371.80</span>
+        <span class="text-lg font-bold text-red-400">-3.48%</span>
+      </div>
+      <p class="text-[11px] text-slate-500">2026-01-22 매도 (확정)</p>
+    </article>
+
+    <article onclick="goView('detail','kr-2026-05-20-247540')" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-2 cursor-pointer hover:bg-slate-800">
+      <header class="flex items-center justify-between text-xs">
+        <span class="text-slate-400">2026-05-20</span>
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded-full bg-horizon-mid/20 text-horizon-mid font-semibold">중기</span>
+          <span class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 font-semibold">보유중</span>
+        </div>
+      </header>
+      <h3 class="text-base font-semibold flex items-center gap-2"><span>🇰🇷</span>에코프로비엠 <span class="text-xs text-slate-400 font-normal">247540.KQ</span></h3>
+      <div class="flex items-baseline justify-between">
+        <span class="text-sm text-slate-300">142,000 → 138,500</span>
+        <span class="text-lg font-bold text-red-400">-2.46%</span>
+      </div>
+      <p class="text-[11px] text-slate-500">D-82 · 만기 2026-08-18</p>
+    </article>
+
+    <article onclick="goView('detail','us-2025-10-12-PLTR')" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-2 cursor-pointer hover:bg-slate-800">
+      <header class="flex items-center justify-between text-xs">
+        <span class="text-slate-400">2025-10-12</span>
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded-full bg-horizon-long/20 text-horizon-long font-semibold">장기</span>
+          <span class="px-2 py-0.5 rounded-full bg-slate-700 text-slate-300 font-semibold">보유중</span>
+        </div>
+      </header>
+      <h3 class="text-base font-semibold flex items-center gap-2"><span>🇺🇸</span>Palantir <span class="text-xs text-slate-400 font-normal">PLTR</span></h3>
+      <div class="flex items-baseline justify-between">
+        <span class="text-sm text-slate-300">$38.50 → $62.10</span>
+        <span class="text-lg font-bold text-emerald-400">+61.30%</span>
+      </div>
+      <p class="text-[11px] text-slate-500">D-139 · 만기 2026-10-12</p>
+    </article>
+
+  </div>
+</main>
+
+<!-- ============== VIEW: DETAIL ============== -->
+<main id="view-detail" hidden class="px-4 pb-12 max-w-screen-md mx-auto">
+  <div class="mb-4">
+    <button onclick="goView('history')" class="text-sm text-slate-400 hover:text-slate-200">← 히스토리</button>
+  </div>
+
+  <header class="mb-4">
+    <h1 class="text-2xl font-bold flex items-center gap-2"><span>🇰🇷</span>삼성전자</h1>
+    <p class="text-sm text-slate-400">005930.KS · KOSPI</p>
+    <div class="mt-2"><span class="text-xs font-semibold px-2 py-1 rounded-full bg-horizon-short/20 text-horizon-short">단기 · 14일 보유</span></div>
+  </header>
+
+  <article class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3 mb-4">
+    <h2 class="text-sm uppercase tracking-wider text-slate-400">매수 시점 30일 차트</h2>
+    <svg viewBox="0 0 320 100" preserveAspectRatio="none" class="w-full h-[100px]">
+      <defs>
+        <linearGradient id="gD" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.4" />
+          <stop offset="100%" stop-color="#60a5fa" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <path d="M0,100 L0,85 L11,82 L21,80 L32,78 L42,75 L53,72 L64,70 L74,68 L85,65 L95,62 L106,60 L117,57 L127,55 L138,52 L148,50 L159,48 L170,45 L180,42 L191,40 L201,38 L212,35 L223,32 L233,30 L244,28 L254,25 L265,22 L276,20 L286,18 L297,15 L307,12 L320,10 L320,100 Z" fill="url(#gD)" />
+      <polyline points="0,85 11,82 21,80 32,78 42,75 53,72 64,70 74,68 85,65 95,62 106,60 117,57 127,55 138,52 148,50 159,48 170,45 180,42 191,40 201,38 212,35 223,32 233,30 244,28 254,25 265,22 276,20 286,18 297,15 307,12 320,10" fill="none" stroke="#60a5fa" stroke-width="2" />
+      <circle cx="320" cy="10" r="4" fill="#60a5fa" />
+    </svg>
+    <p class="text-xs text-slate-500 text-center">2026-04-26 ~ 2026-05-25</p>
+  </article>
+
+  <article class="rounded-2xl bg-slate-900 border border-slate-800 p-5 space-y-3 mb-4">
+    <h2 class="text-sm uppercase tracking-wider text-slate-400">현재 수익률</h2>
+    <p class="text-4xl font-bold text-emerald-400">+2.28%</p>
+
+    <dl class="space-y-2 pt-3 border-t border-slate-800 text-sm">
+      <div class="flex justify-between">
+        <dt class="text-slate-400">매수일</dt>
+        <dd class="font-medium">2026-05-25</dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-slate-400">매수가</dt>
+        <dd class="font-medium">74,500원</dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-slate-400">현재가</dt>
+        <dd class="font-medium">76,200원 <span class="text-xs text-slate-500">(05-28)</span></dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-slate-400">만기일</dt>
+        <dd class="font-medium">2026-06-08 <span class="text-xs text-horizon-short">(D-11)</span></dd>
+      </div>
+    </dl>
+  </article>
+
+  <article class="rounded-2xl bg-slate-900 border border-slate-800 p-5 space-y-3">
+    <h2 class="text-sm uppercase tracking-wider text-slate-400 flex items-center gap-2"><span>💡</span>이 종목을 추천한 이유</h2>
+    <p class="text-base font-medium text-slate-100 leading-relaxed">"30일간 천천히 우상향, 거래량 1.6배 증가. 누군가 조용히 모으는 중."</p>
+
+    <div class="pt-3 border-t border-slate-800 space-y-3 text-sm text-slate-300">
+      <div>
+        <p class="font-semibold text-slate-200 mb-1">📈 추세</p>
+        <p class="text-slate-400">일평균 +0.24% 우상향, 급등 캔들 없음 (최대 일일 +3.8%)</p>
+      </div>
+      <div>
+        <p class="font-semibold text-slate-200 mb-1">📊 거래량</p>
+        <p class="text-slate-400">전반 15일 대비 후반 15일 +62% 증가</p>
+      </div>
+      <div>
+        <p class="font-semibold text-slate-200 mb-1">🎯 매집</p>
+        <p class="text-slate-400">30일 가격 위치 32% (저점권), 매수세 누적 증가</p>
+      </div>
+    </div>
+
+    <div class="pt-3 border-t border-slate-800">
+      <p class="font-semibold text-slate-200 mb-1">⏱️ 호라이즌이 단기·2주인 이유</p>
+      <p class="text-sm text-slate-400">추세·모멘텀 점수 강함 → 단기 차익 실현 권장</p>
+    </div>
+  </article>
+</main>
+
+<!-- ============== FOOTER ============== -->
+<footer class="px-4 py-8 max-w-screen-md mx-auto text-xs text-slate-500 text-center space-y-1">
+  <p>본 사이트의 정보는 투자 판단의 참고용이며 매수/매도 추천이 아닙니다.</p>
+  <p>모든 투자의 책임은 본인에게 있습니다. Source: Yahoo Finance</p>
+  <p class="text-slate-700 mt-2">POC v0.1 · Mock data</p>
+</footer>
+
+<script>
+  // ====================== TOGGLE SECTIONS ======================
+  function toggleSection(target) {
+    const buttons = document.querySelectorAll('.action-btn[data-target]');
+    const sections = ['picks', 'mood'];
+    const sec = document.getElementById('section-' + target);
+    const btn = document.querySelector('.action-btn[data-target="' + target + '"]');
+    const isOpen = btn.getAttribute('aria-expanded') === 'true';
+
+    if (isOpen) {
+      sec.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    } else {
+      sections.forEach((s) => {
+        if (s !== target) {
+          document.getElementById('section-' + s).hidden = true;
+          document.querySelector('.action-btn[data-target="' + s + '"]').setAttribute('aria-expanded', 'false');
+        }
+      });
+      sec.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+      sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  // ====================== THEME TABS ======================
+  function switchTab(group, variant) {
+    const tabs = document.querySelectorAll('[data-group="' + group + '"] .theme-tab');
+    tabs.forEach((b) => {
+      const isActive = b.dataset.tab === variant;
+      b.setAttribute('aria-selected', String(isActive));
+      b.classList.remove('bg-orange-500', 'bg-teal-500', 'bg-slate-800', 'text-white', 'text-slate-300');
+      if (isActive) {
+        b.classList.add(variant === 'popular' ? 'bg-orange-500' : 'bg-teal-500', 'text-white');
+      } else {
+        b.classList.add('bg-slate-800', 'text-slate-300');
+      }
+    });
+    document.querySelectorAll('[data-pane-group="' + group + '"]').forEach((p) => {
+      p.hidden = p.dataset.pane !== variant;
+    });
+  }
+
+  // ====================== VIEW ROUTER ======================
+  function goView(name, id) {
+    ['home', 'history', 'detail'].forEach((v) => {
+      document.getElementById('view-' + v).hidden = (v !== name);
+    });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+</script>
+
+</body>
+</html>
