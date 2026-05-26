@@ -14,7 +14,7 @@ export function selectThemes(pool) {
   const valueCandidates = pool
     .filter((t) =>
       t.score >= 1 &&
-      t.vol20 < 0.25 &&
+      t.vol20 < 0.40 &&
       t.mom3m > -0.05 &&
       !popularIds.has(t.id)
     )

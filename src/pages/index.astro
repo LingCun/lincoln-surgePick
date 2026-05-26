@@ -1,15 +1,82 @@
 ---
+import Base from '../layouts/Base.astro';
+import ActionButton from '../components/ActionButton.astro';
+import PickCard from '../components/PickCard.astro';
+import FearGaugeCard from '../components/FearGaugeCard.astro';
+import MarketMoodCard from '../components/MarketMoodCard.astro';
+import OverallCard from '../components/OverallCard.astro';
+import ThemeTabs from '../components/ThemeTabs.astro';
+import ThemeCarousel from '../components/ThemeCarousel.astro';
+import picksData from '../data/picks.json';
+import regimeData from '../data/regime.json';
+import themesData from '../data/themes.json';
+
+const { kr: krPick = null, us: usPick = null, asOf: picksAsOf } = picksData;
+const { fearGauge, markets = [], overall, asOf: regimeAsOf } = regimeData;
+const { kr: krThemes = { popular: [], value: [] }, us: usThemes = { popular: [], value: [] }, asOf: themesAsOf } = themesData;
+const asOf = themesAsOf ?? regimeAsOf ?? picksAsOf;
 ---
-<!doctype html>
-<html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>surgePick</title>
-  </head>
-  <body>
-    <main class="p-8 text-center">
-      <h1 class="text-2xl">surgePick — placeholder</h1>
-    </main>
-  </body>
-</html>
+<Base title="surgePick — 급등픽 & 시장 온도계" asOf={asOf}>
+  <div class="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0 mb-6">
+    <ActionButton target="picks" label="오늘의 급등픽" icon="📈" color="pick" />
+    <ActionButton target="mood"  label="지금 시장 어때?" icon="🌡️" color="mood" />
+  </div>
+
+  <section id="section-picks" hidden class="space-y-6">
+    <div class="space-y-3">
+      <h2 class="text-sm uppercase tracking-wider text-slate-400">🇰🇷 한국</h2>
+      {krPick ? (
+        <PickCard {...krPick} />
+      ) : (
+        <p class="text-sm text-slate-400 text-center py-4">오늘은 조건 충족 종목 없음. 내일 다시 확인.</p>
+      )}
+    </div>
+    <div class="space-y-3">
+      <h2 class="text-sm uppercase tracking-wider text-slate-400">🇺🇸 미국</h2>
+      {usPick ? (
+        <PickCard {...usPick} />
+      ) : (
+        <p class="text-sm text-slate-400 text-center py-4">오늘은 조건 충족 종목 없음. 내일 다시 확인.</p>
+      )}
+    </div>
+  </section>
+
+  <section id="section-mood" hidden class="space-y-4">
+    <FearGaugeCard {...fearGauge} />
+    {markets.map((m) => <MarketMoodCard {...m} />)}
+    <OverallCard {...overall} />
+
+    <hr class="border-slate-800 my-6" />
+
+    <h2 class="text-base font-semibold flex items-center gap-2">
+      <span aria-hidden="true">📊</span>테마 분위기
+    </h2>
+
+    <div class="space-y-2">
+      <h3 class="text-xs uppercase tracking-wider text-slate-400">🇰🇷 한국</h3>
+      <ThemeTabs groupId="kr" />
+      <div data-pane="popular" data-pane-group="kr">
+        <ThemeCarousel items={krThemes.popular} variant="popular" ariaLabel="한국 인기 테마" />
+      </div>
+      <div data-pane="value" data-pane-group="kr" hidden>
+        <ThemeCarousel items={krThemes.value} variant="value" ariaLabel="한국 투자가치 테마" />
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <h3 class="text-xs uppercase tracking-wider text-slate-400">🇺🇸 미국</h3>
+      <ThemeTabs groupId="us" />
+      <div data-pane="popular" data-pane-group="us">
+        <ThemeCarousel items={usThemes.popular} variant="popular" ariaLabel="미국 인기 테마" />
+      </div>
+      <div data-pane="value" data-pane-group="us" hidden>
+        <ThemeCarousel items={usThemes.value} variant="value" ariaLabel="미국 투자가치 테마" />
+      </div>
+    </div>
+  </section>
+
+  <script>
+    import '../scripts/toggle.ts';
+    import '../scripts/theme-tabs.ts';
+  </script>
+</Base>

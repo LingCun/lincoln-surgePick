@@ -1,0 +1,30 @@
+---
+import IndexChart from './IndexChart.astro';
+
+interface Props {
+  code: string;
+  emoji: string;
+  label: string;
+  weight: string;
+  comment: string;
+  closes60: number[];
+  ma50: (number | null)[];
+  ma200: (number | null)[];
+}
+const { code, emoji, label, weight, comment, closes60, ma50, ma200 } = Astro.props;
+
+const labelColor = {
+  '풀매수': 'text-emerald-400',
+  '분할매수': 'text-teal-400',
+  '관망/존버': 'text-amber-400',
+  '비중축소+이익실현': 'text-red-400',
+}[label] ?? 'text-slate-300';
+---
+<article class="rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-3">
+  <header class="flex items-center justify-between">
+    <h3 class="text-base font-semibold flex items-center gap-2"><span aria-hidden="true">{emoji}</span>{code}</h3>
+    <span class={`text-sm font-semibold ${labelColor}`}>{label} · {weight}</span>
+  </header>
+  <IndexChart closes={closes60} ma50={ma50} ma200={ma200} />
+  <p class="text-sm text-slate-200 leading-relaxed">{comment}</p>
+</article>

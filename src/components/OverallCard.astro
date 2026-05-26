@@ -1,0 +1,15 @@
+---
+interface Props {
+  weight: string;
+  comment: string;
+}
+const { weight, comment } = Astro.props;
+---
+<article class="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 p-5 space-y-2">
+  <header class="flex items-center gap-2">
+    <span aria-hidden="true" class="text-lg">💡</span>
+    <h3 class="text-sm uppercase tracking-wider text-slate-300">종합 권장 비중</h3>
+  </header>
+  <p class="text-2xl font-bold text-brand-mood">{weight}</p>
+  <p class="text-sm text-slate-200 leading-relaxed">{comment}</p>
+</article>

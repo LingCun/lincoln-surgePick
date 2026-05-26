@@ -27,8 +27,8 @@ export function scorePicks(series) {
   }
   const maxDailyReturn = dailyReturns.length ? Math.max(...dailyReturns) : 0;
   const spikeCount = dailyReturns.filter((r) => r >= 0.05).length;
-  const trendUp = slope > 0.001 && maxDailyReturn < 0.07 && spikeCount <= 2;
-  const score_A = clamp(slope / 0.005, 0, 1) * (1 - spikeCount / 3);
+  const trendUp = slope > 0.0005 && maxDailyReturn < 0.10 && spikeCount <= 3;
+  const score_A = clamp(slope / 0.005, 0, 1) * Math.max(0, 1 - spikeCount / 4);
 
   // B: volume
   const volFirst = mean(volumes.slice(0, 15));
@@ -36,7 +36,7 @@ export function scorePicks(series) {
   const volRatio = volFirst === 0 ? 0 : volSecond / volFirst;
   const logVols = volumes.map((v) => Math.log(Math.max(v, 1)));
   const volSlope = linearRegression(logVols).slope;
-  const volumeUp = volRatio >= 1.3 && volSlope > 0;
+  const volumeUp = volRatio >= 1.15 && volSlope > 0;
   const score_B = clamp((volRatio - 1) / 1.0, 0, 1);
 
   // C: accumulation
@@ -48,7 +48,7 @@ export function scorePicks(series) {
   const obvSlope = linearRegression(obvSeries).slope;
   const meanVol = mean(volumes);
   const obvSlopeNormalized = meanVol === 0 ? 0 : clamp(obvSlope / meanVol, 0, 1);
-  const accumulation = pricePosition <= 0.4 && obvSlope > 0;
+  const accumulation = pricePosition <= 0.7 && obvSlope > 0;
   const score_C = (1 - pricePosition) * obvSlopeNormalized;
 
   const total = 0.35 * score_A + 0.30 * score_B + 0.35 * score_C;

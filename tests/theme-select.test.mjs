@@ -26,11 +26,11 @@ describe('selectThemes', () => {
     }
   });
 
-  it('value filtered by score>=1 AND vol20<0.25 AND mom3m>-0.05', () => {
+  it('value filtered by score>=1 AND vol20<0.40 AND mom3m>-0.05', () => {
     const { value } = selectThemes(sample(30));
     for (const t of value) {
       expect(t.score).toBeGreaterThanOrEqual(1);
-      expect(t.vol20).toBeLessThan(0.25);
+      expect(t.vol20).toBeLessThan(0.40);
       expect(t.mom3m).toBeGreaterThan(-0.05);
     }
   });

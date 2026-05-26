@@ -1,0 +1,34 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  asOf?: string;
+}
+const { title = 'surgePick', asOf } = Astro.props;
+const asOfText = asOf
+  ? new Date(asOf).toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Seoul' })
+  : null;
+---
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#020617" />
+    <title>{title}</title>
+  </head>
+  <body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased">
+    <header class="px-4 pt-6 pb-4 flex items-baseline justify-between max-w-screen-md mx-auto">
+      <a href="/" class="text-2xl font-bold tracking-tight">surgePick</a>
+      {asOfText && <span class="text-xs text-slate-400">{asOfText} 기준</span>}
+    </header>
+    <main class="px-4 pb-12 max-w-screen-md mx-auto">
+      <slot />
+    </main>
+    <footer class="px-4 py-8 max-w-screen-md mx-auto text-xs text-slate-500 text-center space-y-1">
+      <p>본 사이트의 정보는 투자 판단의 참고용이며 매수/매도 추천이 아닙니다.</p>
+      <p>모든 투자의 책임은 본인에게 있습니다. Source: Yahoo Finance</p>
+    </footer>
+  </body>
+</html>

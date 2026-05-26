@@ -1,0 +1,75 @@
+---
+interface Props {
+  closes: number[];
+  ma50: (number | null)[];
+  ma200: (number | null)[];
+  width?: number;
+  height?: number;
+}
+const {
+  closes,
+  ma50,
+  ma200,
+  width = 320,
+  height = 80,
+} = Astro.props;
+
+const colorPrice = '#60a5fa';
+const colorMA50 = '#fbbf24';
+const colorMA200 = '#94a3b8';
+
+const all = [
+  ...closes,
+  ...ma50.filter((v) => v != null),
+  ...ma200.filter((v) => v != null),
+];
+const min = Math.min(...all);
+const max = Math.max(...all);
+const range = max - min || 1;
+const stepX = width / Math.max(closes.length - 1, 1);
+
+function toPoints(values) {
+  return values
+    .map((v, i) => {
+      if (v == null) return null;
+      const x = i * stepX;
+      const y = height - ((v - min) / range) * height;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .filter(Boolean)
+    .join(' ');
+}
+
+const pricePoints = toPoints(closes);
+const ma50Points = toPoints(ma50);
+const ma200Points = toPoints(ma200);
+
+const last = closes[closes.length - 1];
+const lastX = (closes.length - 1) * stepX;
+const lastY = height - ((last - min) / range) * height;
+
+const gradId = `idx${Math.random().toString(36).slice(2, 8)}`;
+const areaPath = `M0,${height} L${pricePoints.replace(/ /g, ' L')} L${width},${height} Z`;
+---
+<svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" class="w-full" style={`height:${height}px`} aria-hidden="true">
+  <defs>
+    <linearGradient id={gradId} x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color={colorPrice} stop-opacity="0.35" />
+      <stop offset="100%" stop-color={colorPrice} stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  {ma200Points && (
+    <polyline points={ma200Points} fill="none" stroke={colorMA200} stroke-width="1" opacity="0.7" />
+  )}
+  {ma50Points && (
+    <polyline points={ma50Points} fill="none" stroke={colorMA50} stroke-width="1" stroke-dasharray="3 3" opacity="0.85" />
+  )}
+  <path d={areaPath} fill={`url(#${gradId})`} />
+  <polyline points={pricePoints} fill="none" stroke={colorPrice} stroke-width="1.5" stroke-linejoin="round" />
+  <circle cx={lastX} cy={lastY} r="3" fill={colorPrice} />
+</svg>
+<div class="flex gap-3 text-[10px] text-slate-500 mt-1">
+  <span class="flex items-center gap-1"><span class="inline-block w-3 h-[2px] bg-blue-400"></span>지수</span>
+  <span class="flex items-center gap-1"><span class="inline-block w-3 h-[2px] bg-amber-400"></span>MA50</span>
+  <span class="flex items-center gap-1"><span class="inline-block w-3 h-[2px] bg-slate-400"></span>MA200</span>
+</div>
