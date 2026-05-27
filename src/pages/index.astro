@@ -8,11 +8,13 @@ import OverallCard from '../components/OverallCard.astro';
 import ThemeTabs from '../components/ThemeTabs.astro';
 import ThemeCarousel from '../components/ThemeCarousel.astro';
 import picksData from '../data/picks.json';
+import picksEtfData from '../data/picks-etf.json';
 import regimeData from '../data/regime.json';
 import themesData from '../data/themes.json';
 import historyData from '../data/picks-history.json';
 
 const { kr: krPick = null, us: usPick = null, asOf: picksAsOf } = picksData;
+const { kr: krEtfPick = null, us: usEtfPick = null } = picksEtfData;
 const historyCount = Array.isArray(historyData) ? historyData.length : 0;
 const { fearGauge, markets = [], overall, asOf: regimeAsOf } = regimeData;
 const { kr: krThemes = { popular: [], value: [] }, us: usThemes = { popular: [], value: [] }, asOf: themesAsOf } = themesData;
@@ -25,21 +27,47 @@ const asOf = themesAsOf ?? regimeAsOf ?? picksAsOf;
   </div>
 
   <section id="section-picks" hidden class="space-y-6">
-    <div class="space-y-3">
-      <h2 class="text-sm uppercase tracking-wider text-slate-400">🇰🇷 한국</h2>
-      {krPick ? (
-        <PickCard {...krPick} />
-      ) : (
-        <p class="text-sm text-slate-400 text-center py-4">오늘은 조건 충족 종목 없음. 내일 다시 확인.</p>
-      )}
+    <div data-track-tabs data-track-group="picks" class="flex gap-1 rounded-full bg-slate-900 p-1 border border-slate-800">
+      <button data-track-tab="stock" aria-selected="true" class="flex-1 rounded-full px-3 py-1.5 text-xs font-medium text-slate-100 bg-slate-800">종목</button>
+      <button data-track-tab="etf" aria-selected="false" class="flex-1 rounded-full px-3 py-1.5 text-xs font-medium text-slate-400">ETF</button>
     </div>
-    <div class="space-y-3">
-      <h2 class="text-sm uppercase tracking-wider text-slate-400">🇺🇸 미국</h2>
-      {usPick ? (
-        <PickCard {...usPick} />
-      ) : (
-        <p class="text-sm text-slate-400 text-center py-4">오늘은 조건 충족 종목 없음. 내일 다시 확인.</p>
-      )}
+
+    <div data-track-panel="stock" data-track-group="picks" class="space-y-6">
+      <div class="space-y-3">
+        <h2 class="text-sm uppercase tracking-wider text-slate-400">🇰🇷 한국</h2>
+        {krPick ? (
+          <PickCard {...krPick} />
+        ) : (
+          <p class="text-sm text-slate-400 text-center py-4">오늘은 조건 충족 종목 없음. 내일 다시 확인.</p>
+        )}
+      </div>
+      <div class="space-y-3">
+        <h2 class="text-sm uppercase tracking-wider text-slate-400">🇺🇸 미국</h2>
+        {usPick ? (
+          <PickCard {...usPick} />
+        ) : (
+          <p class="text-sm text-slate-400 text-center py-4">오늘은 조건 충족 종목 없음. 내일 다시 확인.</p>
+        )}
+      </div>
+    </div>
+
+    <div data-track-panel="etf" data-track-group="picks" hidden class="space-y-6">
+      <div class="space-y-3">
+        <h2 class="text-sm uppercase tracking-wider text-slate-400">🇰🇷 한국 ETF</h2>
+        {krEtfPick ? (
+          <PickCard {...krEtfPick} />
+        ) : (
+          <p class="text-sm text-slate-400 text-center py-4">오늘은 조건 충족 ETF 없음.</p>
+        )}
+      </div>
+      <div class="space-y-3">
+        <h2 class="text-sm uppercase tracking-wider text-slate-400">🇺🇸 미국 ETF</h2>
+        {usEtfPick ? (
+          <PickCard {...usEtfPick} />
+        ) : (
+          <p class="text-sm text-slate-400 text-center py-4">오늘은 조건 충족 ETF 없음.</p>
+        )}
+      </div>
     </div>
     <a href="/history/" class="block rounded-2xl bg-slate-900 border border-slate-800 p-4 flex items-center justify-between hover:bg-slate-800 transition-colors">
       <span class="flex items-center gap-2 text-base font-semibold"><span aria-hidden="true">📊</span>히스토리 보기</span>
@@ -88,5 +116,6 @@ const asOf = themesAsOf ?? regimeAsOf ?? picksAsOf;
   <script>
     import '../scripts/toggle.ts';
     import '../scripts/theme-tabs.ts';
+    import '../scripts/track-tabs.ts';
   </script>
 </Base>
