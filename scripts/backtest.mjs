@@ -6,7 +6,6 @@ import { simulate } from './lib/backtest-engine.mjs';
 import { bucketize } from './lib/backtest-aggregate.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUTPUT = resolve(__dirname, '../src/data/backtest.json');
 const SIM_START = '2022-01-01';
 
 function todayStr() {
@@ -39,12 +38,12 @@ function simDayCountsFrom(tickers, simStart, simEnd) {
   };
 }
 
-async function main() {
-  const kr = loadJson('universe-kr.json');
-  const us = loadJson('universe-us.json');
+async function runBacktestTrack({ label, krUniverseFile, usUniverseFile, outputPath }) {
+  const kr = loadJson(krUniverseFile);
+  const us = loadJson(usUniverseFile);
   const today = todayStr();
 
-  console.log(`[backtest] fetching ${kr.length + us.length} tickers @ range=5y...`);
+  console.log(`[backtest/${label}] fetching ${kr.length + us.length} tickers @ range=5y...`);
   const krFetched = await fetchMany(kr.map((t) => ({ ...t, market: 'KR' })), { range: '5y', delayMs: 200 });
   const usFetched = await fetchMany(us.map((t) => ({ ...t, market: 'US' })), { range: '5y', delayMs: 200 });
 
@@ -61,12 +60,12 @@ async function main() {
       lows: row.data.lows,
     }));
 
-  console.log(`[backtest] usable tickers: ${tickers.length} (KR ${tickers.filter((t) => t.market === 'KR').length}, US ${tickers.filter((t) => t.market === 'US').length})`);
+  console.log(`[backtest/${label}] usable tickers: ${tickers.length} (KR ${tickers.filter((t) => t.market === 'KR').length}, US ${tickers.filter((t) => t.market === 'US').length})`);
 
-  console.log(`[backtest] simulating ${SIM_START} -> ${today}...`);
+  console.log(`[backtest/${label}] simulating ${SIM_START} -> ${today}...`);
   const t0 = Date.now();
   const entries = simulate({ tickers, simStart: SIM_START, simEnd: today, today });
-  console.log(`[backtest] entries: ${entries.length} (matured ${entries.filter((e) => e.status === 'matured').length}, active ${entries.filter((e) => e.status === 'active').length}) in ${Date.now() - t0}ms`);
+  console.log(`[backtest/${label}] entries: ${entries.length} (matured ${entries.filter((e) => e.status === 'matured').length}, active ${entries.filter((e) => e.status === 'active').length}) in ${Date.now() - t0}ms`);
 
   const simDayCounts = simDayCountsFrom(tickers, SIM_START, today);
   const buckets = bucketize(entries, simDayCounts);
@@ -84,9 +83,24 @@ async function main() {
     }),
   };
 
-  mkdirSync(dirname(OUTPUT), { recursive: true });
-  writeFileSync(OUTPUT, JSON.stringify(out, null, 2) + '\n', 'utf8');
-  console.log(`[backtest] wrote ${OUTPUT}`);
+  mkdirSync(dirname(outputPath), { recursive: true });
+  writeFileSync(outputPath, JSON.stringify(out, null, 2) + '\n', 'utf8');
+  console.log(`[backtest/${label}] wrote ${outputPath}`);
+}
+
+async function main() {
+  await runBacktestTrack({
+    label: 'stocks',
+    krUniverseFile: 'universe-kr.json',
+    usUniverseFile: 'universe-us.json',
+    outputPath: resolve(__dirname, '../src/data/backtest.json'),
+  });
+  await runBacktestTrack({
+    label: 'etfs',
+    krUniverseFile: 'universe-etf-kr.json',
+    usUniverseFile: 'universe-etf-us.json',
+    outputPath: resolve(__dirname, '../src/data/backtest-etf.json'),
+  });
 }
 
 main().catch((err) => {
