@@ -2,9 +2,6 @@ import { scorePicks } from './scoring.mjs';
 import { classifyHorizon } from './horizon.mjs';
 import { pickReason } from './reason-template.mjs';
 
-const VIX_ENTRY = 18;
-const VIX_EXIT = 10;
-
 function dailyReturn(closes) {
   if (closes.length < 22) return 0;
   return closes[closes.length - 1] / closes[closes.length - 22] - 1;
@@ -35,36 +32,23 @@ function firstIndexAtOrAfter(dates, target) {
   return -1;
 }
 
-function resolveExitWithVix(tickerData, buyIndex, holdDays, today, vixByDate, vixExit = VIX_EXIT) {
+function resolveExitMatured(tickerData, buyIndex, holdDays, today, vixByDate) {
   const buyDate = tickerData.dates[buyIndex];
   const matureDate = addCalendarDays(buyDate, holdDays);
 
   for (let k = buyIndex + 1; k < tickerData.dates.length; k++) {
     const date = tickerData.dates[k];
     if (date > today) break;
-    const price = tickerData.closes[k];
-    const vix = vixByDate?.[date] ?? null;
-
-    if (vix != null && vix < vixExit) {
-      return {
-        exitDate: date,
-        exitPrice: price,
-        sellReason: 'vix',
-        vixAtSell: vix,
-        status: 'matured',
-      };
-    }
     if (date >= matureDate) {
       return {
         exitDate: date,
-        exitPrice: price,
+        exitPrice: tickerData.closes[k],
         sellReason: 'matured',
-        vixAtSell: vix,
+        vixAtSell: vixByDate?.[date] ?? null,
         status: 'matured',
       };
     }
   }
-
   return {
     exitDate: null,
     exitPrice: null,
@@ -84,7 +68,7 @@ function buildSimDates(tickers, simStart, simEnd) {
   return [...set].sort();
 }
 
-export function simulate({ tickers, simStart, simEnd, today, vixByDate = {}, vixEntry = VIX_ENTRY, vixExit = VIX_EXIT }) {
+export function simulate({ tickers, simStart, simEnd, today, vixByDate = {}, bearByMarket = {}, defensiveTickers = [] }) {
   if (!today) {
     const d = new Date();
     today = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
@@ -107,10 +91,21 @@ export function simulate({ tickers, simStart, simEnd, today, vixByDate = {}, vix
       }
 
       const vixToday = vixByDate[D] ?? null;
-      if (vixToday == null || vixToday <= vixEntry) continue;
+      const isBear = bearByMarket[market]?.[D] === true;
+
+      let dayUniverse;
+      if (isBear && market === 'KR') continue;
+      if (isBear && market === 'US' && defensiveTickers.length > 0) {
+        dayUniverse = marketTickers.filter((t) => defensiveTickers.includes(t.ticker));
+        if (dayUniverse.length === 0) continue;
+      } else if (isBear) {
+        continue;
+      } else {
+        dayUniverse = marketTickers;
+      }
 
       const candidates = [];
-      for (const t of marketTickers) {
+      for (const t of dayUniverse) {
         const idx = firstIndexAtOrAfter(t.dates, D);
         if (idx === -1 || t.dates[idx] !== D) continue;
         if (idx + 1 < 30) continue;
@@ -151,7 +146,7 @@ export function simulate({ tickers, simStart, simEnd, today, vixByDate = {}, vix
       const matureDate = addCalendarDays(buyDate, holdDays);
       activeUntil.set(top.ticker.ticker, matureDate);
 
-      const exit = resolveExitWithVix(top.ticker, top.idx, holdDays, today, vixByDate, vixExit);
+      const exit = resolveExitMatured(top.ticker, top.idx, holdDays, today, vixByDate);
       const ret = exit.exitPrice == null ? null : exit.exitPrice / buyPrice - 1;
 
       entries.push({
@@ -172,6 +167,7 @@ export function simulate({ tickers, simStart, simEnd, today, vixByDate = {}, vix
         vixAtBuy: vixToday,
         sellReason: exit.sellReason,
         vixAtSell: exit.vixAtSell,
+        regime: isBear ? 'bear' : 'normal',
       });
     }
   }

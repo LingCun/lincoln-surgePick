@@ -62,13 +62,11 @@ describe('simulate', () => {
       closeFn: sawtoothClose,
       volFn: geomVol,
     });
-    const vixByDate = Object.fromEntries(t.dates.map((d) => [d, 25]));
     const entries = simulate({
       tickers: [t],
       simStart: '2024-01-03',
       simEnd: t.dates[t.dates.length - 1],
       today: t.dates[t.dates.length - 1],
-      vixByDate,
     });
     expect(entries.length).toBeGreaterThan(0);
     const matured = entries.filter((e) => e.status === 'matured');
@@ -86,13 +84,11 @@ describe('simulate', () => {
       closeFn: linearDownClose,
       volFn: flatVol,
     });
-    const vixByDate = Object.fromEntries(t.dates.map((d) => [d, 25]));
     const entries = simulate({
       tickers: [t],
       simStart: '2024-01-03',
       simEnd: t.dates[t.dates.length - 1],
       today: t.dates[t.dates.length - 1],
-      vixByDate,
     });
     expect(entries.length).toBe(0);
   });
@@ -107,13 +103,11 @@ describe('simulate', () => {
       closeFn: sawtoothClose,
       volFn: geomVol,
     });
-    const vixByDate = Object.fromEntries(t.dates.map((d) => [d, 25]));
     const entries = simulate({
       tickers: [t],
       simStart: '2024-01-03',
       simEnd: t.dates[t.dates.length - 1],
       today: t.dates[t.dates.length - 1],
-      vixByDate,
     });
     // The fixture passes scorePicks filters on many days (~40+), but the
     // engine should dedupe so consecutive entries never overlap in hold time.
@@ -145,13 +139,11 @@ describe('simulate', () => {
       closeFn: sawtoothClose,
       volFn: geomVol,
     });
-    const vixByDate = Object.fromEntries(t.dates.map((d) => [d, 25]));
     const entries = simulate({
       tickers: [t],
       simStart: '2024-01-01',
       simEnd: t.dates[t.dates.length - 1],
       today: t.dates[t.dates.length - 1],
-      vixByDate,
     });
     const matured = entries.filter((e) => e.status === 'matured');
     const active = entries.filter((e) => e.status === 'active');
@@ -186,13 +178,11 @@ describe('simulate', () => {
       closeFn: sawtoothClose,
       volFn: geomVol,
     });
-    const vixByDate = Object.fromEntries(t.dates.map((d) => [d, 25]));
     const entries = simulate({
       tickers: [t],
       simStart: '2024-01-03',
       simEnd: t.dates[t.dates.length - 1],
       today: t.dates[t.dates.length - 1],
-      vixByDate,
     });
     const matured = entries.filter((e) => e.status === 'matured');
     expect(matured.length).toBeGreaterThan(0);
@@ -211,10 +201,10 @@ describe('simulate', () => {
     expect(slideObserved).toBe(true);
   });
 
-  it('exits early via sellReason="vix" when VIX drops below 15 mid-hold', () => {
+  it('skips entries on bear days (US, no defensive subset)', () => {
     const t = synthTicker({
-      ticker: 'VIXEX',
-      name: 'VIX Exit',
+      ticker: 'BEAR',
+      name: 'Bear',
       market: 'US',
       startDate: '2024-01-03',
       n: 200,
@@ -224,27 +214,18 @@ describe('simulate', () => {
       },
       volFn: (i) => Math.round(1000 * Math.pow(1.01, i)),
     });
-    const vixByDate = Object.fromEntries(
-      t.dates.map((d, i) => [d, i < 100 ? 25 : 8])
-    );
+    const bearByMarket = { US: Object.fromEntries(t.dates.map((d) => [d, true])) };
     const today = t.dates[t.dates.length - 1];
     const entries = simulate({
-      tickers: [t],
-      simStart: '2024-01-03',
-      simEnd: today,
-      today,
-      vixByDate,
+      tickers: [t], simStart: '2024-01-03', simEnd: today, today, bearByMarket,
     });
-    const matured = entries.filter((e) => e.status === 'matured');
-    expect(matured.length).toBeGreaterThan(0);
-    expect(matured.some((e) => e.sellReason === 'vix')).toBe(true);
-    expect(matured.every((e) => e.vixAtBuy != null)).toBe(true);
+    expect(entries.length).toBe(0);
   });
 
-  it('respects vixEntry override (allows entries below module default)', () => {
+  it('allows defensive entries on bear US days', () => {
     const t = synthTicker({
-      ticker: 'OVR',
-      name: 'Override',
+      ticker: 'SQQQ',
+      name: 'SQQQ Defensive',
       market: 'US',
       startDate: '2024-01-03',
       n: 200,
@@ -254,15 +235,13 @@ describe('simulate', () => {
       },
       volFn: (i) => Math.round(1000 * Math.pow(1.01, i)),
     });
-    const vixByDate = Object.fromEntries(t.dates.map((d) => [d, 17]));
+    const bearByMarket = { US: Object.fromEntries(t.dates.map((d) => [d, true])) };
     const today = t.dates[t.dates.length - 1];
-    const defaultEntries = simulate({
-      tickers: [t], simStart: '2024-01-03', simEnd: today, today, vixByDate,
+    const entries = simulate({
+      tickers: [t], simStart: '2024-01-03', simEnd: today, today, bearByMarket,
+      defensiveTickers: ['SQQQ'],
     });
-    const overrideEntries = simulate({
-      tickers: [t], simStart: '2024-01-03', simEnd: today, today, vixByDate, vixEntry: 16,
-    });
-    expect(defaultEntries.length).toBe(0);
-    expect(overrideEntries.length).toBeGreaterThan(0);
+    expect(entries.length).toBeGreaterThan(0);
+    expect(entries.every((e) => e.regime === 'bear')).toBe(true);
   });
 });
