@@ -89,7 +89,7 @@ export function updateEntry(entry, currentPrice, today) {
     : 0;
 
   let sellReason = null;
-  if (pullback >= 0.10) sellReason = 'trailing';
+  if (maxPriceSinceEntry > entry.buyPrice && pullback >= 0.10) sellReason = 'trailing';
   else if (drawdown >= 0.15) sellReason = 'hard';
   else if (today >= entry.matureDate) sellReason = 'matured';
 
