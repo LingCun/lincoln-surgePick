@@ -46,6 +46,8 @@ const sellReasonLabel = entry.sellReason === 'trailing'
   ? '⛔ 추세 청산 · 최고가 -10%'
   : entry.sellReason === 'hard'
   ? '⛔ 손절 청산 · 진입가 -15%'
+  : entry.sellReason === 'vix'
+  ? '📉 VIX 청산 · 시장 탐욕 단계'
   : '✅ 매도완료 · 만기';
 ---
 <Base title={`${entry.name} — surgePick`}>
@@ -82,6 +84,9 @@ const sellReasonLabel = entry.sellReason === 'trailing'
         <div class="flex justify-between"><dt class="text-slate-400">매수가</dt><dd class="font-medium">{fmtPrice(entry.buyPrice)}</dd></div>
         <div class="flex justify-between"><dt class="text-slate-400">매도일</dt><dd class="font-medium">{entry.sellDate} (만기)</dd></div>
         <div class="flex justify-between"><dt class="text-slate-400">매도가</dt><dd class="font-medium">{fmtPrice(entry.sellPrice)}</dd></div>
+        {(entry.vixAtBuy != null || entry.vixAtSell != null) && (
+          <div class="flex justify-between"><dt class="text-slate-400">VIX</dt><dd class="font-medium">{entry.vixAtBuy?.toFixed(1) ?? '—'} → {entry.vixAtSell?.toFixed(1) ?? '—'}</dd></div>
+        )}
       </dl>
     </article>
   ) : (
@@ -93,6 +98,9 @@ const sellReasonLabel = entry.sellReason === 'trailing'
         <div class="flex justify-between"><dt class="text-slate-400">매수가</dt><dd class="font-medium">{fmtPrice(entry.buyPrice)}</dd></div>
         <div class="flex justify-between"><dt class="text-slate-400">현재가</dt><dd class="font-medium">{fmtPrice(entry.currentPrice)} <span class="text-xs text-slate-500">({entry.currentDate})</span></dd></div>
         <div class="flex justify-between"><dt class="text-slate-400">만기일</dt><dd class="font-medium">{entry.matureDate} <span class={`text-xs ${horizonColor.split(' ')[1]}`}>(D-{daysLeft})</span></dd></div>
+        {entry.vixAtBuy != null && (
+          <div class="flex justify-between"><dt class="text-slate-400">VIX 매수시</dt><dd class="font-medium">{entry.vixAtBuy.toFixed(1)}</dd></div>
+        )}
       </dl>
     </article>
   )}
