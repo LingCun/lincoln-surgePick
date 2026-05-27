@@ -15,8 +15,6 @@ import {
 } from './lib/history-store.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUTPUT = resolve(__dirname, '../src/data/picks.json');
-const HISTORY = resolve(__dirname, '../src/data/picks-history.json');
 
 function load(name) {
   return JSON.parse(readFileSync(resolve(__dirname, name), 'utf8'));
@@ -101,12 +99,12 @@ async function refreshHoldings(history, today) {
   return history.map((e) => updates.get(e.id) ?? e);
 }
 
-async function main() {
-  const kr = load('universe-kr.json');
-  const us = load('universe-us.json');
+async function runTrack({ label, krUniverseFile, usUniverseFile, outputPath, historyPath, idPrefix = '' }) {
+  const kr = load(krUniverseFile);
+  const us = load(usUniverseFile);
   const today = todayDate();
 
-  let history = loadHistory(HISTORY);
+  let history = loadHistory(historyPath);
   history = await refreshHoldings(history, today);
 
   const krPick = await scanGroup(kr, 'KR');
@@ -114,14 +112,14 @@ async function main() {
 
   const newEntries = [];
   if (krPick && !hasPickToday(history, 'KR', today)) {
-    newEntries.push(makeEntry({ market: 'KR', buyDate: today, pick: krPick }));
+    newEntries.push(makeEntry({ market: 'KR', buyDate: today, pick: krPick, idPrefix }));
   }
   if (usPick && !hasPickToday(history, 'US', today)) {
-    newEntries.push(makeEntry({ market: 'US', buyDate: today, pick: usPick }));
+    newEntries.push(makeEntry({ market: 'US', buyDate: today, pick: usPick, idPrefix }));
   }
   history = [...history, ...newEntries];
-  saveHistory(HISTORY, history);
-  console.log(`[scan-picks] history now has ${history.length} entries (added ${newEntries.length})`);
+  saveHistory(historyPath, history);
+  console.log(`[scan-picks/${label}] history now has ${history.length} entries (added ${newEntries.length})`);
 
   // Today's picks snapshot for home page (1+1)
   const buildSnapshot = (entry) => {
@@ -148,9 +146,27 @@ async function main() {
     us: buildSnapshot(todayUS),
   };
 
-  mkdirSync(dirname(OUTPUT), { recursive: true });
-  writeFileSync(OUTPUT, JSON.stringify(out, null, 2) + '\n', 'utf8');
-  console.log(`[scan-picks] wrote ${OUTPUT}`);
+  mkdirSync(dirname(outputPath), { recursive: true });
+  writeFileSync(outputPath, JSON.stringify(out, null, 2) + '\n', 'utf8');
+  console.log(`[scan-picks/${label}] wrote ${outputPath}`);
+}
+
+async function main() {
+  await runTrack({
+    label: 'stocks',
+    krUniverseFile: 'universe-kr.json',
+    usUniverseFile: 'universe-us.json',
+    outputPath: resolve(__dirname, '../src/data/picks.json'),
+    historyPath: resolve(__dirname, '../src/data/picks-history.json'),
+  });
+  await runTrack({
+    label: 'etfs',
+    krUniverseFile: 'universe-etf-kr.json',
+    usUniverseFile: 'universe-etf-us.json',
+    outputPath: resolve(__dirname, '../src/data/picks-etf.json'),
+    historyPath: resolve(__dirname, '../src/data/picks-history-etf.json'),
+    idPrefix: 'etf-',
+  });
 }
 
 main().catch((err) => {
