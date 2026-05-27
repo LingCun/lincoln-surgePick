@@ -6,6 +6,9 @@ import { dirname } from 'node:path';
  * transitions matured entries to 'sold' (price/return frozen at maturity).
  */
 
+const TRAILING_PULLBACK = 0.10;
+const HARD_DRAWDOWN = 0.15;
+
 export function loadHistory(filePath) {
   if (!existsSync(filePath)) return [];
   try {
@@ -65,9 +68,11 @@ export function makeEntry({ market, pick, buyDate, idPrefix = '' }) {
     currentPrice: pick.buyPrice,
     currentDate: buyDate,
     returnPct: 0,
+    maxPriceSinceEntry: pick.buyPrice,
     status: 'holding',
     sellDate: null,
     sellPrice: null,
+    sellReason: null,
   };
 }
 
@@ -78,24 +83,42 @@ export function makeEntry({ market, pick, buyDate, idPrefix = '' }) {
 export function updateEntry(entry, currentPrice, today) {
   if (entry.status === 'sold') return entry;
 
+  const maxPriceSinceEntry = Math.max(
+    entry.maxPriceSinceEntry ?? entry.buyPrice,
+    currentPrice
+  );
   const returnPct = entry.buyPrice
     ? ((currentPrice - entry.buyPrice) / entry.buyPrice) * 100
     : 0;
+  const pullback = maxPriceSinceEntry > 0
+    ? (maxPriceSinceEntry - currentPrice) / maxPriceSinceEntry
+    : 0;
+  const drawdown = entry.buyPrice
+    ? (entry.buyPrice - currentPrice) / entry.buyPrice
+    : 0;
 
-  if (today >= entry.matureDate) {
+  let sellReason = null;
+  if (maxPriceSinceEntry > entry.buyPrice && pullback >= TRAILING_PULLBACK) sellReason = 'trailing';
+  else if (drawdown >= HARD_DRAWDOWN) sellReason = 'hard';
+  else if (today >= entry.matureDate) sellReason = 'matured';
+
+  if (sellReason) {
     return {
       ...entry,
+      maxPriceSinceEntry,
       currentPrice,
       currentDate: today,
       returnPct,
       status: 'sold',
       sellDate: today,
       sellPrice: currentPrice,
+      sellReason,
     };
   }
 
   return {
     ...entry,
+    maxPriceSinceEntry,
     currentPrice,
     currentDate: today,
     returnPct,
