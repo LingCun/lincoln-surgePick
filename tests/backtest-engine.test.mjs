@@ -240,4 +240,29 @@ describe('simulate', () => {
     expect(matured.some((e) => e.sellReason === 'vix')).toBe(true);
     expect(matured.every((e) => e.vixAtBuy != null)).toBe(true);
   });
+
+  it('respects vixEntry override (allows entries below module default)', () => {
+    const t = synthTicker({
+      ticker: 'OVR',
+      name: 'Override',
+      market: 'US',
+      startDate: '2024-01-03',
+      n: 200,
+      closeFn: (i) => {
+        const c = i % 11;
+        return 100 + Math.floor(i / 11) * 3 + (c < 10 ? c * 0.6 : 10 * 0.6 - 3);
+      },
+      volFn: (i) => Math.round(1000 * Math.pow(1.01, i)),
+    });
+    const vixByDate = Object.fromEntries(t.dates.map((d) => [d, 19]));
+    const today = t.dates[t.dates.length - 1];
+    const defaultEntries = simulate({
+      tickers: [t], simStart: '2024-01-03', simEnd: today, today, vixByDate,
+    });
+    const overrideEntries = simulate({
+      tickers: [t], simStart: '2024-01-03', simEnd: today, today, vixByDate, vixEntry: 18,
+    });
+    expect(defaultEntries.length).toBe(0);
+    expect(overrideEntries.length).toBeGreaterThan(0);
+  });
 });

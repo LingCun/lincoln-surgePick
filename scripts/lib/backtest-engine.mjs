@@ -35,7 +35,7 @@ function firstIndexAtOrAfter(dates, target) {
   return -1;
 }
 
-function resolveExitWithVix(tickerData, buyIndex, holdDays, today, vixByDate) {
+function resolveExitWithVix(tickerData, buyIndex, holdDays, today, vixByDate, vixExit = VIX_EXIT) {
   const buyDate = tickerData.dates[buyIndex];
   const matureDate = addCalendarDays(buyDate, holdDays);
 
@@ -45,7 +45,7 @@ function resolveExitWithVix(tickerData, buyIndex, holdDays, today, vixByDate) {
     const price = tickerData.closes[k];
     const vix = vixByDate?.[date] ?? null;
 
-    if (vix != null && vix < VIX_EXIT) {
+    if (vix != null && vix < vixExit) {
       return {
         exitDate: date,
         exitPrice: price,
@@ -84,7 +84,7 @@ function buildSimDates(tickers, simStart, simEnd) {
   return [...set].sort();
 }
 
-export function simulate({ tickers, simStart, simEnd, today, vixByDate = {} }) {
+export function simulate({ tickers, simStart, simEnd, today, vixByDate = {}, vixEntry = VIX_ENTRY, vixExit = VIX_EXIT }) {
   if (!today) {
     const d = new Date();
     today = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
@@ -107,7 +107,7 @@ export function simulate({ tickers, simStart, simEnd, today, vixByDate = {} }) {
       }
 
       const vixToday = vixByDate[D] ?? null;
-      if (vixToday == null || vixToday <= VIX_ENTRY) continue;
+      if (vixToday == null || vixToday <= vixEntry) continue;
 
       const candidates = [];
       for (const t of marketTickers) {
@@ -151,7 +151,7 @@ export function simulate({ tickers, simStart, simEnd, today, vixByDate = {} }) {
       const matureDate = addCalendarDays(buyDate, holdDays);
       activeUntil.set(top.ticker.ticker, matureDate);
 
-      const exit = resolveExitWithVix(top.ticker, top.idx, holdDays, today, vixByDate);
+      const exit = resolveExitWithVix(top.ticker, top.idx, holdDays, today, vixByDate, vixExit);
       const ret = exit.exitPrice == null ? null : exit.exitPrice / buyPrice - 1;
 
       entries.push({
