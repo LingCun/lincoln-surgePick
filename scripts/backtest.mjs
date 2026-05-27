@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { fetchMany } from './fetch-yahoo.mjs';
+import { fetchMany, fetchChart } from './fetch-yahoo.mjs';
 import { simulate } from './lib/backtest-engine.mjs';
 import { bucketize } from './lib/backtest-aggregate.mjs';
 
@@ -38,7 +38,7 @@ function simDayCountsFrom(tickers, simStart, simEnd) {
   };
 }
 
-async function runBacktestTrack({ label, krUniverseFile, usUniverseFile, outputPath }) {
+async function runBacktestTrack({ label, krUniverseFile, usUniverseFile, outputPath, vixByDate }) {
   const kr = loadJson(krUniverseFile);
   const us = loadJson(usUniverseFile);
   const today = todayStr();
@@ -64,7 +64,7 @@ async function runBacktestTrack({ label, krUniverseFile, usUniverseFile, outputP
 
   console.log(`[backtest/${label}] simulating ${SIM_START} -> ${today}...`);
   const t0 = Date.now();
-  const entries = simulate({ tickers, simStart: SIM_START, simEnd: today, today });
+  const entries = simulate({ tickers, simStart: SIM_START, simEnd: today, today, vixByDate });
   console.log(`[backtest/${label}] entries: ${entries.length} (matured ${entries.filter((e) => e.status === 'matured').length}, active ${entries.filter((e) => e.status === 'active').length}) in ${Date.now() - t0}ms`);
 
   const simDayCounts = simDayCountsFrom(tickers, SIM_START, today);
@@ -89,17 +89,31 @@ async function runBacktestTrack({ label, krUniverseFile, usUniverseFile, outputP
 }
 
 async function main() {
+  console.log('[backtest] fetching ^VIX (5y)...');
+  const vixData = await fetchChart('^VIX', '5y');
+  if (!vixData || !vixData.dates || vixData.dates.length === 0) {
+    console.error('[backtest] failed to fetch VIX — cannot run gated backtest');
+    process.exit(1);
+  }
+  const vixByDate = {};
+  for (let i = 0; i < vixData.dates.length; i++) {
+    vixByDate[vixData.dates[i]] = vixData.closes[i];
+  }
+  console.log(`[backtest] VIX days: ${Object.keys(vixByDate).length}`);
+
   await runBacktestTrack({
     label: 'stocks',
     krUniverseFile: 'universe-kr.json',
     usUniverseFile: 'universe-us.json',
     outputPath: resolve(__dirname, '../src/data/backtest.json'),
+    vixByDate,
   });
   await runBacktestTrack({
     label: 'etfs',
     krUniverseFile: 'universe-etf-kr.json',
     usUniverseFile: 'universe-etf-us.json',
     outputPath: resolve(__dirname, '../src/data/backtest-etf.json'),
+    vixByDate,
   });
 }
 
