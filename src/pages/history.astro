@@ -2,34 +2,67 @@
 import Base from '../layouts/Base.astro';
 import HistoryRow from '../components/HistoryRow.astro';
 import history from '../data/picks-history.json';
+import historyEtf from '../data/picks-history-etf.json';
 
-// Latest buyDate first
-const sorted = [...history].sort((a, b) => b.buyDate.localeCompare(a.buyDate));
-const holdingCount = sorted.filter((e) => e.status === 'holding').length;
-const soldCount = sorted.filter((e) => e.status === 'sold').length;
+function summarize(rows) {
+  const sorted = [...rows].sort((a, b) => b.buyDate.localeCompare(a.buyDate));
+  return {
+    sorted,
+    holdingCount: sorted.filter((e) => e.status === 'holding').length,
+    soldCount: sorted.filter((e) => e.status === 'sold').length,
+    shortCount: sorted.filter((e) => e.horizon === '단기').length,
+    midCount: sorted.filter((e) => e.horizon === '중기').length,
+    longCount: sorted.filter((e) => e.horizon === '장기').length,
+  };
+}
 
-const shortCount = sorted.filter((e) => e.horizon === '단기').length;
-const midCount   = sorted.filter((e) => e.horizon === '중기').length;
-const longCount  = sorted.filter((e) => e.horizon === '장기').length;
+const stockSummary = summarize(history);
+const etfSummary = summarize(historyEtf);
 ---
 <Base title="픽 히스토리 — surgePick">
   <div class="mb-4">
     <a href="/" class="text-sm text-slate-400 hover:text-slate-200">← 홈</a>
   </div>
-  <h1 class="text-xl font-bold mb-1">픽 히스토리</h1>
-  <p class="text-xs text-slate-400 mb-4">총 {sorted.length}건 · 보유중 {holdingCount} · 매도완료 {soldCount}</p>
+  <h1 class="text-xl font-bold mb-3">픽 히스토리</h1>
 
-  <div class="flex gap-1 mb-3 text-xs flex-wrap">
-    <span class="px-2 py-1 rounded-full bg-horizon-short/20 text-horizon-short font-semibold">단기 {shortCount}</span>
-    <span class="px-2 py-1 rounded-full bg-horizon-mid/20 text-horizon-mid font-semibold">중기 {midCount}</span>
-    <span class="px-2 py-1 rounded-full bg-horizon-long/20 text-horizon-long font-semibold">장기 {longCount}</span>
+  <div data-track-tabs data-track-group="history" class="flex gap-1 mb-4 rounded-full bg-slate-900 p-1 border border-slate-800">
+    <button data-track-tab="stock" aria-selected="true" class="flex-1 rounded-full px-3 py-1.5 text-xs font-medium text-slate-100 bg-slate-800">종목 ({stockSummary.sorted.length})</button>
+    <button data-track-tab="etf" aria-selected="false" class="flex-1 rounded-full px-3 py-1.5 text-xs font-medium text-slate-400">ETF ({etfSummary.sorted.length})</button>
   </div>
 
-  {sorted.length === 0 ? (
-    <p class="text-sm text-slate-400 text-center py-8">아직 적재된 픽 없음. <code>npm run scan:picks</code> 한 번 실행.</p>
-  ) : (
-    <div class="space-y-3">
-      {sorted.map((entry) => <HistoryRow entry={entry} />)}
+  <div data-track-panel="stock" data-track-group="history">
+    <p class="text-xs text-slate-400 mb-3">보유중 {stockSummary.holdingCount} · 매도완료 {stockSummary.soldCount}</p>
+    <div class="flex gap-1 mb-3 text-xs flex-wrap">
+      <span class="px-2 py-1 rounded-full bg-horizon-short/20 text-horizon-short font-semibold">단기 {stockSummary.shortCount}</span>
+      <span class="px-2 py-1 rounded-full bg-horizon-mid/20 text-horizon-mid font-semibold">중기 {stockSummary.midCount}</span>
+      <span class="px-2 py-1 rounded-full bg-horizon-long/20 text-horizon-long font-semibold">장기 {stockSummary.longCount}</span>
     </div>
-  )}
+    {stockSummary.sorted.length === 0 ? (
+      <p class="text-sm text-slate-400 text-center py-8">아직 적재된 픽 없음. <code>npm run scan:picks</code> 한 번 실행.</p>
+    ) : (
+      <div class="space-y-3">
+        {stockSummary.sorted.map((entry) => <HistoryRow entry={entry} />)}
+      </div>
+    )}
+  </div>
+
+  <div data-track-panel="etf" data-track-group="history" hidden>
+    <p class="text-xs text-slate-400 mb-3">보유중 {etfSummary.holdingCount} · 매도완료 {etfSummary.soldCount}</p>
+    <div class="flex gap-1 mb-3 text-xs flex-wrap">
+      <span class="px-2 py-1 rounded-full bg-horizon-short/20 text-horizon-short font-semibold">단기 {etfSummary.shortCount}</span>
+      <span class="px-2 py-1 rounded-full bg-horizon-mid/20 text-horizon-mid font-semibold">중기 {etfSummary.midCount}</span>
+      <span class="px-2 py-1 rounded-full bg-horizon-long/20 text-horizon-long font-semibold">장기 {etfSummary.longCount}</span>
+    </div>
+    {etfSummary.sorted.length === 0 ? (
+      <p class="text-sm text-slate-400 text-center py-8">아직 적재된 ETF 픽 없음. ETF universe가 작아 며칠 기다려야 첫 픽이 잡힐 수 있음.</p>
+    ) : (
+      <div class="space-y-3">
+        {etfSummary.sorted.map((entry) => <HistoryRow entry={entry} />)}
+      </div>
+    )}
+  </div>
+
+  <script>
+    import '../scripts/track-tabs.ts';
+  </script>
 </Base>
