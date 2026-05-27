@@ -13,8 +13,10 @@ import {
   makeEntry,
   updateEntry,
 } from './lib/history-store.mjs';
+import { isBearAt } from './lib/regime-detect.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const DEFENSIVE_TICKERS = ['SQQQ', 'GLD', 'TLT', 'BND'];
 
 function load(name) {
   return JSON.parse(readFileSync(resolve(__dirname, name), 'utf8'));
@@ -104,20 +106,39 @@ async function runTrack({ label, krUniverseFile, usUniverseFile, outputPath, his
   const us = load(usUniverseFile);
   const today = todayDate();
 
-  const vixData = await fetchChart('^VIX', '1mo');
+  const [vixData, gspcData, ksData] = await Promise.all([
+    fetchChart('^VIX', '1mo'),
+    fetchChart('^GSPC', '1y'),
+    fetchChart('^KS11', '1y'),
+  ]);
   const vix = vixData?.closes?.[vixData.closes.length - 1] ?? null;
-  console.log(`[scan-picks/${label}] VIX today: ${vix?.toFixed(2) ?? 'N/A'}`);
+  const isBearUS = gspcData ? isBearAt(gspcData.closes, gspcData.closes.length - 1) : false;
+  const isBearKR = ksData ? isBearAt(ksData.closes, ksData.closes.length - 1) : false;
+  console.log(`[scan-picks/${label}] VIX: ${vix?.toFixed(2) ?? 'N/A'}, US bear: ${isBearUS}, KR bear: ${isBearKR}`);
 
   let history = loadHistory(historyPath);
   history = await refreshHoldings(history, today, vix);
 
+  const isETFTrack = idPrefix === 'etf-';
   let krPick = null;
   let usPick = null;
-  if (vix != null && vix > 20) {
-    krPick = await scanGroup(kr, 'KR');
-    usPick = await scanGroup(us, 'US');
+
+  if (isBearKR) {
+    console.log(`[scan-picks/${label}] KR bear — skipping KR entry`);
   } else {
-    console.log(`[scan-picks/${label}] VIX gate closed (need >20, got ${vix?.toFixed(2) ?? 'null'}) — no new entries today`);
+    krPick = await scanGroup(kr, 'KR');
+  }
+
+  if (isBearUS) {
+    if (isETFTrack) {
+      const defensiveUs = us.filter((t) => DEFENSIVE_TICKERS.includes(t.ticker));
+      console.log(`[scan-picks/${label}] US bear — defensive subset (${defensiveUs.map((t) => t.ticker).join(',')})`);
+      usPick = await scanGroup(defensiveUs, 'US');
+    } else {
+      console.log(`[scan-picks/${label}] US bear — skipping US stock entry`);
+    }
+  } else {
+    usPick = await scanGroup(us, 'US');
   }
 
   const newEntries = [];
