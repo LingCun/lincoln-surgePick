@@ -18,21 +18,22 @@ maxPriceSinceEntry := max over all observed closes from buyDate to today (inclus
 pullback           := (maxPriceSinceEntry - currentPrice) / maxPriceSinceEntry
 drawdown           := (buyPrice          - currentPrice) / buyPrice
 
-if pullback >= 0.10:                       sellReason = 'trailing'
-else if drawdown >= 0.15:                  sellReason = 'hard'
-else if today >= matureDate:               sellReason = 'matured'
-else:                                      hold
+if maxPriceSinceEntry > buyPrice AND pullback >= 0.10:  sellReason = 'trailing'
+else if drawdown >= 0.15:                               sellReason = 'hard'
+else if today >= matureDate:                            sellReason = 'matured'
+else:                                                   hold
 ```
 
-Trailing takes precedence over hard so that picks which first ran up then gave back gains exit with locked-in profit rather than waiting for entry-price drawdown.
+Trailing is gated on `maxPriceSinceEntry > buyPrice` — it only protects picks that actually went up before giving back gains. If a pick never trades above entry, the `maxPriceSinceEntry == buyPrice` invariant makes pullback == drawdown; without the gate, trailing would always preempt hard at the 10% threshold and the hard floor at 15% would be unreachable. The gate makes hard the sole rule for never-above-entry picks (locking the floor at −15%) and trailing the rule for picks that had upside (locking gains when the high gives back 10%).
 
 ### Examples
 
 | Entry | Trajectory | Trigger | Sell price | Return |
 |---|---|---|---|---|
-| 100 | rises to 130, drops to 117 | trailing (130 → 117 is 10% pullback) | 117 | +17% |
-| 100 | drops to 90, never recovers above 100 | maxPriceSinceEntry stays at 100, pullback = 10% | 90 | −10% |
-| 100 | drops to 86 (−14%) then 84 (−16%) | hard (drawdown ≥ 15%) | 84 | −16% (capped near −15%) |
+| 100 | rises to 130, drops to 117 | trailing (max 130 > 100 gate satisfied; 130 → 117 is 10% pullback) | 117 | +17% |
+| 100 | drops to 90, never recovers above 100 | max stays at 100, trailing gate not satisfied; drawdown 10% < 15% → still holding | — | hold |
+| 100 | drops to 86 (−14%) then 84 (−16%) | max=100, trailing gate not satisfied; drawdown 16% ≥ 15% → hard | 84 | −16% (capped near −15%) |
+| 100 | rises to 110, then falls to 84 | max=110 > 100, pullback (110→84)=23.6% → trailing (fires before reaching hard threshold from entry) | 84 | −16% |
 | 100 | bounces around 95–105 to maturity | matured | close on matureDate | varies |
 
 ## Data model
