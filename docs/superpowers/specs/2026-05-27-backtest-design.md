@@ -128,11 +128,11 @@ On each trading day D in the per-market `simDates`:
 For each entry:
 
 - `matureDate = buyDate + holdDays` (calendar).
-- `exitIndex` = the latest index in T's date array whose date is `<= matureDate`.
-- If `T.dates[exitIndex] === matureDate` or there exists any T.dates entry `>= matureDate` already present in our 5y fetch: `exitPrice = closes[exitIndex_at_or_after_matureDate]` (first trading day at or after `matureDate`), `return = exitPrice/buyPrice - 1`, `status = "matured"`.
-- Else (`matureDate > last available date in T.dates`): `exitPrice = null`, `return = null`, `status = "active"`.
+- `exitIndex` = the **earliest** index in T's date array whose date is `>= matureDate` (first trading day at or after maturity).
+- If such an index exists: `exitDate = T.dates[exitIndex]`, `exitPrice = T.closes[exitIndex]`, `return = exitPrice/buyPrice - 1`, `status = "matured"`.
+- Else (`matureDate > last available date in T.dates`): `exitDate = null`, `exitPrice = null`, `return = null`, `status = "active"`.
 
-This handles weekends/holidays consistently: a 14-day single-day-of-week edge case settles on the next available close.
+Weekend/holiday handling: if `matureDate` falls on a non-trading day, exit slides forward to the next trading day's close.
 
 Active entries are recorded in `picks[]` but excluded from all aggregate metrics.
 
@@ -224,6 +224,7 @@ One new component `StatsTable.astro` (props: title, rows, columns). Re-used for 
 - Same ticker passing filter for 5 consecutive days → only 1 entry recorded (dedupe).
 - Pick with `buyIndex + holdDays > lastIndex` → entry recorded with `status="active"`, `exitPrice === null`.
 - Entry maturing exactly on `lastIndex` → `status="matured"`.
+- `matureDate` falls on a weekend → `exitDate` slides to next trading day; `exitPrice` is that day's close (not the prior Friday).
 
 `tests/backtest-aggregate.test.mjs`:
 
