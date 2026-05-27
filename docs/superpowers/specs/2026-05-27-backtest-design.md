@@ -13,7 +13,7 @@ Specifically, confirm whether the algorithm:
 1. Produces profitable picks in bull markets (2024–2025).
 2. Stays out of severe drawdowns (2022) or loses gracefully if it enters.
 3. Behaves consistently across KR and US universes.
-4. Differentiates the three horizon buckets (단기 14d / 중기 90d / 장기 250d).
+4. Differentiates the three horizon buckets (단기 14d / 중기 90d / 장기 365d, per `horizon.mjs`).
 
 ## Non-goals
 
@@ -62,6 +62,7 @@ universe-kr/us.json
         |
         v
   fetchMany(range='5y')   --- Yahoo, ~60 calls @ 200ms = ~12s
+  (fetchChart extended to also return dates: string[] YYYY-MM-DD from result.timestamp)
         |
         v
   closesByTicker: { [ticker]: { dates[], closes[], volumes[], market, name } }
