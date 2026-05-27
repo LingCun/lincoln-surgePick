@@ -2,8 +2,8 @@ import { scorePicks } from './scoring.mjs';
 import { classifyHorizon } from './horizon.mjs';
 import { pickReason } from './reason-template.mjs';
 
-const VIX_ENTRY = 20;
-const VIX_EXIT = 15;
+const VIX_ENTRY = 18;
+const VIX_EXIT = 10;
 
 function dailyReturn(closes) {
   if (closes.length < 22) return 0;

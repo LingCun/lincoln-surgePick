@@ -225,7 +225,7 @@ describe('simulate', () => {
       volFn: (i) => Math.round(1000 * Math.pow(1.01, i)),
     });
     const vixByDate = Object.fromEntries(
-      t.dates.map((d, i) => [d, i < 100 ? 25 : 12])
+      t.dates.map((d, i) => [d, i < 100 ? 25 : 8])
     );
     const today = t.dates[t.dates.length - 1];
     const entries = simulate({
@@ -254,13 +254,13 @@ describe('simulate', () => {
       },
       volFn: (i) => Math.round(1000 * Math.pow(1.01, i)),
     });
-    const vixByDate = Object.fromEntries(t.dates.map((d) => [d, 19]));
+    const vixByDate = Object.fromEntries(t.dates.map((d) => [d, 17]));
     const today = t.dates[t.dates.length - 1];
     const defaultEntries = simulate({
       tickers: [t], simStart: '2024-01-03', simEnd: today, today, vixByDate,
     });
     const overrideEntries = simulate({
-      tickers: [t], simStart: '2024-01-03', simEnd: today, today, vixByDate, vixEntry: 18,
+      tickers: [t], simStart: '2024-01-03', simEnd: today, today, vixByDate, vixEntry: 16,
     });
     expect(defaultEntries.length).toBe(0);
     expect(overrideEntries.length).toBeGreaterThan(0);

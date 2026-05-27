@@ -6,7 +6,7 @@ import { dirname } from 'node:path';
  * transitions matured entries to 'sold' (price/return frozen at maturity).
  */
 
-const VIX_EXIT = 15;
+const VIX_EXIT = 10;
 
 export function loadHistory(filePath) {
   if (!existsSync(filePath)) return [];

@@ -135,17 +135,17 @@ describe('updateEntry', () => {
     expect(r).toBe(sold);
   });
 
-  it('exits with sellReason="vix" when vix < 15 (before maturity)', () => {
-    const r = updateEntry(base, 102, '2026-05-08', 12);
+  it('exits with sellReason="vix" when vix < 10 (before maturity)', () => {
+    const r = updateEntry(base, 102, '2026-05-08', 8);
     expect(r.status).toBe('sold');
     expect(r.sellReason).toBe('vix');
     expect(r.sellPrice).toBe(102);
     expect(r.sellDate).toBe('2026-05-08');
-    expect(r.vixAtSell).toBe(12);
+    expect(r.vixAtSell).toBe(8);
   });
 
-  it('keeps holding when vix >= 15 and before maturity', () => {
-    const r = updateEntry(base, 105, '2026-05-08', 20);
+  it('keeps holding when vix >= 10 and before maturity', () => {
+    const r = updateEntry(base, 105, '2026-05-08', 15);
     expect(r.status).toBe('holding');
     expect(r.sellReason).toBeUndefined();
   });
