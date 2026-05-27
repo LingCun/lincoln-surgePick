@@ -6,8 +6,6 @@ import { dirname } from 'node:path';
  * transitions matured entries to 'sold' (price/return frozen at maturity).
  */
 
-const VIX_EXIT = 10;
-
 export function loadHistory(filePath) {
   if (!existsSync(filePath)) return [];
   try {
@@ -87,11 +85,7 @@ export function updateEntry(entry, currentPrice, today, vix = null) {
     ? ((currentPrice - entry.buyPrice) / entry.buyPrice) * 100
     : 0;
 
-  let sellReason = null;
-  if (vix != null && vix < VIX_EXIT) sellReason = 'vix';
-  else if (today >= entry.matureDate) sellReason = 'matured';
-
-  if (sellReason) {
+  if (today >= entry.matureDate) {
     return {
       ...entry,
       currentPrice,
@@ -100,7 +94,7 @@ export function updateEntry(entry, currentPrice, today, vix = null) {
       status: 'sold',
       sellDate: today,
       sellPrice: currentPrice,
-      sellReason,
+      sellReason: 'matured',
       vixAtSell: vix,
     };
   }
