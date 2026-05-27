@@ -63,7 +63,8 @@
     "returnPct": 5.759688391300104,
     "status": "holding",
     "sellDate": null,
-    "sellPrice": null
+    "sellPrice": null,
+    "maxPriceSinceEntry": 419.94000244140625
   },
   {
     "id": "kr-2026-05-26-088350KS",
@@ -124,12 +125,13 @@
       5600,
       5400
     ],
-    "currentPrice": 5200,
+    "currentPrice": 5160,
     "currentDate": "2026-05-27",
-    "returnPct": -3.7037037037037033,
+    "returnPct": -4.444444444444445,
     "status": "holding",
     "sellDate": null,
-    "sellPrice": null
+    "sellPrice": null,
+    "maxPriceSinceEntry": 5400
   },
   {
     "id": "kr-2026-05-27-088350KS",
@@ -190,12 +192,13 @@
       5400,
       5180
     ],
-    "currentPrice": 5180,
+    "currentPrice": 5160,
     "currentDate": "2026-05-27",
-    "returnPct": 0,
+    "returnPct": -0.3861003861003861,
     "status": "holding",
     "sellDate": null,
-    "sellPrice": null
+    "sellPrice": null,
+    "maxPriceSinceEntry": 5180
   },
   {
     "id": "us-2026-05-27-COST",
@@ -261,6 +264,7 @@
     "returnPct": 0,
     "status": "holding",
     "sellDate": null,
-    "sellPrice": null
+    "sellPrice": null,
+    "maxPriceSinceEntry": 1002.9299926757812
   }
 ]
