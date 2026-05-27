@@ -2,6 +2,9 @@ import { scorePicks } from './scoring.mjs';
 import { classifyHorizon } from './horizon.mjs';
 import { pickReason } from './reason-template.mjs';
 
+const TRAILING_PULLBACK = 0.10;
+const HARD_DRAWDOWN = 0.15;
+
 function dailyReturn(closes) {
   if (closes.length < 22) return 0;
   return closes[closes.length - 1] / closes[closes.length - 22] - 1;
@@ -32,17 +35,56 @@ function firstIndexAtOrAfter(dates, target) {
   return -1;
 }
 
-function resolveExit(tickerData, buyIndex, holdDays, today) {
+function resolveExitWithStops(tickerData, buyIndex, holdDays, today) {
   const buyDate = tickerData.dates[buyIndex];
   const matureDate = addCalendarDays(buyDate, holdDays);
-  const exitIdx = firstIndexAtOrAfter(tickerData.dates, matureDate);
-  if (exitIdx === -1 || tickerData.dates[exitIdx] > today) {
-    return { exitDate: null, exitPrice: null, status: 'active' };
+  const buyPrice = tickerData.closes[buyIndex];
+
+  let maxPrice = buyPrice;
+  for (let k = buyIndex + 1; k < tickerData.dates.length; k++) {
+    const date = tickerData.dates[k];
+    if (date > today) break;
+    const price = tickerData.closes[k];
+    maxPrice = Math.max(maxPrice, price);
+
+    const pullback = maxPrice > 0 ? (maxPrice - price) / maxPrice : 0;
+    const drawdown = buyPrice > 0 ? (buyPrice - price) / buyPrice : 0;
+
+    if (maxPrice > buyPrice && pullback >= TRAILING_PULLBACK) {
+      return {
+        exitDate: date,
+        exitPrice: price,
+        maxPriceSinceEntry: maxPrice,
+        sellReason: 'trailing',
+        status: 'matured',
+      };
+    }
+    if (drawdown >= HARD_DRAWDOWN) {
+      return {
+        exitDate: date,
+        exitPrice: price,
+        maxPriceSinceEntry: maxPrice,
+        sellReason: 'hard',
+        status: 'matured',
+      };
+    }
+    if (date >= matureDate) {
+      return {
+        exitDate: date,
+        exitPrice: price,
+        maxPriceSinceEntry: maxPrice,
+        sellReason: 'matured',
+        status: 'matured',
+      };
+    }
   }
+
   return {
-    exitDate: tickerData.dates[exitIdx],
-    exitPrice: tickerData.closes[exitIdx],
-    status: 'matured',
+    exitDate: null,
+    exitPrice: null,
+    maxPriceSinceEntry: maxPrice,
+    sellReason: null,
+    status: 'active',
   };
 }
 
@@ -120,7 +162,7 @@ export function simulate({ tickers, simStart, simEnd, today }) {
       const matureDate = addCalendarDays(buyDate, holdDays);
       activeUntil.set(top.ticker.ticker, matureDate);
 
-      const exit = resolveExit(top.ticker, top.idx, holdDays, today);
+      const exit = resolveExitWithStops(top.ticker, top.idx, holdDays, today);
       const ret = exit.exitPrice == null ? null : exit.exitPrice / buyPrice - 1;
 
       entries.push({
@@ -138,6 +180,8 @@ export function simulate({ tickers, simStart, simEnd, today }) {
         score: Math.round(top.s.total * 100),
         reason: pickReason({ scores: top.s.scores, metrics: top.s.metrics }),
         status: exit.status,
+        maxPriceSinceEntry: exit.maxPriceSinceEntry,
+        sellReason: exit.sellReason,
       });
     }
   }
