@@ -1,203 +1,141 @@
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fetchMany, fetchChart } from './fetch-yahoo.mjs';
-import { scorePicks } from './lib/scoring.mjs';
-import { pickReason } from './lib/reason-template.mjs';
-import { classifyHorizon } from './lib/horizon.mjs';
-import {
-  loadHistory,
-  saveHistory,
-  todayDate,
-  hasPickToday,
-  makeEntry,
-  updateEntry,
-} from './lib/history-store.mjs';
-import { isBearAt } from './lib/regime-detect.mjs';
+import { simulate } from './lib/backtest-engine.mjs';
+import { buildBearMap } from './lib/regime-detect.mjs';
+import { valuationTag, rsi, sma } from './lib/valuation.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DEFENSIVE_TICKERS = ['SQQQ', 'GLD', 'TLT', 'BND'];
+const INITIAL_KR = 10_000_000;
+const INITIAL_US = 10_000;
+const PORTFOLIO_PATH = resolve(__dirname, '../src/data/portfolio.json');
+const WATCHLIST_PATH = resolve(__dirname, '../src/data/watchlist.json');
+const PICKS_PATH = resolve(__dirname, '../src/data/picks.json');
 
-function load(name) {
+function todayStr() {
+  const d = new Date();
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+}
+
+function loadJson(name) {
   return JSON.parse(readFileSync(resolve(__dirname, name), 'utf8'));
 }
 
-function dailyReturn(closes) {
-  if (closes.length < 22) return 0;
-  return closes[closes.length - 1] / closes[closes.length - 22] - 1;
-}
-
-function vol20(closes) {
-  if (closes.length < 21) return 0.2;
-  const rets = [];
-  for (let i = closes.length - 20; i < closes.length; i++) {
-    if (i <= 0) continue;
-    rets.push((closes[i] - closes[i - 1]) / closes[i - 1]);
-  }
-  const mean = rets.reduce((a, b) => a + b, 0) / rets.length;
-  const variance = rets.reduce((a, b) => a + (b - mean) ** 2, 0) / Math.max(1, rets.length - 1);
-  return Math.sqrt(variance) * Math.sqrt(252);
-}
-
-async function scanGroup(universe, marketLabel) {
-  console.log(`[scan-picks] ${marketLabel} fetching ${universe.length} tickers...`);
-  const fetched = await fetchMany(universe, { range: '4mo', delayMs: 200 });
-  const candidates = [];
-
-  for (const row of fetched) {
-    if (!row.data || row.data.closes.length < 30) continue;
-    try {
-      const s = scorePicks(row.data);
-      if (!s.passes.trendUp || !s.passes.volumeUp || !s.passes.accumulation) continue;
-
-      const mom1m = dailyReturn(row.data.closes);
-      const v20 = vol20(row.data.closes);
-      const { horizon, holdDays } = classifyHorizon({
-        scores: s.scores,
-        metrics: s.metrics,
-        mom1m,
-        vol20: v20,
-      });
-
-      candidates.push({
-        ticker: row.ticker,
-        name: row.name,
-        market: row.market,
-        score: Math.round(s.total * 100),
-        horizon,
-        holdDays,
-        mom1m,
-        vol20: v20,
-        scores: s.scores,
-        metrics: s.metrics,
-        closes30: row.data.closes.slice(-30),
-        reason: pickReason({ scores: s.scores, metrics: s.metrics }),
-        buyPrice: row.data.closes[row.data.closes.length - 1],
-      });
-    } catch (e) {
-      console.warn(`[scan-picks] score failed for ${row.ticker}: ${e.message}`);
-    }
-  }
-
-  candidates.sort((a, b) => b.score - a.score);
-  console.log(`[scan-picks] ${marketLabel} candidates ${candidates.length}, top: ${candidates[0]?.ticker ?? 'none'}`);
-  return candidates[0] ?? null;
-}
-
-async function refreshHoldings(history, today, vix) {
-  const active = history.filter((e) => e.status === 'holding');
-  if (active.length === 0) return history;
-
-  console.log(`[scan-picks] refreshing ${active.length} active holdings...`);
-  const updates = new Map();
-  for (const entry of active) {
-    const data = await fetchChart(entry.ticker, '1mo');
-    if (!data || data.closes.length === 0) continue;
-    const currentPrice = data.closes[data.closes.length - 1];
-    updates.set(entry.id, updateEntry(entry, currentPrice, today, vix));
-    await new Promise((r) => setTimeout(r, 200));
-  }
-
-  return history.map((e) => updates.get(e.id) ?? e);
-}
-
-async function runTrack({ label, krUniverseFile, usUniverseFile, outputPath, historyPath, idPrefix = '' }) {
-  const kr = load(krUniverseFile);
-  const us = load(usUniverseFile);
-  const today = todayDate();
-
-  const [vixData, gspcData, ksData] = await Promise.all([
-    fetchChart('^VIX', '1mo'),
-    fetchChart('^GSPC', '1y'),
-    fetchChart('^KS11', '1y'),
-  ]);
-  const vix = vixData?.closes?.[vixData.closes.length - 1] ?? null;
-  const isBearUS = gspcData ? isBearAt(gspcData.closes, gspcData.closes.length - 1) : false;
-  const isBearKR = ksData ? isBearAt(ksData.closes, ksData.closes.length - 1) : false;
-  console.log(`[scan-picks/${label}] VIX: ${vix?.toFixed(2) ?? 'N/A'}, US bear: ${isBearUS}, KR bear: ${isBearKR}`);
-
-  let history = loadHistory(historyPath);
-  history = await refreshHoldings(history, today, vix);
-
-  const isETFTrack = idPrefix === 'etf-';
-  let krPick = null;
-  let usPick = null;
-
-  if (isBearKR) {
-    console.log(`[scan-picks/${label}] KR bear — skipping KR entry`);
-  } else {
-    krPick = await scanGroup(kr, 'KR');
-  }
-
-  if (isBearUS) {
-    if (isETFTrack) {
-      const defensiveUs = us.filter((t) => DEFENSIVE_TICKERS.includes(t.ticker));
-      console.log(`[scan-picks/${label}] US bear — defensive subset (${defensiveUs.map((t) => t.ticker).join(',')})`);
-      usPick = await scanGroup(defensiveUs, 'US');
-    } else {
-      console.log(`[scan-picks/${label}] US bear — skipping US stock entry`);
-    }
-  } else {
-    usPick = await scanGroup(us, 'US');
-  }
-
-  const newEntries = [];
-  if (krPick && !hasPickToday(history, 'KR', today)) {
-    newEntries.push(makeEntry({ market: 'KR', buyDate: today, pick: krPick, idPrefix, vixAtBuy: vix }));
-  }
-  if (usPick && !hasPickToday(history, 'US', today)) {
-    newEntries.push(makeEntry({ market: 'US', buyDate: today, pick: usPick, idPrefix, vixAtBuy: vix }));
-  }
-  history = [...history, ...newEntries];
-  saveHistory(historyPath, history);
-  console.log(`[scan-picks/${label}] history now has ${history.length} entries (added ${newEntries.length})`);
-
-  // Today's picks snapshot for home page (1+1)
-  const buildSnapshot = (entry) => {
-    if (!entry) return null;
+function loadPortfolio() {
+  if (!existsSync(PORTFOLIO_PATH)) {
     return {
-      id: entry.id,
-      ticker: entry.ticker,
-      name: entry.name,
-      market: entry.market,
-      score: entry.score,
-      horizon: entry.horizon,
-      holdDays: entry.holdDays,
-      closes30: entry.closes30AtEntry,
-      reason: entry.reason,
+      lastUpdateDate: null,
+      initialCapital: { krInitial: INITIAL_KR, usInitial: INITIAL_US },
     };
-  };
-
-  const todayKR = history.find((e) => e.market === 'KR' && e.buyDate === today) ?? null;
-  const todayUS = history.find((e) => e.market === 'US' && e.buyDate === today) ?? null;
-
-  const out = {
-    asOf: new Date().toISOString(),
-    kr: buildSnapshot(todayKR),
-    us: buildSnapshot(todayUS),
-  };
-
-  mkdirSync(dirname(outputPath), { recursive: true });
-  writeFileSync(outputPath, JSON.stringify(out, null, 2) + '\n', 'utf8');
-  console.log(`[scan-picks/${label}] wrote ${outputPath}`);
+  }
+  return JSON.parse(readFileSync(PORTFOLIO_PATH, 'utf8'));
 }
 
 async function main() {
-  await runTrack({
-    label: 'stocks',
-    krUniverseFile: 'universe-kr.json',
-    usUniverseFile: 'universe-us.json',
-    outputPath: resolve(__dirname, '../src/data/picks.json'),
-    historyPath: resolve(__dirname, '../src/data/picks-history.json'),
+  const today = todayStr();
+  console.log(`[scan-picks] today=${today}`);
+
+  const krStock = loadJson('universe-kr.json');
+  const krEtf = loadJson('universe-etf-kr.json');
+  const usStock = loadJson('universe-us.json');
+  const usEtf = loadJson('universe-etf-us.json');
+  const universe = [
+    ...krStock.map((t) => ({ ...t, market: 'KR' })),
+    ...krEtf.map((t) => ({ ...t, market: 'KR' })),
+    ...usStock.map((t) => ({ ...t, market: 'US' })),
+    ...usEtf.map((t) => ({ ...t, market: 'US' })),
+  ];
+
+  console.log(`[scan-picks] fetching ${universe.length} tickers @ range=1y...`);
+  const fetched = await fetchMany(universe, { range: '1y', delayMs: 200 });
+  const tickers = fetched
+    .filter((row) => row.data && row.data.dates && row.data.dates.length >= 200)
+    .map((row) => ({
+      ticker: row.ticker, name: row.name, market: row.market,
+      dates: row.data.dates, closes: row.data.closes,
+      volumes: row.data.volumes, highs: row.data.highs, lows: row.data.lows,
+    }));
+
+  // Build watchlist (today's tags)
+  const watchlist = { cheap: [], neutral: [], rich: [] };
+  for (const t of tickers) {
+    const tag = valuationTag(t.closes);
+    const endIdx = t.closes.length - 1;
+    const ma200 = sma(t.closes, endIdx, 200);
+    const rsiVal = rsi(t.closes, 14);
+    const price = t.closes[endIdx];
+    const row = {
+      ticker: t.ticker, name: t.name, market: t.market,
+      price,
+      rsi: Number.isNaN(rsiVal) ? null : rsiVal,
+      ma200Distance: Number.isNaN(ma200) ? null : (price - ma200) / ma200,
+      inPortfolio: false,
+    };
+    watchlist[tag].push(row);
+  }
+  watchlist.cheap.sort((a, b) => (a.ma200Distance ?? 0) - (b.ma200Distance ?? 0));
+  watchlist.rich.sort((a, b) => (b.ma200Distance ?? 0) - (a.ma200Distance ?? 0));
+  watchlist.asOf = new Date().toISOString();
+
+  // Re-simulate to advance state (idempotent: re-run today gives same result)
+  console.log('[scan-picks] running portfolio sim...');
+  const portfolio = loadPortfolio();
+  const SIM_START = '2022-01-01';
+  // Fetch 5y series for the sim (idempotent; live picks happen on the very last bar)
+  console.log('[scan-picks] fetching 5y series for sim...');
+  const fetched5y = await fetchMany(universe, { range: '5y', delayMs: 200 });
+  const fullTickers = fetched5y
+    .filter((row) => row.data && row.data.dates && row.data.dates.length >= 200)
+    .map((row) => ({
+      ticker: row.ticker, name: row.name, market: row.market,
+      dates: row.data.dates, closes: row.data.closes,
+      volumes: row.data.volumes, highs: row.data.highs, lows: row.data.lows,
+    }));
+  const [gspc5, ks5] = await Promise.all([
+    fetchChart('^GSPC', '5y'),
+    fetchChart('^KS11', '5y'),
+  ]);
+  const bearByMarket5 = {
+    US: gspc5 ? buildBearMap(gspc5.dates, gspc5.closes) : {},
+    KR: ks5 ? buildBearMap(ks5.dates, ks5.closes) : {},
+  };
+
+  const result = simulate({
+    tickers: fullTickers,
+    simStart: SIM_START, simEnd: today, today,
+    initialCapital: portfolio.initialCapital ?? { krInitial: INITIAL_KR, usInitial: INITIAL_US },
+    indexByMarket: {},
+    bearByMarket: bearByMarket5,
   });
-  await runTrack({
-    label: 'etfs',
-    krUniverseFile: 'universe-etf-kr.json',
-    usUniverseFile: 'universe-etf-us.json',
-    outputPath: resolve(__dirname, '../src/data/picks-etf.json'),
-    historyPath: resolve(__dirname, '../src/data/picks-history-etf.json'),
-    idPrefix: 'etf-',
-  });
+
+  // Mark in-portfolio tickers in watchlist
+  const heldTickers = new Set(result.positions.map((p) => p.ticker));
+  for (const sec of ['cheap', 'neutral', 'rich']) {
+    for (const row of watchlist[sec]) row.inPortfolio = heldTickers.has(row.ticker);
+  }
+
+  // Today's actions (ledger entries on `today`)
+  const todayActions = result.ledger.filter((l) => l.date === today);
+
+  // Write outputs
+  mkdirSync(dirname(PORTFOLIO_PATH), { recursive: true });
+  writeFileSync(PORTFOLIO_PATH, JSON.stringify({
+    asOf: new Date().toISOString(),
+    lastUpdateDate: today,
+    initialCapital: portfolio.initialCapital ?? { krInitial: INITIAL_KR, usInitial: INITIAL_US },
+    positions: result.positions,
+  }, null, 2) + '\n', 'utf8');
+  writeFileSync(WATCHLIST_PATH, JSON.stringify(watchlist, null, 2) + '\n', 'utf8');
+  writeFileSync(PICKS_PATH, JSON.stringify({
+    asOf: new Date().toISOString(),
+    today,
+    actions: todayActions,
+  }, null, 2) + '\n', 'utf8');
+
+  console.log(`[scan-picks] watchlist cheap=${watchlist.cheap.length} neutral=${watchlist.neutral.length} rich=${watchlist.rich.length}`);
+  console.log(`[scan-picks] portfolio positions=${result.positions.length}`);
+  console.log(`[scan-picks] today actions=${todayActions.length}`);
 }
 
 main().catch((err) => {
