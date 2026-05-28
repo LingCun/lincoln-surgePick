@@ -1,8 +1,8 @@
 # surgePick 인수인계 — 종목 시뮬레이션 피벗
 
-> 최종 작업일: **2026-05-28** · 브랜치: `feat/stock-simulation` (최신 `137c09a`) · 다음 진입점: **Task 18 (Vercel preview 에서 수동 QA)** → Task 20 (문서/README)
+> 최종 작업일: **2026-05-29** · 브랜치: `feat/stock-simulation` · 다음 진입점: **Task 18 (Vercel preview 에서 수동 QA)** — 유일하게 남은 작업
 >
-> 진행: **Task 4~17 + 19 완료.** 데이터 적재(ingest.yml) Actions 성공 → Turso 적재됨. UI 전부 구현. Vercel 500 + 런타임 에러 수정. 구버전(portfolio/watchlist/stats) 삭제하고 **탭 2개(홈/시뮬레이션)로 통합**. 남은 건 **Task 18 QA**(Vercel preview 에서 `/sim` 실동작 확인) + **Task 20**(구 spec archive + README 재작성, DB 불필요). PC 에서 이어받을 것.
+> 진행: **Task 4~17, 19, 20 완료.** 데이터 적재(ingest.yml) Actions 성공 → Turso 적재됨. UI 전부 구현. Vercel 500 + 런타임 에러 수정. 구버전(portfolio/watchlist/stats) 삭제하고 **탭 2개(홈/시뮬레이션)로 통합**. 구 spec/plan 14개 archive 이동, README 재작성. 남은 건 **Task 18 QA**(Vercel preview 에서 `/sim` 실동작 확인) — Vercel Deployment Protection 켜져있어 401, 본인 브라우저 로그인 상태로 직접 QA 필요.
 >
 > 이 문서는 다른 PC 에서 작업을 자연스럽게 이어받기 위한 핸드오프야. 위에서 아래로 순서대로 읽으면 돼.
 
@@ -172,7 +172,7 @@ d13e6a0 docs(spec): 2026-05-28 종목 시뮬레이션 페이지 설계
 | 17 | ForecastChart (progressive draw) | ✅ DONE | Chart.js CDN(Base.astro) + `requestAnimationFrame` progressive draw |
 | 18 | 수동 QA | **pending — 다음 진입점** | **Vercel preview 에서** `/sim` KR 3 + US 3 종목 + 모바일. 500 수정됐으니 이제 떠야 함 |
 | 19 | 구버전 일괄 삭제 + 탭 통합 | ✅ DONE | portfolio/watchlist/stats + 옛 전략 코드/데이터/테스트 삭제. 홈(index)은 시장 카드만 남김. 탭 = 홈/시뮬레이션 2개. `market-comment.mjs` 는 scan-regime 의존이라 유지(plan 삭제목록 오류). HANDOFF.md 는 작업 진행중이라 유지 |
-| 20 | spec archive + README 재작성 | pending | 구 spec 8개 + 구 plan 6개 → `docs/superpowers/archive/`, README 재작성 (plan §Task 20 에 본문 있음). DB 불필요, PC 에서 가능 |
+| 20 | spec archive + README 재작성 | ✅ DONE (2026-05-29) | 구 spec 8 + plan 6 → `docs/superpowers/archive/`, README 재작성. `npm test` 50 pass, `npm run build` OK |
 
 ### 이번 세션(2차)에 추가로 고친 것
 - **Vercel 500**: `src/lib/db.mjs` 가 `import.meta.env` 로 Turso 자격증명을 읽어 런타임에 비어 500. → `process.env` 우선 + `import.meta.env` 폴백으로 수정.
