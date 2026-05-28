@@ -15,12 +15,39 @@ import historyData from '../data/picks-history.json';
 
 const { kr: krPick = null, us: usPick = null, asOf: picksAsOf } = picksData;
 const { kr: krEtfPick = null, us: usEtfPick = null } = picksEtfData;
+// Support both old shape (kr/us picks) and new shape (actions array)
+const todayActions: Array<{date: string; action: string; ticker: string; shares?: number; price?: number; reason?: string}> = (picksData as any).actions ?? [];
 const historyCount = Array.isArray(historyData) ? historyData.length : 0;
 const { fearGauge, markets = [], overall, asOf: regimeAsOf } = regimeData;
 const { kr: krThemes = { popular: [], value: [] }, us: usThemes = { popular: [], value: [] }, asOf: themesAsOf } = themesData;
 const asOf = themesAsOf ?? regimeAsOf ?? picksAsOf;
 ---
 <Base title="surgePick — 급등픽 & 시장 온도계" asOf={asOf}>
+  <nav class="flex gap-3 text-sm py-2 px-4 border-b border-slate-800 mb-4">
+    <a href="/" class="font-medium text-slate-100">홈</a>
+    <a href="/portfolio" class="text-slate-400 hover:text-slate-200">포트폴리오</a>
+    <a href="/watchlist" class="text-slate-400 hover:text-slate-200">관찰목록</a>
+    <a href="/stats" class="text-slate-400 hover:text-slate-200">통계</a>
+    <a href="/history" class="text-slate-400 hover:text-slate-200">기록</a>
+  </nav>
+
+  {todayActions.length > 0 && (
+    <section class="mb-6 rounded-2xl bg-slate-900 border border-slate-800 p-4 space-y-2">
+      <h2 class="text-sm font-semibold text-slate-200">오늘의 행동</h2>
+      {todayActions.map((a) => (
+        <div class="flex items-center justify-between text-xs text-slate-300">
+          <span class={a.action === 'buy' ? 'text-emerald-400 font-medium' : 'text-rose-400 font-medium'}>
+            {a.action === 'buy' ? '매수' : '매도'}
+          </span>
+          <span class="font-medium">{a.ticker}</span>
+          {a.shares != null && <span>{a.shares}주</span>}
+          {a.price != null && <span class="tabular-nums">{a.price.toLocaleString()}</span>}
+          {a.reason && <span class="text-slate-500">{a.reason}</span>}
+        </div>
+      ))}
+    </section>
+  )}
+
   <div class="space-y-4 sm:grid sm:grid-cols-2 sm:gap-4 sm:space-y-0 mb-6">
     <ActionButton target="picks" label="오늘의 급등픽" icon="📈" color="pick" />
     <ActionButton target="mood"  label="지금 시장 어때?" icon="🌡️" color="mood" />
