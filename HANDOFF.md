@@ -1,8 +1,8 @@
 # surgePick 인수인계 — 종목 시뮬레이션 피벗
 
-> 최종 작업일: **2026-05-28** · 브랜치: `feat/stock-simulation` · 다음 진입점: **데이터 적재 실행(아래 §11) → Task 12**
+> 최종 작업일: **2026-05-28** · 브랜치: `feat/stock-simulation` · 다음 진입점: **Task 18 (Vercel preview 에서 수동 QA)** → 19 → 20
 >
-> 진행: Task 4 review PASS, Task 5~11 코드 완료·푸시됨. 단 Claude 웹 실행환경의 네트워크 allowlist 가 Turso·Yahoo 를 차단(403)해서 **DB 적재(Task 6·7·8·9)는 이 컨테이너 안에서 실행 불가** → GitHub Actions 워크플로(`.github/workflows/ingest.yml`)로 실행하도록 구성함(§11). 적재 후 Task 12(UI) 부터 이어가면 됨.
+> 진행: Task 4~17 완료. 데이터 적재(ingest.yml) Actions 실행 성공(초록) → Turso 에 tickers/prices/regime 적재됨. UI(Phase 4) 전부 구현·빌드 통과. 남은 건 QA(18) + 구버전 정리(19) + 문서(20). QA 는 DB 가 닿는 **Vercel preview** 에서, 19·20 은 DB 불필요라 이 컨테이너에서 가능.
 >
 > 이 문서는 다른 PC 에서 작업을 자연스럽게 이어받기 위한 핸드오프야. 위에서 아래로 순서대로 읽으면 돼.
 
@@ -164,15 +164,15 @@ d13e6a0 docs(spec): 2026-05-28 종목 시뮬레이션 페이지 설계
 | 9 | tickers-index 빌드 + 파이프라인 | ✅ DONE | `build-tickers-index.mjs`(DB 실패 시 기존 파일 유지 fallback), package.json scripts, scan.yml+ingest.yml, 초기 `public/tickers-index.json`(universe 60종목) 커밋 |
 | 10 | autocomplete 라이브러리 (TDD) | ✅ DONE | `src/lib/autocomplete.mjs` + `tests/autocomplete.test.mjs` 7개 통과 |
 | 11 | predict 라이브러리 (TDD) | ✅ DONE | `src/lib/predict.mjs` + `tests/predict.test.mjs` 8개 통과. **matchCases 버그 수정**(아래 7.6) |
-| 12 | `/sim` 페이지 스캐폴드 + 네비 | pending | Base.astro 네비 수정 |
-| 13 | `/api/search` 라우트 | pending | SSR fallback |
-| 14 | `/api/ticker` 라우트 | pending | 종목 prices + forecast 반환 |
-| 15 | TickerSearch 컴포넌트 | pending | 자동완성 입력 + 키보드 |
-| 16 | SimController + PriceTable | pending | 결과 영역, horizon 토글 placeholder |
-| 17 | ForecastChart (progressive draw) | pending | Chart.js CDN + `requestAnimationFrame` |
-| 18 | 수동 QA | pending | KR 3 + US 3 종목, 모바일 |
-| 19 | 구버전 일괄 삭제 | pending | portfolio/watchlist/stats + 관련 코드 |
-| 20 | spec archive + README 재작성 | pending | 구 spec 8개 + 구 plan 6개 archive |
+| 12 | `/sim` 페이지 스캐폴드 + 네비 | ✅ DONE | Base.astro 네비(시장/종목 시뮬레이션) + sim.astro |
+| 13 | `/api/search` 라우트 | ✅ DONE | `src/pages/api/search.ts` SSR fallback |
+| 14 | `/api/ticker` 라우트 | ✅ DONE | `src/pages/api/ticker.ts` — prices + predict forecast 반환 |
+| 15 | TickerSearch 컴포넌트 | ✅ DONE | `src/components/TickerSearch.astro` 자동완성 + 키보드 |
+| 16 | SimController + PriceTable | ✅ DONE | `src/components/{SimController,PriceTable}.astro` + horizon 토글 |
+| 17 | ForecastChart (progressive draw) | ✅ DONE | Chart.js CDN(Base.astro) + `requestAnimationFrame` progressive draw |
+| 18 | 수동 QA | pending | **Vercel preview 에서** KR 3 + US 3 종목 + 모바일 (이 컨테이너는 DB 접근 불가). 다음 진입점. |
+| 19 | 구버전 일괄 삭제 | pending | portfolio/watchlist/stats + 관련 코드 (DB 불필요, 여기서 가능) |
+| 20 | spec archive + README 재작성 | pending | 구 spec 8개 + 구 plan 6개 archive (DB 불필요) |
 
 ---
 
