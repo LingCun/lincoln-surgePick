@@ -30,7 +30,7 @@ const totalReturn = startEq > 0 ? (endEq / startEq - 1) * 100 : 0;
 
 <div class="rounded-2xl border border-slate-800 p-4 bg-slate-900">
   <div class="flex items-baseline justify-between mb-2">
-    <h3 class="font-semibold text-slate-100">자산 곡선</h3>
+    <h3 class="font-semibold text-slate-100">자산 변화 그래프</h3>
     <div class="text-sm text-slate-400">
       {points[0]?.date} → {points[points.length - 1]?.date}
       <span class={totalReturn >= 0 ? 'text-rose-400 ml-2' : 'text-sky-400 ml-2'}>

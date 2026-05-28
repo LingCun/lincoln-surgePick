@@ -8,6 +8,7 @@ import ThemeCarousel from '../components/ThemeCarousel.astro';
 import picksData from '../data/picks.json';
 import regimeData from '../data/regime.json';
 import themesData from '../data/themes.json';
+import { reasonKr } from '../lib/labels';
 
 type Action = { date: string; action: string; ticker: string; name?: string; shares?: number; price?: number; reason?: string };
 const todayActions: Action[] = ((picksData as any).actions ?? []) as Action[];
@@ -36,7 +37,7 @@ const asOf = themesAsOf ?? regimeAsOf ?? picksAsOf;
         <span class="font-medium flex-1 truncate">{a.name ?? a.ticker}</span>
         {a.shares != null && <span>{a.shares}주</span>}
         {a.price != null && <span class="tabular-nums">{Math.round(a.price).toLocaleString()}</span>}
-        {a.reason && <span class="text-slate-500 text-xs">{a.reason}</span>}
+        {a.reason && <span class="text-slate-500 text-xs">{reasonKr(a.reason)}</span>}
       </div>
     ))}
   </section>

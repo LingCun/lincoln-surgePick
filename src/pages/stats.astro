@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import data from '../data/backtest.json';
+import { reasonKr } from '../lib/labels';
 
 const { metrics, sellReasonBreakdown, window: win } = data;
 const totalCurrent = data.equityCurve[data.equityCurve.length - 1]?.total ?? 0;
@@ -22,7 +23,7 @@ const breakdown = Object.entries(sellReasonBreakdown ?? {}).sort((a, b) => b[1] 
 
     <div class="grid grid-cols-2 gap-3">
       <div class="rounded-2xl border border-slate-800 p-3 bg-slate-900">
-        <div class="text-xs text-slate-400">CAGR</div>
+        <div class="text-xs text-slate-400">연복리수익률</div>
         <div class="text-2xl font-bold">{(metrics.cagr * 100).toFixed(1)}%</div>
       </div>
       <div class="rounded-2xl border border-slate-800 p-3 bg-slate-900">
@@ -30,7 +31,7 @@ const breakdown = Object.entries(sellReasonBreakdown ?? {}).sort((a, b) => b[1] 
         <div class="text-2xl font-bold text-sky-400">{(metrics.maxDrawdown * 100).toFixed(1)}%</div>
       </div>
       <div class="rounded-2xl border border-slate-800 p-3 bg-slate-900">
-        <div class="text-xs text-slate-400">Sharpe</div>
+        <div class="text-xs text-slate-400">위험조정수익 (샤프)</div>
         <div class="text-2xl font-bold">{metrics.sharpe.toFixed(2)}</div>
       </div>
       <div class="rounded-2xl border border-slate-800 p-3 bg-slate-900">
@@ -45,7 +46,7 @@ const breakdown = Object.entries(sellReasonBreakdown ?? {}).sort((a, b) => b[1] 
       <h2 class="font-semibold mb-2">청산 사유 분포</h2>
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 text-sm space-y-1 text-slate-200">
         {breakdown.map(([reason, n]) => (
-          <div class="flex justify-between"><span class="text-slate-400">{reason}</span><span class="font-medium">{n}</span></div>
+          <div class="flex justify-between"><span class="text-slate-400">{reasonKr(reason)}</span><span class="font-medium">{n}건</span></div>
         ))}
       </div>
     </section>

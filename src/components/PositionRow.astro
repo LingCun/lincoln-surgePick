@@ -33,6 +33,6 @@ const colorCls = positive ? 'text-rose-400' : 'text-sky-400';
     <div class={`${colorCls} text-xs`}>{positive ? '+' : ''}{(r * 100).toFixed(1)}%</div>
   </div>
   <div class="text-right text-xs text-slate-500">
-    {position.dcaPlan ? 'DCA 진행' : position.distPlan ? '분할 매도' : '보유'}
+    {position.dcaPlan ? '분할매수 중' : position.distPlan ? '분할매도 중' : '보유'}
   </div>
 </div>

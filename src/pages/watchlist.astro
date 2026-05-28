@@ -37,10 +37,10 @@ const sections = [
                 </div>
                 <div class="text-right">
                   <div>{row.price?.toLocaleString?.() ?? row.price}</div>
-                  <div class="text-xs text-slate-500">RSI {row.rsi?.toFixed?.(0)}</div>
+                  <div class="text-xs text-slate-500">강도 {row.rsi?.toFixed?.(0)}</div>
                 </div>
                 <div class="text-right text-xs text-slate-400">
-                  MA200 {row.ma200Distance >= 0 ? '+' : ''}{(row.ma200Distance * 100).toFixed(1)}%
+                  장기평균 {row.ma200Distance >= 0 ? '+' : ''}{(row.ma200Distance * 100).toFixed(1)}%
                 </div>
                 {row.inPortfolio && <div class="text-xs text-sky-400 font-medium">보유</div>}
               </div>
