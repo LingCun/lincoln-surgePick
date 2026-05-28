@@ -1,247 +1,132 @@
 import { describe, it, expect } from 'vitest';
 import { simulate } from '../scripts/lib/backtest-engine.mjs';
 
-/**
- * Build a synthetic OHLCV series. Skips weekends so `dates` only contains
- * trading days. `closeFn(i)` and `volFn(i)` are evaluated in trading-day index.
- */
-function synthTicker({ ticker, name, market, startDate, n, closeFn, volFn }) {
+function buildSyntheticTicker({ ticker, name, market, startDate, n, closeFn }) {
   const dates = [];
   const closes = [];
-  const volumes = [];
-  const highs = [];
-  const lows = [];
-  let d = new Date(startDate + 'T00:00:00Z');
+  const d = new Date(startDate + 'T00:00:00Z');
   let i = 0;
   while (dates.length < n) {
     const day = d.getUTCDay();
     if (day !== 0 && day !== 6) {
-      const ds = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
-      const c = closeFn(i);
-      dates.push(ds);
-      closes.push(c);
-      volumes.push(volFn(i));
-      highs.push(c * 1.005);
-      lows.push(c * 0.995);
+      dates.push(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`);
+      closes.push(closeFn(i));
       i++;
     }
     d.setUTCDate(d.getUTCDate() + 1);
   }
-  return { ticker, name, market, dates, closes, volumes, highs, lows };
+  return { ticker, name, market, dates, closes, volumes: closes.map(() => 1000), highs: closes, lows: closes };
 }
 
-// Sawtooth: 10 days up (+0.6 each), 1 day pullback (-3), repeating 11-day cycle
-// with cumulative +3 per cycle. Produces overall uptrend with the last close
-// sitting mid-range (satisfies pricePosition <= 0.8 at certain D), while
-// the 30-day window keeps slope > 0.0002 and OBV slope positive.
-const sawtoothClose = (i) => {
-  const cyc = Math.floor(i / 11);
-  const phase = i % 11;
-  let base = 100 + cyc * 3;
-  if (phase < 10) base += phase * 0.6;
-  else base += 10 * 0.6 - 3;
-  return base;
-};
-
-// Geometric volume growth — back-half mean / front-half mean > 1.10 for any
-// 30-day window, and log-volume slope is positive (volSlope > 0).
-const geomVol = (i) => 1000 * Math.pow(1.01, i);
-
-// Pure linear down — guaranteed to fail trendUp (slope <= 0).
-const linearDownClose = (i) => 100 - i * 0.2;
-const flatVol = (i) => 1000 + i;
-
-describe('simulate', () => {
-  it('produces matured wins when prices rise with rising volume', () => {
-    const t = synthTicker({
-      ticker: 'UPUP',
-      name: 'Up Up',
-      market: 'US',
-      startDate: '2024-01-03',
-      n: 200,
-      closeFn: sawtoothClose,
-      volFn: geomVol,
+describe('simulate (portfolio)', () => {
+  it('returns equityCurve covering every sim day and ledger array', () => {
+    const t = buildSyntheticTicker({
+      ticker: 'A', name: 'A', market: 'KR', startDate: '2023-01-02', n: 250,
+      closeFn: (i) => 100 + Math.sin(i / 5) * 2,
     });
-    const entries = simulate({
+    const result = simulate({
       tickers: [t],
-      simStart: '2024-01-03',
-      simEnd: t.dates[t.dates.length - 1],
+      simStart: '2023-01-02', simEnd: t.dates[t.dates.length - 1],
       today: t.dates[t.dates.length - 1],
+      initialCapital: { krInitial: 1_000_000, usInitial: 0 },
+      indexByMarket: {},
+      bearByMarket: {},
     });
-    expect(entries.length).toBeGreaterThan(0);
-    const matured = entries.filter((e) => e.status === 'matured');
-    expect(matured.length).toBeGreaterThan(0);
-    expect(matured.every((e) => e.return > 0)).toBe(true);
+    expect(result.equityCurve).toBeInstanceOf(Array);
+    expect(result.equityCurve.length).toBeGreaterThan(0);
+    expect(result.ledger).toBeInstanceOf(Array);
+    expect(result.positions).toBeInstanceOf(Array);
   });
 
-  it('produces zero entries on a pure downtrend', () => {
-    const t = synthTicker({
-      ticker: 'DNDN',
-      name: 'Down Down',
-      market: 'US',
-      startDate: '2024-01-03',
-      n: 200,
-      closeFn: linearDownClose,
-      volFn: flatVol,
+  it('opens a position via DCA when cheap signal appears', () => {
+    // 200 rising days then plunge → final RSI<35, distance from MA200 < 10%
+    const rising = Array.from({ length: 200 }, (_, i) => 100 + i * 0.1);
+    const drop = [115, 114, 113, 110, 108, 105, 103, 102, 101, 100, 99, 98, 97, 96, 95];
+    const closes = [...rising, ...drop];
+    const t = buildSyntheticTicker({
+      ticker: 'A', name: 'A', market: 'KR', startDate: '2023-01-02',
+      n: closes.length, closeFn: (i) => closes[i],
     });
-    const entries = simulate({
+    const result = simulate({
       tickers: [t],
-      simStart: '2024-01-03',
-      simEnd: t.dates[t.dates.length - 1],
+      simStart: '2023-01-02', simEnd: t.dates[t.dates.length - 1],
       today: t.dates[t.dates.length - 1],
+      initialCapital: { krInitial: 1_000_000, usInitial: 0 },
+      indexByMarket: {},
+      bearByMarket: {},
     });
-    expect(entries.length).toBe(0);
+    const buys = result.ledger.filter((l) => l.action === 'buy' && l.ticker === 'A');
+    expect(buys.length).toBeGreaterThan(0);
   });
 
-  it('dedupes a single ticker — one entry per active hold window', () => {
-    const t = synthTicker({
-      ticker: 'UPUP',
-      name: 'Up Up',
-      market: 'US',
-      startDate: '2024-01-03',
-      n: 200,
-      closeFn: sawtoothClose,
-      volFn: geomVol,
+  it('catastrophe gate fires when close drops 10% below avgCost', () => {
+    // Cheap → buy → -15% plunge
+    const rising = Array.from({ length: 200 }, (_, i) => 100 + i * 0.1);
+    const drop = [115, 113, 110, 105, 100, 95, 90, 85, 80, 75];
+    const closes = [...rising, ...drop];
+    const t = buildSyntheticTicker({
+      ticker: 'A', name: 'A', market: 'KR', startDate: '2023-01-02',
+      n: closes.length, closeFn: (i) => closes[i],
     });
-    const entries = simulate({
+    const result = simulate({
       tickers: [t],
-      simStart: '2024-01-03',
-      simEnd: t.dates[t.dates.length - 1],
+      simStart: '2023-01-02', simEnd: t.dates[t.dates.length - 1],
       today: t.dates[t.dates.length - 1],
+      initialCapital: { krInitial: 1_000_000, usInitial: 0 },
+      indexByMarket: {},
+      bearByMarket: {},
     });
-    // The fixture passes scorePicks filters on many days (~40+), but the
-    // engine should dedupe so consecutive entries never overlap in hold time.
-    expect(entries.length).toBeGreaterThan(0);
-    for (let i = 1; i < entries.length; i++) {
-      const prev = entries[i - 1];
-      const curr = entries[i];
-      if (prev.ticker !== curr.ticker) continue;
-      // Next buy must be strictly after previous matureDate (which is
-      // prev.buyDate + holdDays). Use exitDate when matured (>= matureDate)
-      // or use the active deadline (prev still holds at today). Either way,
-      // curr.buyDate must be > prev.buyDate + a non-trivial gap.
-      const prevBuy = new Date(prev.buyDate + 'T00:00:00Z').getTime();
-      const currBuy = new Date(curr.buyDate + 'T00:00:00Z').getTime();
-      const gapDays = (currBuy - prevBuy) / 86400000;
-      expect(gapDays).toBeGreaterThanOrEqual(prev.holdDays);
-    }
+    const catastropheSells = result.ledger.filter(
+      (l) => l.action === 'sell' && l.reason === 'catastrophe',
+    );
+    expect(catastropheSells.length).toBeGreaterThan(0);
   });
 
-  it('correctly distinguishes active vs matured at the today boundary', () => {
-    // 120 trading days is long enough to produce one matured 90-day entry
-    // and one still-active entry near the end of the series.
-    const t = synthTicker({
-      ticker: 'UPUP',
-      name: 'Up Up',
-      market: 'US',
-      startDate: '2024-01-01',
-      n: 120,
-      closeFn: sawtoothClose,
-      volFn: geomVol,
+  it('bear-flip gate liquidates positions when regime turns bear', () => {
+    const rising = Array.from({ length: 200 }, (_, i) => 100 + i * 0.1);
+    const drop = [115, 114, 113, 110, 108, 105, 103, 102, 101, 100, 99];
+    const closes = [...rising, ...drop, ...Array(50).fill(100)];
+    const t = buildSyntheticTicker({
+      ticker: 'A', name: 'A', market: 'KR', startDate: '2023-01-02',
+      n: closes.length, closeFn: (i) => closes[i],
     });
-    const entries = simulate({
+    const bearByMarket = { KR: Object.fromEntries(t.dates.map((d, i) => [d, i > 220])) };
+    const result = simulate({
       tickers: [t],
-      simStart: '2024-01-01',
-      simEnd: t.dates[t.dates.length - 1],
+      simStart: '2023-01-02', simEnd: t.dates[t.dates.length - 1],
       today: t.dates[t.dates.length - 1],
+      initialCapital: { krInitial: 1_000_000, usInitial: 0 },
+      indexByMarket: {},
+      bearByMarket,
     });
-    const matured = entries.filter((e) => e.status === 'matured');
-    const active = entries.filter((e) => e.status === 'active');
-    expect(matured.length).toBeGreaterThan(0);
-    expect(active.length).toBeGreaterThan(0);
-    // active entries have no exit info
-    for (const e of active) {
-      expect(e.exitDate).toBeNull();
-      expect(e.exitPrice).toBeNull();
-      expect(e.return).toBeNull();
-    }
-    // matured entries have full exit info
-    for (const e of matured) {
-      expect(e.exitDate).not.toBeNull();
-      expect(e.exitPrice).not.toBeNull();
-      expect(typeof e.return).toBe('number');
-    }
+    const bearSells = result.ledger.filter((l) => l.action === 'sell' && l.reason === 'bear-flip');
+    expect(bearSells.length).toBeGreaterThan(0);
   });
 
-  it('slides matureDate forward to the next trading day for weekend matures', () => {
-    function addCalendarDays(dateStr, days) {
-      const d = new Date(dateStr + 'T00:00:00Z');
-      d.setUTCDate(d.getUTCDate() + days);
-      return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
-    }
-    const t = synthTicker({
-      ticker: 'UPUP',
-      name: 'Up Up',
-      market: 'US',
-      startDate: '2024-01-03',
-      n: 200,
-      closeFn: sawtoothClose,
-      volFn: geomVol,
+  it('respects maxSlots cap (only opens up to 5 positions per market)', () => {
+    // 6 tickers, all hit cheap signal on day 220
+    const mkClose = (offset) => (i) => {
+      const base = 100 + offset;
+      if (i < 200) return base + i * 0.1;
+      return base + 20 - (i - 200) * 1.5;
+    };
+    const tickers = Array.from({ length: 6 }, (_, k) =>
+      buildSyntheticTicker({
+        ticker: `T${k}`, name: `T${k}`, market: 'KR', startDate: '2023-01-02',
+        n: 220, closeFn: mkClose(k),
+      }),
+    );
+    const result = simulate({
+      tickers,
+      simStart: '2023-01-02', simEnd: tickers[0].dates[219],
+      today: tickers[0].dates[219],
+      initialCapital: { krInitial: 10_000_000, usInitial: 0 },
+      indexByMarket: {},
+      bearByMarket: {},
     });
-    const entries = simulate({
-      tickers: [t],
-      simStart: '2024-01-03',
-      simEnd: t.dates[t.dates.length - 1],
-      today: t.dates[t.dates.length - 1],
-    });
-    const matured = entries.filter((e) => e.status === 'matured');
-    expect(matured.length).toBeGreaterThan(0);
-    const datesSet = new Set(t.dates);
-    let slideObserved = false;
-    for (const e of matured) {
-      // exitDate must exist in the trading-day series
-      expect(datesSet.has(e.exitDate)).toBe(true);
-      // exitDate must be on or after matureDate
-      const mat = addCalendarDays(e.buyDate, e.holdDays);
-      expect(e.exitDate >= mat).toBe(true);
-      if (e.exitDate !== mat) slideObserved = true;
-    }
-    // This particular fixture / start date is engineered so that at least
-    // one matureDate lands on a weekend and slides forward.
-    expect(slideObserved).toBe(true);
-  });
-
-  it('skips entries on bear days (US, no defensive subset)', () => {
-    const t = synthTicker({
-      ticker: 'BEAR',
-      name: 'Bear',
-      market: 'US',
-      startDate: '2024-01-03',
-      n: 200,
-      closeFn: (i) => {
-        const c = i % 11;
-        return 100 + Math.floor(i / 11) * 3 + (c < 10 ? c * 0.6 : 10 * 0.6 - 3);
-      },
-      volFn: (i) => Math.round(1000 * Math.pow(1.01, i)),
-    });
-    const bearByMarket = { US: Object.fromEntries(t.dates.map((d) => [d, true])) };
-    const today = t.dates[t.dates.length - 1];
-    const entries = simulate({
-      tickers: [t], simStart: '2024-01-03', simEnd: today, today, bearByMarket,
-    });
-    expect(entries.length).toBe(0);
-  });
-
-  it('allows defensive entries on bear US days', () => {
-    const t = synthTicker({
-      ticker: 'SQQQ',
-      name: 'SQQQ Defensive',
-      market: 'US',
-      startDate: '2024-01-03',
-      n: 200,
-      closeFn: (i) => {
-        const c = i % 11;
-        return 100 + Math.floor(i / 11) * 3 + (c < 10 ? c * 0.6 : 10 * 0.6 - 3);
-      },
-      volFn: (i) => Math.round(1000 * Math.pow(1.01, i)),
-    });
-    const bearByMarket = { US: Object.fromEntries(t.dates.map((d) => [d, true])) };
-    const today = t.dates[t.dates.length - 1];
-    const entries = simulate({
-      tickers: [t], simStart: '2024-01-03', simEnd: today, today, bearByMarket,
-      defensiveTickers: ['SQQQ'],
-    });
-    expect(entries.length).toBeGreaterThan(0);
-    expect(entries.every((e) => e.regime === 'bear')).toBe(true);
+    const openPositions = new Set(
+      result.ledger.filter((l) => l.action === 'buy').map((l) => l.ticker),
+    );
+    expect(openPositions.size).toBeLessThanOrEqual(5);
   });
 });

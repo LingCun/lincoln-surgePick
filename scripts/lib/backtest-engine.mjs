@@ -1,10 +1,60 @@
+import { valuationTag } from './valuation.mjs';
+import { createDcaPlan, createDistPlan, chunkDueOn, abortIfSignalChanged } from './dca-plan.mjs';
+import { evaluateExit } from './exit-rules.mjs';
+import {
+  initState, buyShares, sellShares, computeEquity, freeSlots,
+  updatePeak, setPlan, blacklistTicker, isBlacklisted,
+} from './portfolio.mjs';
 import { scorePicks } from './scoring.mjs';
-import { classifyHorizon } from './horizon.mjs';
-import { pickReason } from './reason-template.mjs';
 
-function dailyReturn(closes) {
-  if (closes.length < 22) return 0;
-  return closes[closes.length - 1] / closes[closes.length - 22] - 1;
+const FX_USD_KRW = 1300;
+const MAX_SLOTS = 5;
+const MIN_POSITION_FRACTION = 0.05;
+const BLACKLIST_DAYS = 30;
+
+function addCalendarDays(dateStr, days) {
+  const d = new Date(dateStr + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + days);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+}
+
+function buildSimDates(tickers, simStart, simEnd) {
+  const set = new Set();
+  for (const t of tickers) for (const d of t.dates) if (d >= simStart && d <= simEnd) set.add(d);
+  return [...set].sort();
+}
+
+function priceMapAt(tickers, date) {
+  const map = {};
+  for (const t of tickers) {
+    const idx = t.dates.indexOf(date);
+    if (idx >= 0) map[t.ticker] = t.closes[idx];
+    else {
+      // last available close on or before date
+      let last = null;
+      for (let k = t.dates.length - 1; k >= 0; k--) {
+        if (t.dates[k] <= date) { last = t.closes[k]; break; }
+      }
+      if (last != null) map[t.ticker] = last;
+    }
+  }
+  return map;
+}
+
+function daysBetween(a, b) {
+  const da = new Date(a + 'T00:00:00Z').getTime();
+  const db = new Date(b + 'T00:00:00Z').getTime();
+  return Math.round((db - da) / 86_400_000);
+}
+
+function convictionMultiplier(slice, distancePctBelowMa) {
+  let mult = 1.0;
+  try {
+    const s = scorePicks(slice);
+    if (s.passes.trendUp && s.passes.volumeUp && s.passes.accumulation) mult *= 1.5;
+  } catch { /* not enough data */ }
+  if (distancePctBelowMa > 0.05) mult *= 1.3;
+  return Math.max(0.7, Math.min(1.5, mult));
 }
 
 function vol20(closes) {
@@ -19,158 +69,226 @@ function vol20(closes) {
   return Math.sqrt(variance) * Math.sqrt(252);
 }
 
-function addCalendarDays(dateStr, days) {
-  const d = new Date(dateStr + 'T00:00:00Z');
-  d.setUTCDate(d.getUTCDate() + days);
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
-}
+/**
+ * Run the CWC portfolio simulation.
+ * Inputs:
+ *   tickers[]      { ticker, name, market, dates[], closes[], volumes[], highs[], lows[] }
+ *   simStart, simEnd, today
+ *   initialCapital { krInitial, usInitial }
+ *   indexByMarket  { KR: {dates,closes}, US: {dates,closes} } (currently unused but reserved for RS)
+ *   bearByMarket   { KR: {date→bool}, US: {date→bool} }
+ * Returns { equityCurve[], ledger[], positions[], finalState }
+ */
+export function simulate({
+  tickers, simStart, simEnd, today,
+  initialCapital, indexByMarket = {}, bearByMarket = {},
+}) {
+  let state = initState({
+    krInitial: initialCapital.krInitial,
+    usInitial: initialCapital.usInitial,
+    maxSlots: MAX_SLOTS,
+  });
+  const ledger = [];
+  const equityCurve = [];
+  const tickersByKey = new Map(tickers.map((t) => [t.ticker, t]));
+  const simDates = buildSimDates(tickers, simStart, simEnd);
 
-function firstIndexAtOrAfter(dates, target) {
-  for (let i = 0; i < dates.length; i++) {
-    if (dates[i] >= target) return i;
-  }
-  return -1;
-}
+  for (const D of simDates) {
+    if (D > today) break;
+    const prices = priceMapAt(tickers, D);
 
-function resolveExitMatured(tickerData, buyIndex, holdDays, today, vixByDate) {
-  const buyDate = tickerData.dates[buyIndex];
-  const matureDate = addCalendarDays(buyDate, holdDays);
-
-  for (let k = buyIndex + 1; k < tickerData.dates.length; k++) {
-    const date = tickerData.dates[k];
-    if (date > today) break;
-    if (date >= matureDate) {
-      return {
-        exitDate: date,
-        exitPrice: tickerData.closes[k],
-        sellReason: 'matured',
-        vixAtSell: vixByDate?.[date] ?? null,
-        status: 'matured',
-      };
-    }
-  }
-  return {
-    exitDate: null,
-    exitPrice: null,
-    sellReason: null,
-    vixAtSell: null,
-    status: 'active',
-  };
-}
-
-function buildSimDates(tickers, simStart, simEnd) {
-  const set = new Set();
-  for (const t of tickers) {
-    for (const d of t.dates) {
-      if (d >= simStart && d <= simEnd) set.add(d);
-    }
-  }
-  return [...set].sort();
-}
-
-export function simulate({ tickers, simStart, simEnd, today, vixByDate = {}, bearByMarket = {}, defensiveTickers = [] }) {
-  if (!today) {
-    const d = new Date();
-    today = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
-  }
-  const entries = [];
-
-  const byMarket = new Map();
-  for (const t of tickers) {
-    if (!byMarket.has(t.market)) byMarket.set(t.market, []);
-    byMarket.get(t.market).push(t);
-  }
-
-  for (const [market, marketTickers] of byMarket) {
-    const simDates = buildSimDates(marketTickers, simStart, simEnd);
-    const activeUntil = new Map();
-
-    for (const D of simDates) {
-      for (const [tkr, mat] of activeUntil) {
-        if (mat < D) activeUntil.delete(tkr);
+    // 1. Update peaks for all open positions
+    for (const market of ['KR', 'US']) {
+      const pool = market === 'KR' ? state.kr : state.us;
+      for (const p of pool.positions) {
+        const px = prices[p.ticker];
+        if (px != null) state = updatePeak(state, market, p.ticker, px);
       }
+    }
 
-      const vixToday = vixByDate[D] ?? null;
+    // 2. Risk gates — evaluate every open position
+    for (const market of ['KR', 'US']) {
       const isBear = bearByMarket[market]?.[D] === true;
-
-      let dayUniverse;
-      if (isBear && market === 'KR') continue;
-      if (isBear && market === 'US' && defensiveTickers.length > 0) {
-        dayUniverse = marketTickers.filter((t) => defensiveTickers.includes(t.ticker));
-        if (dayUniverse.length === 0) continue;
-      } else if (isBear) {
-        continue;
-      } else {
-        dayUniverse = marketTickers;
+      const pool = market === 'KR' ? state.kr : state.us;
+      const positionsSnapshot = [...pool.positions];
+      for (const p of positionsSnapshot) {
+        const px = prices[p.ticker];
+        if (px == null) continue;
+        const holdingDays = daysBetween(p.firstBuyDate, D);
+        const verdict = evaluateExit({
+          close: px, avgCost: p.avgCost, peak: p.peak,
+          isBear, holdingDays,
+        });
+        if (!verdict.fire) continue;
+        const sharesSold = p.shares;
+        state = sellShares(state, { market, ticker: p.ticker, shares: sharesSold, price: px });
+        ledger.push({
+          date: D, action: 'sell', market, ticker: p.ticker, name: p.name,
+          shares: sharesSold, price: px, reason: verdict.reason,
+          unrealizedReturn: (px - p.avgCost) / p.avgCost,
+        });
+        if (verdict.reason === 'catastrophe' || verdict.reason === 'trailing') {
+          state = blacklistTicker(state, market, p.ticker, addCalendarDays(D, BLACKLIST_DAYS));
+        }
       }
+    }
 
-      const candidates = [];
-      for (const t of dayUniverse) {
-        const idx = firstIndexAtOrAfter(t.dates, D);
-        if (idx === -1 || t.dates[idx] !== D) continue;
-        if (idx + 1 < 30) continue;
-        const slice = {
-          closes: t.closes.slice(0, idx + 1),
-          volumes: t.volumes.slice(0, idx + 1),
-          highs: t.highs.slice(0, idx + 1),
-          lows: t.lows.slice(0, idx + 1),
-        };
-        let s;
-        try {
-          s = scorePicks(slice);
-        } catch {
+    // 3. Distribution fills (active dist plans)
+    for (const market of ['KR', 'US']) {
+      const pool = market === 'KR' ? state.kr : state.us;
+      for (const p of [...pool.positions]) {
+        if (!p.distPlan) continue;
+        const t = tickersByKey.get(p.ticker);
+        if (!t) continue;
+        const idx = t.dates.indexOf(D);
+        if (idx < 0) continue;
+        const tag = valuationTag(t.closes.slice(0, idx + 1));
+        if (abortIfSignalChanged(p.distPlan, tag)) {
+          state = setPlan(state, market, p.ticker, 'distPlan', null);
           continue;
         }
-        if (!s.passes.trendUp || !s.passes.volumeUp || !s.passes.accumulation) continue;
-        candidates.push({ ticker: t, idx, s });
+        const chunk = chunkDueOn(p.distPlan, D);
+        if (!chunk) continue;
+        const px = t.closes[idx];
+        const sharesToSell = Math.min(chunk.shares, p.shares);
+        if (sharesToSell <= 0) continue;
+        state = sellShares(state, { market, ticker: p.ticker, shares: sharesToSell, price: px });
+        chunk.filled = true;
+        ledger.push({
+          date: D, action: 'sell', market, ticker: p.ticker, name: p.name,
+          shares: sharesToSell, price: px, reason: 'dist-chunk',
+        });
       }
-      if (candidates.length === 0) continue;
+    }
 
-      candidates.sort((a, b) => b.s.total - a.s.total);
-      const top = candidates[0];
+    // 4. DCA fills (existing pending DCA plans + new entries)
+    for (const market of ['KR', 'US']) {
+      const pool = market === 'KR' ? state.kr : state.us;
+      for (const p of [...pool.positions]) {
+        if (!p.dcaPlan) continue;
+        const t = tickersByKey.get(p.ticker);
+        if (!t) continue;
+        const idx = t.dates.indexOf(D);
+        if (idx < 0) continue;
+        const tag = valuationTag(t.closes.slice(0, idx + 1));
+        if (abortIfSignalChanged(p.dcaPlan, tag)) {
+          state = setPlan(state, market, p.ticker, 'dcaPlan', null);
+          continue;
+        }
+        const chunk = chunkDueOn(p.dcaPlan, D);
+        if (!chunk) continue;
+        const px = t.closes[idx];
+        const cost = chunk.shares * px;
+        if (pool.cash < cost) continue;
+        state = buyShares(state, { market, ticker: p.ticker, name: p.name, shares: chunk.shares, price: px, date: D });
+        chunk.filled = true;
+        ledger.push({
+          date: D, action: 'buy', market, ticker: p.ticker, name: p.name,
+          shares: chunk.shares, price: px, reason: 'dca-chunk',
+        });
+      }
+    }
 
-      if (activeUntil.has(top.ticker.ticker)) continue;
+    // 5. New entries — scan watchlist for CHEAP signals
+    for (const t of tickers) {
+      const market = t.market;
+      if (bearByMarket[market]?.[D] === true) continue;
+      const idx = t.dates.indexOf(D);
+      if (idx < 0) continue;
+      if (idx < 200) continue;
+      const slice = t.closes.slice(0, idx + 1);
+      const tag = valuationTag(slice);
+      if (tag !== 'cheap') continue;
+      if (isBlacklisted(state, market, t.ticker, D)) continue;
+      const pool = market === 'KR' ? state.kr : state.us;
+      if (pool.positions.some((p) => p.ticker === t.ticker)) continue;
+      if (freeSlots(state, market) === 0) continue;
 
-      const closesSlice = top.ticker.closes.slice(0, top.idx + 1);
-      const mom1m = dailyReturn(closesSlice);
-      const v20 = vol20(closesSlice);
-      const { horizon, holdDays } = classifyHorizon({
-        scores: top.s.scores,
-        metrics: top.s.metrics,
-        mom1m,
-        vol20: v20,
+      const eq = computeEquity(state, prices, { usdKrw: FX_USD_KRW });
+      const marketEquity = market === 'KR'
+        ? eq.kr.cash + eq.kr.posValue
+        : eq.us.cash + eq.us.posValue;
+      const baseSize = marketEquity / MAX_SLOTS;
+      const ma200 = slice.slice(-200).reduce((a, b) => a + b, 0) / 200;
+      const price = t.closes[idx];
+      const distancePctBelowMa = ma200 > price ? (ma200 - price) / ma200 : 0;
+      const sliceForScoring = {
+        closes: t.closes.slice(Math.max(0, idx - 29), idx + 1),
+        volumes: t.volumes.slice(Math.max(0, idx - 29), idx + 1),
+        highs: t.highs.slice(Math.max(0, idx - 29), idx + 1),
+        lows: t.lows.slice(Math.max(0, idx - 29), idx + 1),
+      };
+      const conviction = convictionMultiplier(sliceForScoring, distancePctBelowMa);
+      const v20 = vol20(slice);
+      const volAdjust = v20 > 0.35 ? 0.7 : 1.0;
+      const targetSize = baseSize * conviction * volAdjust;
+      if (targetSize < marketEquity * MIN_POSITION_FRACTION) continue;
+      const totalShares = Math.floor(targetSize / price);
+      if (totalShares < 3) continue;
+
+      const dcaPlan = createDcaPlan({ startDate: D, totalShares });
+      const day1Chunk = dcaPlan.chunks[0];
+      const day1Cost = day1Chunk.shares * price;
+      if (pool.cash < day1Cost) continue;
+
+      state = buyShares(state, { market, ticker: t.ticker, name: t.name, shares: day1Chunk.shares, price, date: D });
+      day1Chunk.filled = true;
+      state = setPlan(state, market, t.ticker, 'dcaPlan', dcaPlan);
+      ledger.push({
+        date: D, action: 'buy', market, ticker: t.ticker, name: t.name,
+        shares: day1Chunk.shares, price, reason: 'dca-start',
+        conviction, volAdjust,
       });
+    }
 
-      const buyDate = D;
-      const buyPrice = top.ticker.closes[top.idx];
-      const matureDate = addCalendarDays(buyDate, holdDays);
-      activeUntil.set(top.ticker.ticker, matureDate);
+    // 6. Check for rich signals on open positions — start dist plan
+    for (const market of ['KR', 'US']) {
+      const pool = market === 'KR' ? state.kr : state.us;
+      for (const p of [...pool.positions]) {
+        if (p.distPlan) continue;
+        const t = tickersByKey.get(p.ticker);
+        if (!t) continue;
+        const idx = t.dates.indexOf(D);
+        if (idx < 0) continue;
+        const slice = t.closes.slice(0, idx + 1);
+        const tag = valuationTag(slice);
+        if (tag !== 'rich') continue;
+        const px = t.closes[idx];
+        const gain = (px - p.avgCost) / p.avgCost;
+        if (gain < 0.10) continue;
+        const plan = createDistPlan({ startDate: D, totalShares: p.shares });
+        state = setPlan(state, market, p.ticker, 'distPlan', plan);
+      }
+    }
 
-      const exit = resolveExitMatured(top.ticker, top.idx, holdDays, today, vixByDate);
-      const ret = exit.exitPrice == null ? null : exit.exitPrice / buyPrice - 1;
+    // 7. Record equity curve point
+    const eqPoint = computeEquity(state, prices, { usdKrw: FX_USD_KRW });
+    equityCurve.push({
+      date: D,
+      total: eqPoint.totalKrwEquiv,
+      krCash: eqPoint.kr.cash, krPos: eqPoint.kr.posValue,
+      usCash: eqPoint.us.cash, usPos: eqPoint.us.posValue,
+    });
+  }
 
-      entries.push({
-        id: `${market.toLowerCase()}-${buyDate}-${top.ticker.ticker.replace(/[.^]/g, '')}`,
+  // Final position snapshot
+  const finalPrices = priceMapAt(tickers, simDates[simDates.length - 1] ?? today);
+  const positions = [];
+  for (const market of ['KR', 'US']) {
+    const pool = market === 'KR' ? state.kr : state.us;
+    for (const p of pool.positions) {
+      const px = finalPrices[p.ticker] ?? p.avgCost;
+      positions.push({
         market,
-        ticker: top.ticker.ticker,
-        name: top.ticker.name,
-        buyDate,
-        buyPrice,
-        exitDate: exit.exitDate,
-        exitPrice: exit.exitPrice,
-        return: ret,
-        horizon,
-        holdDays,
-        score: Math.round(top.s.total * 100),
-        reason: pickReason({ scores: top.s.scores, metrics: top.s.metrics }),
-        status: exit.status,
-        vixAtBuy: vixToday,
-        sellReason: exit.sellReason,
-        vixAtSell: exit.vixAtSell,
-        regime: isBear ? 'bear' : 'normal',
+        ticker: p.ticker, name: p.name,
+        shares: p.shares, avgCost: p.avgCost, peak: p.peak,
+        currentPrice: px,
+        unrealizedReturn: (px - p.avgCost) / p.avgCost,
+        firstBuyDate: p.firstBuyDate, lastBuyDate: p.lastBuyDate,
+        dcaPlan: p.dcaPlan, distPlan: p.distPlan,
       });
     }
   }
 
-  return entries;
+  return { equityCurve, ledger, positions, finalState: state };
 }
