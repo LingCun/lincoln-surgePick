@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import TickerSearch from '../components/TickerSearch.astro';
+import SimController from '../components/SimController.astro';
 export const prerender = false;
 ---
 <Base title="surgePick — 종목 시뮬레이션">
@@ -10,6 +11,7 @@ export const prerender = false;
       종목 하나를 선택하면 과거 차트 + 과거 유사 시장 사례 평균에 기반한 1·2·3개월 예측선을 그립니다.
     </p>
     <TickerSearch />
-    <div id="sim-result" class="hidden space-y-4"></div>
+    <div id="sim-result" class="hidden space-y-6"></div>
+    <SimController />
   </section>
 </Base>
