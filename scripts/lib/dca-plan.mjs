@@ -49,10 +49,11 @@ export function createDistPlan({ startDate, totalShares }) {
  * Return the next unfilled chunk whose scheduled date <= currentDate, else null.
  */
 export function chunkDueOn(plan, currentDate) {
+  let result = null;
   for (const c of plan.chunks) {
-    if (!c.filled && c.date <= currentDate) return c;
+    if (!c.filled && c.date <= currentDate) result = c;
   }
-  return null;
+  return result;
 }
 
 /**
