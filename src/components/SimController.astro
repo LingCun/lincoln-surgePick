@@ -69,7 +69,7 @@
           <h2 class="text-lg font-semibold">예측 차트</h2>
           <div class="flex gap-1">${[30, 60, 90].map(mTag).join('')}</div>
         </div>
-        <div class="relative aspect-video bg-slate-900 rounded-lg p-2">
+        <div class="relative h-72 md:h-96 bg-slate-900 rounded-lg p-2">
           <canvas id="forecast-canvas"></canvas>
         </div>
       </section>
@@ -114,4 +114,92 @@
     const hz = Number((btn as HTMLElement).dataset.hz);
     window.dispatchEvent(new CustomEvent('sim:horizon', { detail: { horizon: hz } }));
   });
+
+  // ---- ForecastChart (Chart.js + 수동 progressive draw) ----
+  declare const Chart: any;
+
+  let chart: any = null;
+
+  window.addEventListener('sim:rendered', (ev: Event) => {
+    const { data } = (ev as CustomEvent).detail;
+    drawChart(data);
+  });
+
+  function drawChart(data: ApiResp) {
+    const canvas = document.getElementById('forecast-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    if (chart) chart.destroy();
+
+    const ctx = canvas.getContext('2d')!;
+
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: '실제',         data: [], borderColor: '#60a5fa', backgroundColor: 'transparent', borderWidth: 2, fill: false, pointRadius: 0, tension: 0.2 },
+          { label: '예측 메디안',  data: [], borderColor: '#22d3ee', backgroundColor: 'transparent', borderWidth: 2, borderDash: [6, 4], fill: false, pointRadius: 0, tension: 0.2 },
+          { label: '예측 p25-p75', data: [], borderColor: 'transparent', backgroundColor: 'rgba(34,211,238,0.18)', fill: '-1', pointRadius: 0 },
+          { label: '_p25 hidden',  data: [], borderColor: 'transparent', backgroundColor: 'transparent', fill: false, pointRadius: 0, showLine: false, hidden: false },
+        ],
+      },
+      options: {
+        animation: false,
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { labels: { color: '#cbd5e1', filter: (l: any) => !l.text.startsWith('_') } },
+          tooltip: { mode: 'index', intersect: false },
+        },
+        scales: {
+          x: { type: 'time', time: { unit: 'month' }, ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+          y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+        },
+      },
+    });
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const allPoints = [
+      ...data.history.map((p) => ({ date: p.date, isHistory: true, value: p.close })),
+      ...data.forecast.slice(1).map((p) => ({ date: p.date, isHistory: false, median: p.median, lo: p.lo, hi: p.hi })),
+    ];
+
+    if (reduceMotion) {
+      allPoints.forEach((p) => pushPoint(p));
+      chart.update('none');
+      return;
+    }
+
+    const totalMs = 2000;
+    const msPerPoint = totalMs / allPoints.length;
+    let i = 0;
+    let lastTs = performance.now();
+
+    function tick(now: number) {
+      while (now - lastTs >= msPerPoint && i < allPoints.length) {
+        pushPoint(allPoints[i]);
+        i++;
+        lastTs += msPerPoint;
+      }
+      chart.update('none');
+      if (i < allPoints.length) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    function pushPoint(p: any) {
+      chart.data.labels.push(p.date);
+      if (p.isHistory) {
+        chart.data.datasets[0].data.push(p.value);
+        chart.data.datasets[1].data.push(null);
+        chart.data.datasets[2].data.push(null);
+        chart.data.datasets[3].data.push(null);
+      } else {
+        chart.data.datasets[0].data.push(null);
+        chart.data.datasets[1].data.push(p.median);
+        chart.data.datasets[2].data.push(p.hi);
+        chart.data.datasets[3].data.push(p.lo);
+      }
+    }
+  }
 </script>
