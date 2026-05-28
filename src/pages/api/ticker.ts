@@ -70,8 +70,8 @@ export const GET: APIRoute = async ({ url }) => {
     horizon,
   });
 
-  // 표시용 최근 가격: horizon 과 동일한 calendar-day 윈도우 (대칭 차트)
-  const historyCutoff = addDays(today, -horizon);
+  // 표시용 최근 가격: 과거 30 calendar-day 고정 (horizon 과 무관). 예측 horizon 이 시선 받게 함.
+  const historyCutoff = addDays(today, -30);
   const recent = prices.filter((p) => p.date >= historyCutoff);
 
   return new Response(

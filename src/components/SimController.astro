@@ -21,8 +21,19 @@
 
   window.addEventListener('sim:horizon', async (ev: Event) => {
     currentHorizon = (ev as CustomEvent).detail.horizon;
+    syncHorizonButtons(currentHorizon);
     if (lastSelectedTicker) await runAndRender(currentHorizon);
   });
+
+  function syncHorizonButtons(hz: number) {
+    document.querySelectorAll('[data-hz]').forEach((btn) => {
+      const el = btn as HTMLElement;
+      const active = Number(el.dataset.hz) === hz;
+      el.className = `px-4 py-2 rounded text-sm font-semibold transition ${
+        active ? 'bg-cyan-600 text-white shadow' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+      }`;
+    });
+  }
 
   async function runAndRender(horizon: number) {
     if (!lastSelectedTicker) return;
@@ -36,17 +47,39 @@
     }
     const data: ApiResp = await res.json();
 
-    resultRoot.innerHTML = renderPriceTable(data) + renderChartPlaceholder(horizon);
+    resultRoot.innerHTML = renderChartSection(data) + renderPriceTable(data);
     fillPriceTable(data);
-    // 차트 init 은 Task 17 에서 추가
     window.dispatchEvent(new CustomEvent('sim:rendered', { detail: { data, horizon } }));
+  }
+
+  function renderChartSection(d: ApiResp) {
+    const shortTicker = d.ticker.ticker.replace(/\.[A-Z]+$/, '');
+    const name = d.ticker.name_kr ?? d.ticker.name_en ?? shortTicker;
+    const currency = d.ticker.market === 'KR' ? '₩' : '$';
+    const fmt = (n: number) => n.toLocaleString(d.ticker.market === 'KR' ? 'ko-KR' : 'en-US', { maximumFractionDigits: 2 });
+    return `
+      <section class="forecast-chart space-y-2">
+        <header class="flex items-baseline justify-between">
+          <h2 class="text-lg font-semibold">${name} <span class="text-slate-400 text-sm">(${shortTicker})</span></h2>
+          <span class="text-sm text-slate-300">${currency}${fmt(d.today_close)}</span>
+        </header>
+        <div class="relative h-72 md:h-96 bg-slate-900 rounded-lg p-2">
+          <canvas id="forecast-canvas"></canvas>
+        </div>
+        <div class="flex justify-center gap-4 text-xs text-slate-400">
+          <span><span class="inline-block w-3 h-0.5 bg-sky-400 align-middle mr-1"></span>과거 1달 실제</span>
+          <span><span class="inline-block w-3 h-0.5 bg-amber-400 align-middle mr-1" style="border-top:2px dashed #fbbf24"></span>예측 메디안</span>
+          <span><span class="inline-block w-3 h-2 align-middle mr-1" style="background:rgba(251,191,36,0.18)"></span>예측 p25~p75</span>
+        </div>
+      </section>
+    `;
   }
 
   function renderPriceTable(d: ApiResp) {
     return `
       <section class="price-table">
         <header class="flex items-baseline justify-between mb-2">
-          <h2 class="text-lg font-semibold" data-pt-title></h2>
+          <h2 class="text-base font-semibold text-slate-300">최근 가격</h2>
           <span class="text-xs text-slate-400" data-pt-context></span>
         </header>
         <div class="overflow-x-auto">
@@ -61,29 +94,10 @@
     `;
   }
 
-  function renderChartPlaceholder(horizon: number) {
-    const mTag = (n: number) => `<button data-hz="${n}" class="px-3 py-1 rounded text-sm ${n === horizon ? 'bg-cyan-700 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}">${n / 30}M</button>`;
-    return `
-      <section class="forecast-chart space-y-2">
-        <div class="flex items-center justify-between">
-          <h2 class="text-lg font-semibold">예측 차트</h2>
-          <div class="flex gap-1">${[30, 60, 90].map(mTag).join('')}</div>
-        </div>
-        <div class="relative h-72 md:h-96 bg-slate-900 rounded-lg p-2">
-          <canvas id="forecast-canvas"></canvas>
-        </div>
-      </section>
-    `;
-  }
-
   function fillPriceTable(d: ApiResp) {
-    const title = resultRoot.querySelector('[data-pt-title]') as HTMLElement;
     const ctxEl = resultRoot.querySelector('[data-pt-context]') as HTMLElement;
     const body = resultRoot.querySelector('[data-pt-body]') as HTMLElement;
     const fmt = (n: number) => n.toLocaleString(d.ticker.market === 'KR' ? 'ko-KR' : 'en-US', { maximumFractionDigits: 2 });
-    const currency = d.ticker.market === 'KR' ? '₩' : '$';
-    const shortTicker = d.ticker.ticker.replace(/\.[A-Z]+$/, '');
-    title.textContent = `${d.ticker.name_kr ?? d.ticker.name_en ?? shortTicker} (${shortTicker}) — ${currency}${fmt(d.today_close)}`;
 
     const labelKo = { bull: '강세장', neutral: '횡보', bear: '약세장' }[d.context.label] ?? d.context.label;
     const bandKo = { low: '낮음', mid: '보통', high: '높음' }[d.context.vix_band] ?? d.context.vix_band;
@@ -107,7 +121,7 @@
       .join('');
   }
 
-  // horizon 토글
+  // horizon 토글 (sim.astro 의 #horizon-picker 버튼이 트리거)
   document.body.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest('[data-hz]');
     if (!btn) return;
@@ -115,7 +129,7 @@
     window.dispatchEvent(new CustomEvent('sim:horizon', { detail: { horizon: hz } }));
   });
 
-  // ---- ForecastChart (Chart.js + 수동 progressive draw) ----
+  // ---- ForecastChart ----
   declare const Chart: any;
 
   let chart: any = null;
@@ -125,6 +139,39 @@
     drawChart(data);
   });
 
+  // "오늘" 세로선 + 영역 음영 plugin (lastHistoryDate 를 데이터셋에 stash)
+  const todayMarkerPlugin = {
+    id: 'todayMarker',
+    afterDatasetsDraw(chart: any) {
+      const todayDate = chart.options._todayDate;
+      if (!todayDate) return;
+      const xScale = chart.scales.x;
+      const yScale = chart.scales.y;
+      const xPos = xScale.getPixelForValue(new Date(todayDate).getTime());
+      if (xPos == null || isNaN(xPos)) return;
+      const { ctx } = chart;
+      ctx.save();
+      // 예측 영역 배경 음영 (오늘 ~ 차트 우측)
+      ctx.fillStyle = 'rgba(251,191,36,0.04)';
+      ctx.fillRect(xPos, yScale.top, xScale.right - xPos, yScale.bottom - yScale.top);
+      // 세로 점선
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(xPos, yScale.top);
+      ctx.lineTo(xPos, yScale.bottom);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // "오늘" 라벨
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('오늘', xPos, yScale.top - 4);
+      ctx.restore();
+    },
+  };
+
   function drawChart(data: ApiResp) {
     const canvas = document.getElementById('forecast-canvas') as HTMLCanvasElement;
     if (!canvas) return;
@@ -132,14 +179,27 @@
 
     const ctx = canvas.getContext('2d')!;
 
+    // x-axis lock: 과거 시작일 ~ 예측 마지막일 (애니메이션 동안 리스케일 방지)
+    const xMin = data.history.length > 0 ? data.history[0].date : null;
+    const xMax = data.forecast.length > 0 ? data.forecast[data.forecast.length - 1].date : null;
+    const todayDate = data.forecast.length > 0 ? data.forecast[0].date : null;
+
+    // y-axis lock: history + forecast 의 모든 값 범위 (5% 패딩)
+    const yVals: number[] = [];
+    data.history.forEach((p) => yVals.push(p.close));
+    data.forecast.forEach((p) => { yVals.push(p.lo, p.hi); });
+    const yMin = yVals.length ? Math.min(...yVals) : 0;
+    const yMax = yVals.length ? Math.max(...yVals) : 1;
+    const pad = (yMax - yMin) * 0.08 || yMax * 0.02;
+
     chart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: [],
         datasets: [
-          { label: '실제',         data: [], borderColor: '#60a5fa', backgroundColor: 'transparent', borderWidth: 2, fill: false, pointRadius: 0, tension: 0.2 },
-          { label: '예측 메디안',  data: [], borderColor: '#22d3ee', backgroundColor: 'transparent', borderWidth: 2, borderDash: [6, 4], fill: false, pointRadius: 0, tension: 0.2 },
-          { label: '예측 p25-p75', data: [], borderColor: 'transparent', backgroundColor: 'rgba(34,211,238,0.18)', fill: '-1', pointRadius: 0 },
+          { label: '과거 실제',     data: [], borderColor: '#38bdf8', backgroundColor: 'transparent', borderWidth: 2.5, fill: false, pointRadius: 0, tension: 0.2 },
+          { label: '예측 메디안',   data: [], borderColor: '#fbbf24', backgroundColor: 'transparent', borderWidth: 2.5, borderDash: [6, 4], fill: false, pointRadius: 0, tension: 0.2 },
+          { label: '예측 p25-p75', data: [], borderColor: 'transparent', backgroundColor: 'rgba(251,191,36,0.18)', fill: '-1', pointRadius: 0 },
           { label: '_p25 hidden',  data: [], borderColor: 'transparent', backgroundColor: 'transparent', fill: false, pointRadius: 0, showLine: false, hidden: false },
         ],
       },
@@ -148,15 +208,29 @@
         responsive: true,
         maintainAspectRatio: false,
         interaction: { mode: 'index', intersect: false },
+        _todayDate: todayDate,
         plugins: {
-          legend: { labels: { color: '#cbd5e1', filter: (l: any) => !l.text.startsWith('_') } },
+          legend: { display: false },
           tooltip: { mode: 'index', intersect: false },
         },
         scales: {
-          x: { type: 'time', time: { unit: 'month' }, ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
-          y: { ticks: { color: '#64748b' }, grid: { color: '#1e293b' } },
+          x: {
+            type: 'time',
+            min: xMin ?? undefined,
+            max: xMax ?? undefined,
+            time: { unit: 'week' },
+            ticks: { color: '#64748b' },
+            grid: { color: '#1e293b' },
+          },
+          y: {
+            min: yMin - pad,
+            max: yMax + pad,
+            ticks: { color: '#64748b' },
+            grid: { color: '#1e293b' },
+          },
         },
-      },
+      } as any,
+      plugins: [todayMarkerPlugin],
     });
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -171,8 +245,9 @@
       return;
     }
 
-    const totalMs = 2000;
-    const msPerPoint = totalMs / allPoints.length;
+    // 천천히: 5초. 데이터양 무관 일정 속도.
+    const totalMs = 5000;
+    const msPerPoint = totalMs / Math.max(allPoints.length, 1);
     let i = 0;
     let lastTs = performance.now();
 
