@@ -71,11 +71,23 @@
       const flag = item.market === 'KR' ? '🇰🇷' : '🇺🇸';
       const raw = item.name_kr ?? item.name_en ?? item.ticker;
       const name = cleanName(raw, item.ticker);
-      return `<button type="button" data-recent="${i}" class="text-xs px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center gap-1.5 transition">
-        <span>${flag}</span><span>${name}</span>
-      </button>`;
+      return `<div class="text-xs rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center transition overflow-hidden">
+        <button type="button" data-recent="${i}" class="pl-2.5 pr-1.5 py-1 flex items-center gap-1.5">
+          <span>${flag}</span><span>${name}</span>
+        </button>
+        <button type="button" data-recent-del="${i}" aria-label="삭제" class="pl-1 pr-2 py-1 text-slate-500 hover:text-rose-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>`;
     });
     recentEl.innerHTML = `<span class="text-[11px] text-slate-500 self-center mr-1">최근:</span>${chips.join('')}`;
+  }
+
+  function removeRecent(idx: number) {
+    const list = loadRecent();
+    list.splice(idx, 1);
+    saveRecent(list);
+    renderRecent();
   }
 
   function syncClearBtn() {
@@ -150,6 +162,7 @@
     input.value = cleanName(raw, m.ticker);
     results.classList.add('hidden');
     goBtn.disabled = false;
+    goBtn.textContent = '시뮬레이션 시작';
     pushRecent(m);
     syncClearBtn();
   }
@@ -165,6 +178,7 @@
     input.value = '';
     selected = null;
     goBtn.disabled = true;
+    goBtn.textContent = '시뮬레이션 시작';
     results.classList.add('hidden');
     syncClearBtn();
     input.focus();
@@ -201,13 +215,20 @@
   });
 
   recentEl.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest('[data-recent]');
+    const target = e.target as HTMLElement;
+    const delBtn = target.closest('[data-recent-del]');
+    if (delBtn) {
+      e.stopPropagation();
+      const idx = Number((delBtn as HTMLElement).dataset.recentDel);
+      removeRecent(idx);
+      return;
+    }
+    const btn = target.closest('[data-recent]');
     if (!btn) return;
     const idx = Number((btn as HTMLElement).dataset.recent);
     const list = loadRecent();
     const item = list[idx];
     if (!item) return;
-    // 인덱스에서 최신 메타 사용 (이름 갱신 대응)
     const match = index.find((x) => x.ticker === item.ticker) ?? item;
     pick(match);
     window.dispatchEvent(new CustomEvent('sim:run', { detail: { ticker: match } }));
@@ -220,7 +241,14 @@
   renderRecent();
 
   goBtn.addEventListener('click', () => {
-    if (!selected) return;
+    if (!selected || goBtn.disabled) return;
     window.dispatchEvent(new CustomEvent('sim:run', { detail: { ticker: selected } }));
+  });
+
+  // sim:run 트리거 직후 버튼 비활성화 — 중복 클릭 방지.
+  // 사용자가 새 종목 선택하면 pick() 에서 다시 활성화됨.
+  window.addEventListener('sim:run', () => {
+    goBtn.disabled = true;
+    goBtn.textContent = '시뮬레이션 실행 중';
   });
 </script>
