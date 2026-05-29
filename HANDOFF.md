@@ -2,7 +2,7 @@
 
 > 최종 작업일: **2026-05-29** · 브랜치: `main` · 라이브: https://surge-pick.vercel.app
 >
-> 상태: **종목 case-based 시뮬레이터 v1 라이브.** Turso DB에 712+ 종목 · 5y 가격 · 5y regime 적재 완료. UI/UX 폴리시 + 자동 데이터 cron (KR/US 분리) 가동 중. nav 활성 탭 강조 + per-market 갱신 시각 표시.
+> 상태: **종목 case-based 시뮬레이터 v1 라이브.** Turso DB에 712+ 종목 · 5y 가격 · 5y regime 적재 완료. UI/UX 폴리시 + 자동 데이터 cron (KR/US 분리) 가동 중. nav 활성 탭 강조 + per-market 갱신 시각 표시. `/schedule` 일정 탭 MVP (하드코딩) 추가.
 >
 > 이 문서는 다른 PC에서 작업을 자연스럽게 이어받기 위한 핸드오프. 위→아래로 읽으면 됨.
 
@@ -62,6 +62,7 @@ node -e "import('./scripts/lib/db.mjs').then(async({getDb})=>{const d=getDb();fo
 |---|---|
 | `/` | 시장 온도계 (VIX·4시장·overall regime) |
 | `/sim` | 종목 시뮬레이션 (자동완성 + 차트 + 예측선 + 가격 테이블) |
+| `/schedule` | KR/US 거시지표 + 어닝 일정 (MVP 하드코딩, 다음 3개월) |
 | `/about` | 예측 방법론 (regime 매칭, 사례 추출, 한계, 출처) |
 
 ### 3.2 universe (712 종목)
@@ -179,9 +180,20 @@ cron schedule 별 MARKET env 매핑은 `scan.yml`의 `Determine market from cron
 
 상단 nav 우측에 "방법" 탭으로 링크.
 
+### 6.5 schedule 페이지 (/schedule)
+
+- KR/US 거시지표 + 어닝 일정 (오늘 + 다음 3개월)
+- `src/data/schedule.json` 하드코딩 — 분기마다 수동 갱신 필요
+- 필터: 전체 / 🇰🇷 한국 / 🇺🇸 미국 (JS 토글, sched-active 클래스)
+- 날짜 그룹: 오늘 강조 (cyan border + "오늘" 뱃지), 이번주 표기
+- 카테고리: 🏛️ Fed / 🏦 BOK / 📊 거시 / 💼 어닝
+- 중요도 색깔: high(rose) / mid(amber) / low(slate)
+- 어닝 항목은 해당 종목 시뮬레이션 직링크 (예: `/sim?ticker=005930.KS`)
+- 추가: §12 #1 "일정 자동 수집" 라운드에서 스크레이프 + cron 자동화 예정
+
 ### 6.4 layout (Base.astro)
 
-- nav: `시장 / 시뮬레이션 / 방법(우측 ml-auto)`
+- nav: `시장 / 시뮬레이션 / 일정 / 방법(우측 ml-auto)`
 - **활성 탭 강조**: `Astro.url.pathname` 기준, cyan-400 border + cyan-300 text + font-semibold
 - 탭 크기: `text-base pb-3 gap-6` (모바일도 충분한 hit area)
 - 우측 상단 데이터 갱신:
@@ -256,8 +268,10 @@ cron schedule 별 MARKET env 매핑은 `scan.yml`의 `Determine market from cron
 | `src/lib/predict.mjs` | case-based 예측 (matchCases + normalizeTrajectory + aggregateBands + predict) |
 | `src/lib/autocomplete.mjs` | prefix/substring 검색 (정확 > ticker prefix > 이름 prefix > 이름 substring) |
 | `src/pages/sim.astro` | 시뮬레이션 페이지 + horizon picker |
+| `src/pages/schedule.astro` | 일정 페이지 (KR/US 거시 + 어닝) |
 | `src/pages/about.astro` | 방법론 페이지 |
 | `src/pages/index.astro` | 시장 페이지 |
+| `src/data/schedule.json` | 일정 데이터 (하드코딩, 분기 수동 갱신) |
 | `src/pages/api/ticker.ts` | `/api/ticker?id=X&horizon=N` SSR |
 | `src/pages/api/search.ts` | `/api/search?q=Q` SSR fallback |
 | `src/components/SimController.astro` | sim 메인 컨트롤러 (차트 + 가격 테이블) |
