@@ -1,32 +1,597 @@
 [
-  { "ticker": "005930.KS", "name": "삼성전자", "market": "KOSPI" },
-  { "ticker": "000660.KS", "name": "SK하이닉스", "market": "KOSPI" },
-  { "ticker": "373220.KS", "name": "LG에너지솔루션", "market": "KOSPI" },
-  { "ticker": "207940.KS", "name": "삼성바이오로직스", "market": "KOSPI" },
-  { "ticker": "005380.KS", "name": "현대차", "market": "KOSPI" },
-  { "ticker": "000270.KS", "name": "기아", "market": "KOSPI" },
-  { "ticker": "005490.KS", "name": "POSCO홀딩스", "market": "KOSPI" },
-  { "ticker": "105560.KS", "name": "KB금융", "market": "KOSPI" },
-  { "ticker": "035420.KS", "name": "NAVER", "market": "KOSPI" },
-  { "ticker": "068270.KS", "name": "셀트리온", "market": "KOSPI" },
-  { "ticker": "055550.KS", "name": "신한지주", "market": "KOSPI" },
-  { "ticker": "035720.KS", "name": "카카오", "market": "KOSPI" },
-  { "ticker": "012330.KS", "name": "현대모비스", "market": "KOSPI" },
-  { "ticker": "066570.KS", "name": "LG전자", "market": "KOSPI" },
-  { "ticker": "086790.KS", "name": "하나금융지주", "market": "KOSPI" },
-  { "ticker": "032830.KS", "name": "삼성생명", "market": "KOSPI" },
-  { "ticker": "015760.KS", "name": "한국전력", "market": "KOSPI" },
-  { "ticker": "017670.KS", "name": "SK텔레콤", "market": "KOSPI" },
-  { "ticker": "088350.KS", "name": "한화생명", "market": "KOSPI" },
-  { "ticker": "012450.KS", "name": "한화에어로스페이스", "market": "KOSPI" },
-  { "ticker": "247540.KQ", "name": "에코프로비엠", "market": "KOSDAQ" },
-  { "ticker": "086520.KQ", "name": "에코프로", "market": "KOSDAQ" },
-  { "ticker": "091990.KQ", "name": "셀트리온헬스케어", "market": "KOSDAQ" },
-  { "ticker": "196170.KQ", "name": "알테오젠", "market": "KOSDAQ" },
-  { "ticker": "035900.KQ", "name": "JYP Ent.", "market": "KOSDAQ" },
-  { "ticker": "041510.KQ", "name": "에스엠", "market": "KOSDAQ" },
-  { "ticker": "058470.KQ", "name": "리노공업", "market": "KOSDAQ" },
-  { "ticker": "240810.KQ", "name": "원익IPS", "market": "KOSDAQ" },
-  { "ticker": "293490.KQ", "name": "카카오게임즈", "market": "KOSDAQ" },
-  { "ticker": "067160.KQ", "name": "아프리카TV", "market": "KOSDAQ" }
+  {
+    "ticker": "005930.KS",
+    "name": "�Ｚ����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000660.KS",
+    "name": "SK���̴н�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "402340.KS",
+    "name": "SK������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "009150.KS",
+    "name": "�Ｚ����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "005380.KS",
+    "name": "������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "373220.KS",
+    "name": "LG�������ַ��",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "329180.KS",
+    "name": "HD�����߰���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "032830.KS",
+    "name": "�Ｚ����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "028260.KS",
+    "name": "�Ｚ����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "012330.KS",
+    "name": "������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "034020.KS",
+    "name": "�λ꿡�ʺ���Ƽ",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000270.KS",
+    "name": "���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "207940.KS",
+    "name": "�Ｚ���̿�������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "012450.KS",
+    "name": "��ȭ����ν����̽�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "105560.KS",
+    "name": "KB����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "006400.KS",
+    "name": "�ＺSDI",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "034730.KS",
+    "name": "SK",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "066570.KS",
+    "name": "LG����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "055550.KS",
+    "name": "��������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "068270.KS",
+    "name": "��Ʈ����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "042660.KS",
+    "name": "��ȭ����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "267260.KS",
+    "name": "HD�����Ϸ�Ʈ��",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "035420.KS",
+    "name": "NAVER",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "010120.KS",
+    "name": "LS ELECTRIC",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "006800.KS",
+    "name": "�̷���������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "298040.KS",
+    "name": "ȿ���߰���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "005490.KS",
+    "name": "POSCOȦ����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "086790.KS",
+    "name": "�ϳ���������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "011070.KS",
+    "name": "LG�̳���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "009540.KS",
+    "name": "HD�ѱ������ؾ�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000150.KS",
+    "name": "�λ�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "010130.KS",
+    "name": "�����ƿ�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "042700.KS",
+    "name": "�ѹ̹ݵ�ü",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "015760.KS",
+    "name": "�ѱ�����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000810.KS",
+    "name": "�Ｚȭ��",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "010140.KS",
+    "name": "�Ｚ�߰���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "051910.KS",
+    "name": "LGȭ��",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "018260.KS",
+    "name": "�Ｚ�����𿡽�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "307950.KS",
+    "name": "������信��",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "064350.KS",
+    "name": "�������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "316140.KS",
+    "name": "�츮��������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "003670.KS",
+    "name": "������ǻó��",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "267250.KS",
+    "name": "HD����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "017670.KS",
+    "name": "SK�ڷ���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "003550.KS",
+    "name": "LG",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "272210.KS",
+    "name": "��ȭ�ý���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "096770.KS",
+    "name": "SK�̳뺣�̼�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "033780.KS",
+    "name": "KT&G",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "035720.KS",
+    "name": "īī��",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "079550.KS",
+    "name": "LIG���潺�ؿ���ν����̽�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "011200.KS",
+    "name": "HMM",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "086280.KS",
+    "name": "����۷κ�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "138040.KS",
+    "name": "�޸�����������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "047810.KS",
+    "name": "�ѱ��װ�����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "024110.KS",
+    "name": "�������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000720.KS",
+    "name": "����Ǽ�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "278470.KS",
+    "name": "�����Ǿ�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "030200.KS",
+    "name": "KT",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "006260.KS",
+    "name": "LS",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "071050.KS",
+    "name": "�ѱ���������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "259960.KS",
+    "name": "ũ������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "010950.KS",
+    "name": "S-Oil",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "047040.KS",
+    "name": "���Ǽ�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "047050.KS",
+    "name": "���������ͳ��ų�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "064400.KS",
+    "name": "LG��������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "016360.KS",
+    "name": "�Ｚ����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "005940.KS",
+    "name": "NH��������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "323410.KS",
+    "name": "īī����ũ",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "443060.KS",
+    "name": "HD���븶���ַ��",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "028050.KS",
+    "name": "�ＺE&A",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "003490.KS",
+    "name": "�����װ�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "007660.KS",
+    "name": "�̼���Ÿ�ý�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "039490.KS",
+    "name": "Ű������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000880.KS",
+    "name": "��ȭ",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "352820.KS",
+    "name": "���̺�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "003230.KS",
+    "name": "����ǰ",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "005830.KS",
+    "name": "DB���غ���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "001440.KS",
+    "name": "��������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "161390.KS",
+    "name": "�ѱ�Ÿ�̾����ũ�����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "180640.KS",
+    "name": "����Į",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "034220.KS",
+    "name": "LG���÷���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "062040.KS",
+    "name": "��������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "326030.KS",
+    "name": "SK���̿���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "010060.KS",
+    "name": "OCIȦ����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "009830.KS",
+    "name": "��ȭ�ַ��",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "066970.KS",
+    "name": "���ؿ���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "078930.KS",
+    "name": "GS",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000100.KS",
+    "name": "���Ѿ���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "454910.KS",
+    "name": "�λ�κ�ƽ��",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "032640.KS",
+    "name": "LG���÷���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "090430.KS",
+    "name": "�Ƹ��۽���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "021240.KS",
+    "name": "�ڿ���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "128940.KS",
+    "name": "�ѹ̾�ǰ",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "036570.KS",
+    "name": "NC",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "241560.KS",
+    "name": "�λ��Ĺ",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "377300.KS",
+    "name": "īī������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "018880.KS",
+    "name": "�ѿ½ý���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "082740.KS",
+    "name": "��ȭ����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "029780.KS",
+    "name": "�Ｚī��",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "138930.KS",
+    "name": "BNK��������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "004020.KS",
+    "name": "������ö",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "271560.KS",
+    "name": "������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "011790.KS",
+    "name": "SKC",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "052690.KS",
+    "name": "�������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "004170.KS",
+    "name": "�ż���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "022100.KS",
+    "name": "������DX",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "001040.KS",
+    "name": "CJ",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "002380.KS",
+    "name": "KCC",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "175330.KS",
+    "name": "JB��������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "450080.KS",
+    "name": "�������θ�Ƽ",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "088350.KS",
+    "name": "��ȭ����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "023530.KS",
+    "name": "�Ե�����",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "051900.KS",
+    "name": "LG��Ȱ�ǰ�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "111770.KS",
+    "name": "��������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "005850.KS",
+    "name": "������",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "251270.KS",
+    "name": "�ݸ���",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "011170.KS",
+    "name": "�Ե��ɹ�Į",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "009420.KS",
+    "name": "�ѿù��̿��ĸ�",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "011780.KS",
+    "name": "��ȣ����ȭ��",
+    "market": "KOSPI"
+  }
 ]
