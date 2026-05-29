@@ -15,6 +15,7 @@
     "ingest:prices": "node scripts/ingest-prices.mjs",
     "ingest:tickers": "node scripts/ingest-tickers.mjs",
     "backfill:prices": "node scripts/backfill-prices.mjs",
+    "backfill:prices:new": "node scripts/backfill-prices-new.mjs",
     "backfill:regime": "node scripts/backfill-regime.mjs",
     "build:universe": "node scripts/build-universe.mjs",
     "build:index": "node scripts/build-tickers-index.mjs",

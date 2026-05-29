@@ -33,6 +33,12 @@ jobs:
           TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
         run: npm run ingest:tickers
 
+      - name: Backfill prices for any new/sparse tickers
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: npm run backfill:prices:new
+
       - name: Rebuild autocomplete index
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
