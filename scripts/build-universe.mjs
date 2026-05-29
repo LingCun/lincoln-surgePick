@@ -38,9 +38,10 @@ async function fetchSP500() {
   return list;
 }
 
-// Wikipedia "KOSPI 200" → ~200 tickers. Table format: name | symbol(6-digit) | GICS sector.
+// Korean Wikipedia "KOSPI 200" → ~200 tickers with Korean company names.
+// English Wikipedia has the same table but English names, which makes Korean autocomplete useless.
 async function fetchKospi200() {
-  const res = await fetch('https://en.wikipedia.org/wiki/KOSPI_200', {
+  const res = await fetch('https://ko.wikipedia.org/wiki/KOSPI_200', {
     headers: { 'User-Agent': 'Mozilla/5.0 surgepick-builder' },
   });
   if (!res.ok) throw new Error(`KOSPI 200 fetch HTTP ${res.status}`);
