@@ -55,6 +55,10 @@
     resultRoot.innerHTML = renderChartSection(data) + renderPriceTable(data);
     fillPriceTable(data);
     window.dispatchEvent(new CustomEvent('sim:rendered', { detail: { data, horizon } }));
+    // 차트로 포커스 이동 (헤더 카드 상단에 맞춤)
+    requestAnimationFrame(() => {
+      resultRoot.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }
 
   function renderChartSection(d: ApiResp) {
