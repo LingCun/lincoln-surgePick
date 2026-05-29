@@ -2513,5 +2513,130 @@
     "ticker": "ZTS",
     "name": "Zoetis",
     "market": "SP500"
+  },
+  {
+    "ticker": "SPY",
+    "name": "SPDR S&P 500",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "QQQ",
+    "name": "Invesco QQQ Trust",
+    "market": "NASDAQ"
+  },
+  {
+    "ticker": "VOO",
+    "name": "Vanguard S&P 500",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "IWM",
+    "name": "iShares Russell 2000",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "DIA",
+    "name": "SPDR Dow Jones",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "XLK",
+    "name": "Technology Select Sector",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "XLE",
+    "name": "Energy Select Sector",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "XLF",
+    "name": "Financial Select Sector",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "XLV",
+    "name": "Health Care Select Sector",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "XLY",
+    "name": "Consumer Discretionary Select Sector",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "SMH",
+    "name": "VanEck Semiconductor",
+    "market": "NASDAQ"
+  },
+  {
+    "ticker": "TQQQ",
+    "name": "ProShares UltraPro QQQ (3x)",
+    "market": "NASDAQ"
+  },
+  {
+    "ticker": "SQQQ",
+    "name": "ProShares UltraPro Short QQQ (-3x)",
+    "market": "NASDAQ"
+  },
+  {
+    "ticker": "SOXL",
+    "name": "Direxion Daily Semi Bull 3x",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "SOXS",
+    "name": "Direxion Daily Semi Bear 3x",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "UPRO",
+    "name": "ProShares UltraPro S&P 500 (3x)",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "SPXU",
+    "name": "ProShares UltraPro Short S&P 500 (-3x)",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "TMF",
+    "name": "Direxion 20+ Year Treasury Bull 3x",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "TMV",
+    "name": "Direxion 20+ Year Treasury Bear 3x",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "UVXY",
+    "name": "ProShares Ultra VIX Short-Term",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "VXX",
+    "name": "iPath Series B S&P 500 VIX",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "GLD",
+    "name": "SPDR Gold Shares",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "SLV",
+    "name": "iShares Silver Trust",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "USO",
+    "name": "United States Oil Fund",
+    "market": "NYSEARCA"
+  },
+  {
+    "ticker": "ARKK",
+    "name": "ARK Innovation",
+    "market": "NYSEARCA"
   }
 ]
