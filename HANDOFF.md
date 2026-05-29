@@ -312,15 +312,20 @@ curl -s "https://surge-pick.vercel.app/api/ticker?id=005930.KS&horizon=30" | hea
 
 ## 12. 다음 라운드 후보 (우선순위)
 
-1. 거래량 바 (DB schema migration + Chart.js 2nd axis) — 1시간
-2. 인앱 브라우저 배너 ("외부 브라우저로 열기") — 20분
-3. 즐겨찾기 ⭐ (recent 너머 영구 핀) — 30분
-4. 종목 비교 모드 (2 종목 차트 겹쳐) — 1시간
-5. KOSDAQ 150 완전 (KRX API or 다른 소스) — 1시간
-6. og:image / favicon / PWA manifest — 30분
-7. /api/ticker 캐시 헤더 (Cache-Control 15min) — 5분
-8. Pretendard 폰트 CDN — 5분
-9. FAQ / 예시 (about 페이지 확장) — 30분
-10. 실시간 가격 (현재 EOD) — 별도 plan 필요
-11. 신뢰도 워닝 고도화 (case 분산/표준편차 기반) — 30분
-12. ingest-regime 의 date 처리 정확화 (현재 scan 실행 일자 → 실제 데이터 일자로) — 30분
+1. **일정 자동 수집** — `src/data/schedule.json` 현재 하드코딩. 자동화 4단계 (~3.5시간 총):
+   - (1h) Yahoo Finance 어닝 캘린더 스크레이프 (US 어닝)
+   - (1.5h) Naver Finance 스크레이프 (KR 어닝 + KR 거시)
+   - (0.5h) Fed/BOK/KOSTAT 정적 일정 자동 fetch (FOMC 연간 일정 등)
+   - (0.5h) `.github/workflows/schedule.yml` 주 1회 cron + commit
+2. 거래량 바 (DB schema migration + Chart.js 2nd axis) — 1시간
+3. 인앱 브라우저 배너 ("외부 브라우저로 열기") — 20분
+4. 즐겨찾기 ⭐ (recent 너머 영구 핀) — 30분
+5. 종목 비교 모드 (2 종목 차트 겹쳐) — 1시간
+6. KOSDAQ 150 완전 (KRX API or 다른 소스) — 1시간
+7. og:image / favicon / PWA manifest — 30분
+8. /api/ticker 캐시 헤더 (Cache-Control 15min) — 5분
+9. Pretendard 폰트 CDN — 5분
+10. FAQ / 예시 (about 페이지 확장) — 30분
+11. 실시간 가격 (현재 EOD) — 별도 plan 필요
+12. 신뢰도 워닝 고도화 (case 분산/표준편차 기반) — 30분
+13. ingest-regime 의 date 처리 정확화 (현재 scan 실행 일자 → 실제 데이터 일자로) — 30분
