@@ -11,6 +11,7 @@
     "build": "node scripts/build-tickers-index.mjs && astro build && node scripts/fix-vercel-runtime.mjs",
     "preview": "astro preview",
     "scan:regime": "node scripts/scan-regime.mjs",
+    "scan:themes": "node scripts/scan-themes.mjs",
     "ingest:regime": "node scripts/ingest-regime.mjs",
     "ingest:prices": "node scripts/ingest-prices.mjs",
     "ingest:tickers": "node scripts/ingest-tickers.mjs",

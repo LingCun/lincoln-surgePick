@@ -1,0 +1,47 @@
+name: Refresh themes
+
+# 테마 분위기 데이터(src/data/themes.json) 재생성. Yahoo 에서 테마별 종목 시세를 받아 집계.
+# 수동(Run workflow) + 주 1회 자동.
+on:
+  workflow_dispatch:
+  schedule:
+    # 매주 월요일 UTC 22:00 (KST 화 07:00)
+    - cron: '0 22 * * 1'
+
+jobs:
+  themes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Scan themes (Yahoo)
+        run: npm run scan:themes
+        env:
+          NODE_OPTIONS: --max-old-space-size=2048
+
+      - name: Commit themes.json (if changed)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/themes.json
+          if git diff --cached --quiet; then
+            echo "No themes changes to commit."
+          else
+            STAMP=$(date -u +%Y-%m-%d_%H%MZ)
+            git commit -m "data: refresh themes ${STAMP}"
+            git push
+          fi
