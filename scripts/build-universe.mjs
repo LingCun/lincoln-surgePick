@@ -51,7 +51,9 @@ async function fetchKospi200() {
   const pattern = /<td[^>]*>([\s\S]*?)<\/td>\s*<td[^>]*>\s*(\d{6})\s*<\/td>/g;
   const seen = new Map();
   for (const m of html.matchAll(pattern)) {
-    const name = stripTags(m[1]);
+    // 일부 ko-Wikipedia 셀은 sector + name 을 multi-line 으로 묶음 → 마지막 비어있지 않은 줄만.
+    const raw = stripTags(m[1]);
+    const name = raw.split(/[\r\n]+/).map((s) => s.trim()).filter(Boolean).pop();
     const code = m[2];
     if (!name) continue;
     const ticker = `${code}.KS`;
