@@ -2,7 +2,7 @@
 
 > 최종 작업일: **2026-05-29** · 브랜치: `main` · 라이브: https://surge-pick.vercel.app
 >
-> 상태: **종목 case-based 시뮬레이터 v1 라이브.** Turso DB에 712+ 종목 · 5y 가격 · 5y regime 적재 완료. UI/UX 폴리시 + 자동 데이터 cron 가동 중.
+> 상태: **종목 case-based 시뮬레이터 v1 라이브.** Turso DB에 712+ 종목 · 5y 가격 · 5y regime 적재 완료. UI/UX 폴리시 + 자동 데이터 cron (KR/US 분리) 가동 중. nav 활성 탭 강조 + per-market 갱신 시각 표시.
 >
 > 이 문서는 다른 PC에서 작업을 자연스럽게 이어받기 위한 핸드오프. 위→아래로 읽으면 됨.
 
@@ -106,12 +106,14 @@ node -e "import('./scripts/lib/db.mjs').then(async({getDb})=>{const d=getDb();fo
 
 ### 5.1 cron schedule
 
-| 워크플로 | 시간 (KST) | 시간 (UTC cron) | 역할 |
-|---|---|---|---|
-| `scan.yml` | 17:00 (KR 마감 후) | `0 8 * * 1-5` | regime 계산 + 오늘 가격 증분 |
-| `scan.yml` | 05:00 (US EDT 마감 후) | `0 20 * * 1-5` | 동상 |
-| `scan.yml` | 06:00 (US EST 마감 후, DST 대비) | `0 21 * * 1-5` | 동상 |
-| `reindex.yml` | 17:00 매일 | `0 8 * * *` | universe 재스크레이프 (KOSPI 200/S&P 500/KOSDAQ_TOP/EXTRAS) + 신규 종목 prices backfill + autocomplete index |
+| 워크플로 | 시간 (KST) | 시간 (UTC cron) | MARKET | 역할 |
+|---|---|---|---|---|
+| `scan.yml` | **18:30 (월~금)** KR 시간외 단일가 종료 + 30분 | `30 9 * * 1-5` | `kr` | KR regime + KR ticker 가격 증분 + `asOfKR` 업데이트 |
+| `scan.yml` | **10:30 (화~토 KST)** US after-hours 종료 + 30분 | `30 1 * * 2-6` | `us` | US regime + US ticker 가격 증분 + `asOfUS` 업데이트 |
+| `scan.yml` | 수동 트리거 | (workflow_dispatch) | `all` | 둘 다 갱신 + `asOfKR`/`asOfUS` 둘 다 |
+| `reindex.yml` | 17:00 매일 | `0 8 * * *` | — | universe 재스크레이프 (KOSPI 200/S&P 500/KOSDAQ_TOP/EXTRAS) + 신규 종목 prices backfill + autocomplete index |
+
+cron schedule 별 MARKET env 매핑은 `scan.yml`의 `Determine market from cron` 스텝에서 `github.event.schedule` 으로 자동 결정. `scan-regime.mjs` / `ingest-prices.mjs`가 `MARKET` env 를 읽어 해당 region 만 처리하고, 다른 region 의 이전 데이터·timestamp 를 보존함.
 
 ### 5.2 수동 트리거 워크플로
 
@@ -134,24 +136,36 @@ node -e "import('./scripts/lib/db.mjs').then(async({getDb})=>{const d=getDb();fo
 
 ---
 
-## 6. UI 폴리시 (오늘 마무리)
+## 6. UI 폴리시
 
 ### 6.1 sim 페이지 (/sim)
 
 - gradient hero (cyan→sky)
-- 큰 1M/2M/3M horizon 카드 (활성시 글로우)
-- 검색 입력: 돋보기 아이콘 + X 클리어 버튼 + "최근:" chip 5개 (localStorage)
+- 큰 1M/2M/3M horizon 카드 (활성시 글로우, `<style is:global>` 로 JS 토글 회피)
+- 검색 입력:
+  - 돋보기 아이콘 + X 클리어 버튼
+  - "최근:" chip 5개 (localStorage `surgepick:recent`), 각 chip 우측 X로 개별 삭제
+  - URL 파라미터 (`?ticker=...&h=...`) 자동 적용
+- "시뮬레이션 시작" 버튼:
+  - sim:run 트리거 직후 비활성화 + 텍스트 `시뮬레이션 실행 중` (중복 클릭 방지)
+  - 새 종목 선택 / X 클리어 시 복귀
 - 차트 헤더 카드: 깃발 + 이름 + 코드/거래소 + 현재가 + 공유 버튼
 - regime 배지 색깔 (bull=emerald, bear=rose, neutral=slate)
 - case_count<30 워닝 배너
-- 차트: 좌·우 대칭, x축 한글 (`M월 d일`) + 툴팁 (`yyyy년 M월 d일`), "오늘" 세로 점선 + 음영
+- 차트:
+  - 좌(과거 1달 sky-400 solid) / 우(예측 amber-400 dashed + p25~p75 amber 음영) 대칭
+  - x축 한글 (`M월 d일`) + 툴팁 (`yyyy년 M월 d일`)
+  - "오늘" 세로 점선 + 예측 영역 배경 음영 (custom Chart.js plugin)
+  - x/y축 락 (애니메이션 중 리스케일 방지) + 5초 progressive draw
+  - 다중 클릭 시 in-flight tick 무효화 (drawId 추적)
 - 가격 테이블: ▲▼ 화살표, tabular-nums, hover 하이라이트
 - "시뮬레이션 시작" 클릭 시 `#sim-result`로 smooth scroll
+- 우측 상단 데이터 갱신 시각 (KR + US 분리 표시, regime.json의 `asOfKR` / `asOfUS`)
 
 ### 6.2 공유 / 직링크
 
 - 차트 헤더의 공유 아이콘: `navigator.share()` 우선, 클립보드 폴백
-- URL: `/sim?ticker=AAPL&h=60` 형식 → 페이지 로드시 자동 pick + run
+- URL: `/sim?ticker=AAPL&h=60` 형식 → 페이지 로드시 자동 pick + run + 버튼 비활성화
 - 사용자 액션마다 `history.replaceState`로 URL 동기화
 
 ### 6.3 about 페이지 (/about)
@@ -165,9 +179,14 @@ node -e "import('./scripts/lib/db.mjs').then(async({getDb})=>{const d=getDb();fo
 
 상단 nav 우측에 "방법" 탭으로 링크.
 
-### 6.4 layout
+### 6.4 layout (Base.astro)
 
-- Base.astro nav: `시장 / 시뮬레이션 / 방법(우측)`
+- nav: `시장 / 시뮬레이션 / 방법(우측 ml-auto)`
+- **활성 탭 강조**: `Astro.url.pathname` 기준, cyan-400 border + cyan-300 text + font-semibold
+- 탭 크기: `text-base pb-3 gap-6` (모바일도 충분한 hit area)
+- 우측 상단 데이터 갱신:
+  - `asOfKR` / `asOfUS` 둘 다 있으면 2줄 (`KR MM/DD HH:mm` / `US MM/DD HH:mm`)
+  - 둘 다 없을 때만 fallback `asOf`
 - bg-slate-950 다크 + Pretendard 폰트
 - Tailwind 3 + 인라인 `<style is:global>` (Astro 자동 스코프 회피)
 
@@ -210,7 +229,13 @@ node -e "import('./scripts/lib/db.mjs').then(async({getDb})=>{const d=getDb();fo
 ### 7.7 KOSDAQ 가격 데이터 race
 
 - daily cron이 Yahoo 데이터 갱신 전 트리거되면 stale 적재 가능
-- 현재 +1h 버퍼 잡았으나 Yahoo 지연 시 가끔 빈 적재 가능
+- 현재 KR 시간외 단일가 종료 +30분 / US after-hours 종료 +30분 버퍼
+- Yahoo 지연 시 가끔 빈 적재 가능
+
+### 7.8 GitHub Actions cron 지연
+
+- 가끔 schedule cron 이 정시에 안 돈다 (Actions side load 이슈, 0-30분 지연 / 드물게 skip)
+- 정시 안 돌면 `gh workflow run scan.yml` 수동 트리거 (MARKET=all 로 둘 다 갱신)
 
 ---
 
@@ -297,3 +322,5 @@ curl -s "https://surge-pick.vercel.app/api/ticker?id=005930.KS&horizon=30" | hea
 8. Pretendard 폰트 CDN — 5분
 9. FAQ / 예시 (about 페이지 확장) — 30분
 10. 실시간 가격 (현재 EOD) — 별도 plan 필요
+11. 신뢰도 워닝 고도화 (case 분산/표준편차 기반) — 30분
+12. ingest-regime 의 date 처리 정확화 (현재 scan 실행 일자 → 실제 데이터 일자로) — 30분
