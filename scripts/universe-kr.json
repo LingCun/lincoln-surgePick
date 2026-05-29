@@ -1,997 +1,997 @@
 [
   {
-    "ticker": "090430.KS",
-    "name": "Amorepacific",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "002790.KS",
-    "name": "Amorepacific Holdings",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "278470.KS",
-    "name": "APR",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "002030.KS",
-    "name": "Asia Holdings",
+    "ticker": "500000.KS",
+    "name": "교환:\nKRX\n\n부문:\n색인\n\n진드기 크기:\n0.05\n\nBPV:",
     "market": "KOSPI"
   },
   {
     "ticker": "282330.KS",
-    "name": "BGF Retail",
+    "name": "통화:\nKRW\n\n\n탄생 배경[편집]\n코스피200 지수의 탄생 배경은 다음과 같다. 주가지수 선물거래를 하려면 거래의 근거가 되는 모(母)지수가 필요한데, 기존의 코스피 지수(종합주가지수)를 선물 거래의 모(母)지수로 삼으려니 여러 문제가 있었다. 코스피 지수(종합주가지수)는 유가증권시장에 상장된 전체 종목을 포괄하는 지수이다 보니 선물 거래의 지표로 삼기엔 시장 대표성이 떨어졌던 것이다. 또한 소형주 등 거래량이 적은 종목에서는 수급 문제 때문에 현물과 선물의 가격차가 크게 나서 시장이 왜곡될 수 있는 난점도 있었다. 그래서 앞선 문제점들을 상쇄시킬 수 있는 주가지수 선물거래의 모(母)지수를 새로 정해야할 필요가 있었고, 그래서 코스피 200 지수가 나온 것이다.\n\n코스피 200 지수와 코스피 지수와의 상관계수는 1.0 수준에 이른다.\n\n산출 방법[편집]\n한국거래소 유가증권시장(Stock Market)의 보통주 전 종목 가운데 시장 대표성, 유동성(거래량), 업종 대표성(업종은 9개 업종으로 구분)을 기준으로 한다. 즉 시가총액이 상위군에 속하고 거래량이 많은 종목 서열에 따라서 200 종목이 편입된다. 지수 산출 기준시점은 1990년 1월 3일이다. 이날의 시가총액을 100.00 포인트로 정하고 현재의 시가총액과 증감을 비교하는 식으로 장 운영 시간 동안 매 2초마다 산출하여 발표한다. 개장 30분 전(일반적으로 오전 8시 30분)부터는 단일가매매에 따른 체결가격을 추정한 예상지수가 발표된다. 한편 2007년부터는 대주주의 지분, 보호 예수 물량 등 비유동성/비유통 주식수를 산출에서 제외하여 시세 반영률을 높였다고 한국거래소는 주장한다.\n\n변경사항의 반영[편집]\n채용종목 편입, 퇴출, 상장폐지 및 증자에 의한 추가상장, 감자, CB 및 BW의 행사 등으로 인한 추가상장 등이 있으면 기준 시가총액을 수정하는 방식으로 지수의 일관성을 유지하고 있다.\n\n채용 종목은 매년 1회(6월 주가지수 선물상품 만기일 다음 거래일) 정기적으로 변경된다. 그리고 채용 종목중 유가증권시장 상장 폐지 사유가 발생하거나 관리종목으로 지정된 종목이 있으면 해당 종목은 거래소가 지정한 날짜부터 퇴출되며 동시에 새로운 종목이 채용된다. 최신 채용된 종목은 공시되며, 한국거래소 웹 사이트에서 알 수 있다.\n\n활용[편집]\n코스피200은 코스피200 주가지수선물의 현물이며, 코스피200 주가지수옵션의 기초자산이다. 즉 선물 및 옵션 거래의 기초가 되는 수치로 활용된다.\n\n선물과 옵션 외에도 KODEX 200, KODEX 레버리지, KODEX 인버스 등 ETF(상장지수펀드)의 기초지수로도 활용되고 있다. 자산운용사의 인덱스펀드, 주식워런트증권(ELW) 등의 기초 지수로도 활용된다.\n\n증시의 등락을 가늠하기 위해 코스피 지수 대신 사용되기도 한다.\n\n단점도 있다. 시장 대비 시가총액 비중이 큰 대형주의 시세를 주로 반영하고 중소형주의 시장 동향을 파악하기엔 미미하여 개인투자자들의 체감 장세와는 다소간의 거리가 있을 수 있다.\n\n구성 종목[편집]\n\n\n회사명종목코드GICS 섹터\n\nBGF리테일",
     "market": "KOSPI"
   },
   {
     "ticker": "138930.KS",
-    "name": "BNK Financial",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "068270.KS",
-    "name": "Celltrion",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "030000.KS",
-    "name": "Cheil Worldwide",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "185750.KS",
-    "name": "Chong Kun Dang",
+    "name": "생활소비재\n\nBNK금융지주",
     "market": "KOSPI"
   },
   {
     "ticker": "001040.KS",
-    "name": "CJ",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "097950.KS",
-    "name": "CJ CheilJedang",
+    "name": "금융\n\nCJ",
     "market": "KOSPI"
   },
   {
     "ticker": "000120.KS",
-    "name": "CJ Logistics",
+    "name": "생활소비재\n\nCJ대한통운",
     "market": "KOSPI"
   },
   {
-    "ticker": "192820.KS",
-    "name": "Cosmax",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "005420.KS",
-    "name": "Cosmo Chemical",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "021240.KS",
-    "name": "Coway",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "112610.KS",
-    "name": "CS Wind",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "001680.KS",
-    "name": "Daesang",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "047040.KS",
-    "name": "Daewoo E&C",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "003090.KS",
-    "name": "Daewoong",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "069620.KS",
-    "name": "Daewoong Pharmaceutical",
+    "ticker": "097950.KS",
+    "name": "산업재\n\nCJ제일제당",
     "market": "KOSPI"
   },
   {
     "ticker": "005830.KS",
-    "name": "DB Insurance",
+    "name": "생활소비재\n\nDB손해보험",
     "market": "KOSPI"
   },
   {
     "ticker": "000210.KS",
-    "name": "DL",
+    "name": "금융\n\nDL",
     "market": "KOSPI"
   },
   {
     "ticker": "375500.KS",
-    "name": "DL E&C",
+    "name": "건설\n\nDL이앤씨",
     "market": "KOSPI"
   },
   {
     "ticker": "007340.KS",
-    "name": "DN Automotive",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "026960.KS",
-    "name": "Dongsuh",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "006040.KS",
-    "name": "Dongwon Industries",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "014820.KS",
-    "name": "Dongwon Systems",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "000150.KS",
-    "name": "Doosan",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "241560.KS",
-    "name": "Doosan Bobcat",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "034020.KS",
-    "name": "Doosan Enerbility",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "454910.KS",
-    "name": "Doosan Robotics",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "192080.KS",
-    "name": "DoubleU Games",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "450080.KS",
-    "name": "Ecopro Materials",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "139480.KS",
-    "name": "Emart",
+    "name": "건설\n\nDN오토모티브",
     "market": "KOSPI"
   },
   {
     "ticker": "383220.KS",
-    "name": "F&F",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "093370.KS",
-    "name": "Foosung",
+    "name": "경기소비재\n\nF&F",
     "market": "KOSPI"
   },
   {
     "ticker": "114090.KS",
-    "name": "Grand Korea Leisure",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "006280.KS",
-    "name": "Green Cross",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "005250.KS",
-    "name": "Green Cross Holdings",
+    "name": "경기소비재\n\nGKL",
     "market": "KOSPI"
   },
   {
     "ticker": "078930.KS",
-    "name": "GS",
+    "name": "경기소비재\n\nGS",
     "market": "KOSPI"
   },
   {
     "ticker": "006360.KS",
-    "name": "GS E&C",
+    "name": "에너지/화학\n\nGS건설",
     "market": "KOSPI"
   },
   {
     "ticker": "007070.KS",
-    "name": "GS Retail",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "086790.KS",
-    "name": "Hana Financial",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "009420.KS",
-    "name": "Hanall Biopharma",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "300720.KS",
-    "name": "Hanil Cement",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "180640.KS",
-    "name": "Hanjin KAL",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "161390.KS",
-    "name": "Hankook",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "000240.KS",
-    "name": "Hankook & Company",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "128940.KS",
-    "name": "Hanmi Pharm",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "008930.KS",
-    "name": "Hanmi Science",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "042700.KS",
-    "name": "Hanmi Semiconductor",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "018880.KS",
-    "name": "Hanon Systems",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "014680.KS",
-    "name": "Hansol Chemical",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "009240.KS",
-    "name": "Hanssem",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "000880.KS",
-    "name": "Hanwha",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "012450.KS",
-    "name": "Hanwha Aerospace",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "082740.KS",
-    "name": "Hanwha Engine",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "088350.KS",
-    "name": "Hanwha Life",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "042660.KS",
-    "name": "Hanwha Ocean",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "009830.KS",
-    "name": "Hanwha Solutions",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "272210.KS",
-    "name": "Hanwha Systems",
+    "name": "건설\n\nGS리테일",
     "market": "KOSPI"
   },
   {
     "ticker": "267250.KS",
-    "name": "HD Hyundai",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "267260.KS",
-    "name": "HD Hyundai Electric",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "329180.KS",
-    "name": "HD Hyundai Heavy Industries",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "071970.KS",
-    "name": "HD Hyundai Marine Engine",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "443060.KS",
-    "name": "HD Hyundai Marine Solution",
+    "name": "생활소비재\n\nHD현대",
     "market": "KOSPI"
   },
   {
     "ticker": "009540.KS",
-    "name": "HD KSOE",
+    "name": "에너지/화학\n\nHD한국조선해양",
     "market": "KOSPI"
   },
   {
-    "ticker": "017960.KS",
-    "name": "Hankuk Carbon",
+    "ticker": "443060.KS",
+    "name": "중공업\n\nHD현대마린솔루션",
     "market": "KOSPI"
   },
   {
-    "ticker": "000080.KS",
-    "name": "HiteJinro",
+    "ticker": "071970.KS",
+    "name": "중공업\n\nHD현대마린엔진",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "267260.KS",
+    "name": "중공업\n\nHD현대일렉트릭",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "329180.KS",
+    "name": "중공업\n\nHD현대중공업",
     "market": "KOSPI"
   },
   {
     "ticker": "204320.KS",
-    "name": "HL Mando",
+    "name": "중공업\n\nHL만도",
     "market": "KOSPI"
   },
   {
     "ticker": "011200.KS",
-    "name": "HMM",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "008770.KS",
-    "name": "Hotel Shilla",
+    "name": "경기소비재\n\nHMM",
     "market": "KOSPI"
   },
   {
     "ticker": "298050.KS",
-    "name": "HS Hyosung Advanced Materials",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "352820.KS",
-    "name": "Hybe",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "298040.KS",
-    "name": "Hyosung Heavy Industries",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "298020.KS",
-    "name": "Hyosung TNC",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "307950.KS",
-    "name": "Hyundai AutoEver",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "069960.KS",
-    "name": "Hyundai Department Store",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "000720.KS",
-    "name": "Hyundai E&C",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "017800.KS",
-    "name": "Hyundai Elevator",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "086280.KS",
-    "name": "Hyundai Glovis",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "001450.KS",
-    "name": "Hyundai Marine & Fire",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "012330.KS",
-    "name": "Hyundai Mobis",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "005380.KS",
-    "name": "Hyundai Motor",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "064350.KS",
-    "name": "Hyundai Rotem",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "004020.KS",
-    "name": "Hyundai Steel",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "011210.KS",
-    "name": "Hyundai WIA",
+    "name": "산업재\n\nHS효성첨단소재",
     "market": "KOSPI"
   },
   {
     "ticker": "139130.KS",
-    "name": "IM Financial",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "024110.KS",
-    "name": "Industrial Bank of Korea",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "007660.KS",
-    "name": "Isu Petasys",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "457190.KS",
-    "name": "Isu Specialty Chemical",
+    "name": "에너지/화학\n\niM금융지주",
     "market": "KOSPI"
   },
   {
     "ticker": "175330.KS",
-    "name": "JB Financial",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "035720.KS",
-    "name": "Kakao",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "323410.KS",
-    "name": "KakaoBank",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "377300.KS",
-    "name": "KakaoPay",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "035250.KS",
-    "name": "Kangwon Land",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "105560.KS",
-    "name": "KB Financial",
+    "name": "금융\n\nJB금융지주",
     "market": "KOSPI"
   },
   {
     "ticker": "002380.KS",
-    "name": "KCC",
+    "name": "금융\n\nKCC",
     "market": "KOSPI"
   },
   {
-    "ticker": "015760.KS",
-    "name": "KEPCO",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "052690.KS",
-    "name": "KEPCO E&C",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "051600.KS",
-    "name": "KEPCO KPS",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "000270.KS",
-    "name": "Kia",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "039490.KS",
-    "name": "Kiwoom Securities",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "161890.KS",
-    "name": "Kolmar Korea",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "120110.KS",
-    "name": "Kolon Industries",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "047810.KS",
-    "name": "Korea Aerospace",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "071320.KS",
-    "name": "Korea District Heating",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "036460.KS",
-    "name": "Korea Gas",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "071050.KS",
-    "name": "Korea Investment",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "006650.KS",
-    "name": "Korea Petrochemical",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "010130.KS",
-    "name": "Korea Zinc",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "003490.KS",
-    "name": "Korean Air",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "259960.KS",
-    "name": "Krafton",
+    "ticker": "105560.KS",
+    "name": "건설\n\nKB금융",
     "market": "KOSPI"
   },
   {
     "ticker": "030200.KS",
-    "name": "KT",
+    "name": "금융\n\nKT",
     "market": "KOSPI"
   },
   {
     "ticker": "033780.KS",
-    "name": "KT&G",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "011780.KS",
-    "name": "Kumho Petrochemical",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "073240.KS",
-    "name": "Kumho Tire",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "066970.KS",
-    "name": "L&F",
+    "name": "커뮤니케이션서비스\n\nKT&G",
     "market": "KOSPI"
   },
   {
     "ticker": "003550.KS",
-    "name": "LG",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "051910.KS",
-    "name": "LG Chem",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "064400.KS",
-    "name": "LG CNS",
+    "name": "생활소비재\n\nLG",
     "market": "KOSPI"
   },
   {
     "ticker": "034220.KS",
-    "name": "LG Display",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "066570.KS",
-    "name": "LG Electronics",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "373220.KS",
-    "name": "LG Energy Solution",
+    "name": "정보기술\n\nLG디스플레이",
     "market": "KOSPI"
   },
   {
     "ticker": "051900.KS",
-    "name": "LG H&H",
+    "name": "정보기술\n\nLG생활건강",
     "market": "KOSPI"
   },
   {
-    "ticker": "011070.KS",
-    "name": "LG Innotek",
+    "ticker": "064400.KS",
+    "name": "생활소비재\n\nLG씨엔에스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "373220.KS",
+    "name": "정보기술\n\nLG에너지솔루션",
     "market": "KOSPI"
   },
   {
     "ticker": "032640.KS",
-    "name": "LG Uplus",
+    "name": "산업재\n\nLG유플러스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "011070.KS",
+    "name": "커뮤니케이션서비스\n\nLG이노텍",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "066570.KS",
+    "name": "정보기술\n\nLG전자",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "051910.KS",
+    "name": "정보기술\n\nLG화학",
     "market": "KOSPI"
   },
   {
     "ticker": "079550.KS",
-    "name": "LIG Nex1",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "004990.KS",
-    "name": "Lotte",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "011170.KS",
-    "name": "Lotte Chemical",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "005300.KS",
-    "name": "Lotte Chilsung",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "004000.KS",
-    "name": "Lotte Fine Chemical",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "023530.KS",
-    "name": "Lotte Shopping",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "280360.KS",
-    "name": "Lotte Wellfood",
+    "name": "에너지/화학\n\nLIG넥스원",
     "market": "KOSPI"
   },
   {
     "ticker": "006260.KS",
-    "name": "LS",
+    "name": "산업재\n\nLS",
     "market": "KOSPI"
   },
   {
     "ticker": "010120.KS",
-    "name": "LS Electric",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "138040.KS",
-    "name": "Meritz Financial",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "006800.KS",
-    "name": "Mirae Asset Securities",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "081660.KS",
-    "name": "Misto",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "002840.KS",
-    "name": "Miwon Commercial",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "268280.KS",
-    "name": "Miwon Specialty Chemical",
+    "name": "산업재\n\nLS일렉트릭",
     "market": "KOSPI"
   },
   {
     "ticker": "035420.KS",
-    "name": "Naver",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "036570.KS",
-    "name": "NCSoft",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "251270.KS",
-    "name": "Netmarble",
+    "name": "산업재\n\nNAVER",
     "market": "KOSPI"
   },
   {
     "ticker": "005940.KS",
-    "name": "NH Investment & Securities",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "004370.KS",
-    "name": "Nongshim",
+    "name": "커뮤니케이션서비스\n\nNH투자증권",
     "market": "KOSPI"
   },
   {
     "ticker": "010060.KS",
-    "name": "OCI Holdings",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "271560.KS",
-    "name": "Orion",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "001800.KS",
-    "name": "Orion Holdings",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "007310.KS",
-    "name": "Ottogi",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "028670.KS",
-    "name": "Pan Ocean",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "034230.KS",
-    "name": "Paradise",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "103140.KS",
-    "name": "Poongsan",
+    "name": "금융\n\nOCI홀딩스",
     "market": "KOSPI"
   },
   {
     "ticker": "005490.KS",
-    "name": "POSCO",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "022100.KS",
-    "name": "POSCO DX",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "003670.KS",
-    "name": "POSCO Future M",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "047050.KS",
-    "name": "POSCO International",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "012750.KS",
-    "name": "S-1",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "062040.KS",
-    "name": "Sanil Electric",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "207940.KS",
-    "name": "Samsung Biologics",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "028260.KS",
-    "name": "Samsung C&T",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "029780.KS",
-    "name": "Samsung Card",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "028050.KS",
-    "name": "Samsung E&A",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "009150.KS",
-    "name": "Samsung Electro-Mechanics",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "005930.KS",
-    "name": "Samsung Electronics",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "000810.KS",
-    "name": "Samsung Fire & Marine",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "010140.KS",
-    "name": "Samsung Heavy Industries",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "032830.KS",
-    "name": "Samsung Life",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "006400.KS",
-    "name": "Samsung SDI",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "018260.KS",
-    "name": "Samsung SDS",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "016360.KS",
-    "name": "Samsung Securities",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "003230.KS",
-    "name": "Samyang Foods",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "137310.KS",
-    "name": "SD Biosensor",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "001430.KS",
-    "name": "Seah Besteel",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "003030.KS",
-    "name": "Seah Steel Holdings",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "004490.KS",
-    "name": "Sebang Global Battery",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "055550.KS",
-    "name": "Shinhan Financial",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "004170.KS",
-    "name": "Shinsegae",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "034730.KS",
-    "name": "SK",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "326030.KS",
-    "name": "SK Biopharm",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "302440.KS",
-    "name": "SK Bioscience",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "285130.KS",
-    "name": "SK Chemicals",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "000660.KS",
-    "name": "SK Hynix",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "361610.KS",
-    "name": "SK IE Technology",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "096770.KS",
-    "name": "SK Innovation",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "402340.KS",
-    "name": "SK Square",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "017670.KS",
-    "name": "SK Telecom",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "011790.KS",
-    "name": "SKC",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "005850.KS",
-    "name": "SL",
+    "name": "에너지/화학\n\nPOSCO홀딩스",
     "market": "KOSPI"
   },
   {
     "ticker": "010950.KS",
-    "name": "S-Oil",
+    "name": "철강/소재\n\nS-Oil",
     "market": "KOSPI"
   },
   {
-    "ticker": "003240.KS",
-    "name": "Taekwang Industrial",
+    "ticker": "034730.KS",
+    "name": "에너지/화학\n\nSK",
     "market": "KOSPI"
   },
   {
-    "ticker": "001440.KS",
-    "name": "Taihan Cable & Solution",
+    "ticker": "011790.KS",
+    "name": "에너지/화학\n\nSKC",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "302440.KS",
+    "name": "에너지/화학\n\nSK바이오사이언스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "326030.KS",
+    "name": "헬스케어\n\nSK바이오팜",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "402340.KS",
+    "name": "헬스케어\n\nSK스퀘어",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "361610.KS",
+    "name": "정보기술\n\nSK아이이테크놀로지",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "096770.KS",
+    "name": "산업재\n\nSK이노베이션",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "285130.KS",
+    "name": "에너지/화학\n\nSK케미칼",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "017670.KS",
+    "name": "에너지/화학\n\nSK텔레콤",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000660.KS",
+    "name": "커뮤니케이션서비스\n\nSK하이닉스",
     "market": "KOSPI"
   },
   {
     "ticker": "069260.KS",
-    "name": "TKG Huchems",
+    "name": "정보기술\n\nTKG휴켐스",
     "market": "KOSPI"
   },
   {
-    "ticker": "316140.KS",
-    "name": "Woori Financial",
+    "ticker": "035250.KS",
+    "name": "에너지/화학\n\n강원랜드",
     "market": "KOSPI"
   },
   {
-    "ticker": "008730.KS",
-    "name": "Youlchon Chemical",
+    "ticker": "010130.KS",
+    "name": "경기소비재\n\n고려아연",
     "market": "KOSPI"
   },
   {
-    "ticker": "000670.KS",
-    "name": "Young Poong",
+    "ticker": "011780.KS",
+    "name": "철강/소재\n\n금호석유화학",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "073240.KS",
+    "name": "에너지/화학\n\n금호타이어",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000270.KS",
+    "name": "경기소비재\n\n기아",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "024110.KS",
+    "name": "경기소비재\n\n기업은행",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "251270.KS",
+    "name": "금융\n\n넷마블",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "004370.KS",
+    "name": "커뮤니케이션서비스\n\n농심",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "006280.KS",
+    "name": "생활소비재\n\n녹십자",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "005250.KS",
+    "name": "헬스케어\n\n녹십자홀딩스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "001680.KS",
+    "name": "헬스케어\n\n대상",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "047040.KS",
+    "name": "생활소비재\n\n대우건설",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "003090.KS",
+    "name": "건설\n\n대웅",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "069620.KS",
+    "name": "헬스케어\n\n대웅제약",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "001440.KS",
+    "name": "헬스케어\n\n대한전선",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "006650.KS",
+    "name": "산업재\n\n대한유화",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "003490.KS",
+    "name": "에너지/화학\n\n대한항공",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "192080.KS",
+    "name": "산업재\n\n더블유게임즈",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "026960.KS",
+    "name": "경기소비재\n\n동서",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "006040.KS",
+    "name": "생활소비재\n\n동원산업",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "014820.KS",
+    "name": "생활소비재\n\n동원시스템즈",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000150.KS",
+    "name": "철강/소재\n\n두산",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "454910.KS",
+    "name": "중공업\n\n두산로보틱스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "241560.KS",
+    "name": "중공업\n\n두산밥캣",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "034020.KS",
+    "name": "중공업\n\n두산에너빌리티",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "023530.KS",
+    "name": "중공업\n\n롯데쇼핑",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "280360.KS",
+    "name": "경기소비재\n\n롯데웰푸드",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "004000.KS",
+    "name": "생활소비재\n\n롯데정밀화학",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "004990.KS",
+    "name": "에너지/화학\n\n롯데지주",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "011170.KS",
+    "name": "생활소비재\n\n롯데케미칼",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "005300.KS",
+    "name": "에너지/화학\n\n롯데칠성",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "138040.KS",
+    "name": "생활소비재\n\n메리츠금융지주",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "006800.KS",
+    "name": "금융\n\n미래에셋증권",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "081660.KS",
+    "name": "금융\n\n미스토홀딩스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "002840.KS",
+    "name": "경기소비재\n\n미원상사",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "268280.KS",
+    "name": "에너지/화학\n\n미원에스씨",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "062040.KS",
+    "name": "에너지/화학\n\n산일전기",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "028050.KS",
+    "name": "중공업\n\n삼성E&A",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "006400.KS",
+    "name": "건설\n\n삼성SDI",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "018260.KS",
+    "name": "정보기술\n\n삼성SDS",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "028260.KS",
+    "name": "정보기술\n\n삼성물산",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "207940.KS",
+    "name": "건설\n\n삼성바이오로직스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "016360.KS",
+    "name": "헬스케어\n\n삼성에피스홀딩스0126Z0헬스케어\n\n삼성증권",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "009150.KS",
+    "name": "금융\n\n삼성전기",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "005930.KS",
+    "name": "정보기술\n\n삼성전자",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "010140.KS",
+    "name": "정보기술\n\n삼성중공업",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "032830.KS",
+    "name": "중공업\n\n삼성생명",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "029780.KS",
+    "name": "금융\n\n삼성카드",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000810.KS",
+    "name": "금융\n\n삼성화재",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "003230.KS",
+    "name": "금융\n\n삼양식품",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "004490.KS",
+    "name": "생활소비재\n\n세방전지",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "001430.KS",
+    "name": "경기소비재\n\n세아베스틸지주",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "003030.KS",
+    "name": "철강/소재\n\n세아제강지주",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "112610.KS",
+    "name": "철강/소재\n\n씨에스윈드",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "068270.KS",
+    "name": "중공업\n\n셀트리온",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "004170.KS",
+    "name": "헬스케어\n\n신세계",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "055550.KS",
+    "name": "경기소비재\n\n신한지주",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "090430.KS",
+    "name": "금융\n\n아모레퍼시픽",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "002790.KS",
+    "name": "생활소비재\n\n아모레퍼시픽홀딩스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "002030.KS",
+    "name": "생활소비재\n\n아세아",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "005850.KS",
+    "name": "철강/소재\n\n에스엘",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "137310.KS",
+    "name": "경기소비재\n\n에스디바이오센서",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "012750.KS",
+    "name": "헬스케어\n\n에스원",
     "market": "KOSPI"
   },
   {
     "ticker": "111770.KS",
-    "name": "Youngone",
+    "name": "산업재\n\n에이피알",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "450080.KS",
+    "name": "생활소비재\n\n에코프로머티",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "036570.KS",
+    "name": "산업재\n\n엔씨소프트",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "066970.KS",
+    "name": "커뮤니케이션서비스\n\n엘앤에프",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "139480.KS",
+    "name": "산업재\n\n영원무역",
     "market": "KOSPI"
   },
   {
     "ticker": "009970.KS",
-    "name": "Youngone Holdings",
+    "name": "경기소비재\n\n영원무역홀딩스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000670.KS",
+    "name": "경기소비재\n\n영풍",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "007310.KS",
+    "name": "철강/소재\n\n오뚜기",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "271560.KS",
+    "name": "생활소비재\n\n오리온",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "001800.KS",
+    "name": "생활소비재\n\n오리온홀딩스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "316140.KS",
+    "name": "생활소비재\n\n우리금융지주",
     "market": "KOSPI"
   },
   {
     "ticker": "000100.KS",
-    "name": "Yuhan",
+    "name": "금융\n\n유한양행",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "008730.KS",
+    "name": "헬스케어\n\n율촌화학",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "457190.KS",
+    "name": "생활소비재\n\n이수스페셜티케미컬",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "007660.KS",
+    "name": "에너지/화학\n\n이수페타시스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "030000.KS",
+    "name": "정보기술\n\n제일기획",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "185750.KS",
+    "name": "커뮤니케이션서비스\n\n종근당",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "071320.KS",
+    "name": "헬스케어\n\n지역난방공사",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "035720.KS",
+    "name": "생활소비재\n\n카카오",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "323410.KS",
+    "name": "커뮤니케이션서비스\n\n카카오뱅크",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "377300.KS",
+    "name": "금융\n\n카카오페이",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "192820.KS",
+    "name": "금융\n\n코스맥스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "005420.KS",
+    "name": "생활소비재\n\n코스모화학",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "120110.KS",
+    "name": "에너지/화학\n\n코오롱인더",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "021240.KS",
+    "name": "에너지/화학\n\n코웨이",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "259960.KS",
+    "name": "경기소비재\n\n크래프톤",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "039490.KS",
+    "name": "커뮤니케이션서비스\n\n키움증권",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "003240.KS",
+    "name": "금융\n\n태광산업",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "034230.KS",
+    "name": "에너지/화학\n\n파라다이스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "028670.KS",
+    "name": "경기소비재\n\n팬오션",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "022100.KS",
+    "name": "산업재\n\n포스코DX",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "047050.KS",
+    "name": "정보기술\n\n포스코인터내셔널",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "003670.KS",
+    "name": "산업재\n\n포스코퓨처엠",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "103140.KS",
+    "name": "산업재\n\n풍산",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "086790.KS",
+    "name": "철강/소재\n\n하나금융지주",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "352820.KS",
+    "name": "금융\n\n하이브",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000080.KS",
+    "name": "커뮤니케이션서비스\n\n하이트진로",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "036460.KS",
+    "name": "생활소비재\n\n한국가스공사",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000240.KS",
+    "name": "생활소비재\n\n한국앤컴퍼니",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "015760.KS",
+    "name": "경기소비재\n\n한국전력",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "161390.KS",
+    "name": "생활소비재\n\n한국타이어앤테크놀로지",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "071050.KS",
+    "name": "경기소비재\n\n한국금융지주",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "017960.KS",
+    "name": "금융\n\n한국카본",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "161890.KS",
+    "name": "에너지/화학\n\n한국콜마",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "047810.KS",
+    "name": "생활소비재\n\n한국항공우주",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "042700.KS",
+    "name": "산업재\n\n한미반도체",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "008930.KS",
+    "name": "정보기술\n\n한미사이언스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "128940.KS",
+    "name": "헬스케어\n\n한미약품",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "009240.KS",
+    "name": "헬스케어\n\n한샘",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "014680.KS",
+    "name": "경기소비재\n\n한솔케미칼",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "018880.KS",
+    "name": "에너지/화학\n\n한온시스템",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "009420.KS",
+    "name": "경기소비재\n\n한올바이오파마",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "300720.KS",
+    "name": "헬스케어\n\n한일시멘트",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "051600.KS",
+    "name": "건설\n\n한전KPS",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "052690.KS",
+    "name": "산업재\n\n한전기술",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "180640.KS",
+    "name": "건설\n\n한진칼",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000880.KS",
+    "name": "경기소비재\n\n한화",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "088350.KS",
+    "name": "에너지/화학\n\n한화생명",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "009830.KS",
+    "name": "금융\n\n한화솔루션",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "272210.KS",
+    "name": "에너지/화학\n\n한화시스템",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "012450.KS",
+    "name": "산업재\n\n한화에어로스페이스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "082740.KS",
+    "name": "산업재\n\n한화엔진",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "042660.KS",
+    "name": "중공업\n\n한화오션",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "000720.KS",
+    "name": "중공업\n\n현대건설",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "086280.KS",
+    "name": "건설\n\n현대글로비스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "012330.KS",
+    "name": "산업재\n\n현대모비스",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "064350.KS",
+    "name": "경기소비재\n\n현대로템",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "069960.KS",
+    "name": "중공업\n\n현대백화점",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "017800.KS",
+    "name": "경기소비재\n\n현대엘리베이터",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "307950.KS",
+    "name": "중공업\n\n현대오토에버",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "011210.KS",
+    "name": "정보기술\n\n현대위아",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "005380.KS",
+    "name": "경기소비재\n\n현대차",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "004020.KS",
+    "name": "경기소비재\n\n현대제철",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "001450.KS",
+    "name": "철강/소재\n\n현대해상",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "008770.KS",
+    "name": "금융\n\n호텔신라",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "298040.KS",
+    "name": "경기소비재\n\n효성중공업",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "298020.KS",
+    "name": "중공업\n\n효성티앤씨",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "093370.KS",
+    "name": "에너지/화학\n\n후성",
     "market": "KOSPI"
   }
 ]
