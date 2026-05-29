@@ -2,12 +2,12 @@ name: Daily data scan
 
 on:
   schedule:
-    # KST 16:30 = UTC 07:30, Mon-Fri (after KOSPI close)
-    - cron: '30 7 * * 1-5'
-    # ET 16:30 ≈ UTC 21:30 (EDT) / 22:30 (EST) — use both to cover DST.
-    # Mon-Fri in ET corresponds to UTC weekday close enough; idempotent scanner is safe to over-run.
-    - cron: '30 21 * * 1-5'
-    - cron: '30 22 * * 1-5'
+    # KR 마감 후 → KST 17:00 = UTC 08:00 (KOSPI 15:30 마감 + 1.5h 버퍼)
+    - cron: '0 8 * * 1-5'
+    # US 마감 후 → KST 05:00 EDT 시즌 = UTC 20:00 (NYSE 16:00 ET EDT 직후, +1h 버퍼)
+    - cron: '0 20 * * 1-5'
+    # US 마감 후 EST 시즌 = UTC 21:00 (NYSE 16:00 ET EST 직후, +1h 버퍼)
+    - cron: '0 21 * * 1-5'
   workflow_dispatch:
 
 jobs:
