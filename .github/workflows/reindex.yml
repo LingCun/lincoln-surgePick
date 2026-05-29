@@ -1,0 +1,52 @@
+name: Reindex (manual, ~30s)
+
+# universe-*.json 만 새로 빌드 → ticker DB 재적재 → autocomplete index 재생성 + commit.
+# 가격 backfill 건너뜀 — autocomplete 만 필요한 빠른 경로.
+on:
+  workflow_dispatch:
+
+jobs:
+  reindex:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build universe JSON
+        run: node scripts/build-universe.mjs
+
+      - name: Ingest tickers
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: npm run ingest:tickers
+
+      - name: Rebuild autocomplete index
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: npm run build:index
+
+      - name: Commit universe + index
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/universe-kr.json scripts/universe-us.json public/tickers-index.json
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "data: reindex (universe + tickers-index)"
+            git push
+          fi
