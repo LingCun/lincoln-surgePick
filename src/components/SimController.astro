@@ -307,14 +307,28 @@
         _todayDate: todayDate,
         plugins: {
           legend: { display: false },
-          tooltip: { mode: 'index', intersect: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              title: (items: any[]) => {
+                if (!items.length) return '';
+                const d = new Date(items[0].parsed.x);
+                return `${d.getUTCFullYear()}년 ${d.getUTCMonth() + 1}월 ${d.getUTCDate()}일`;
+              },
+            },
+          },
         },
         scales: {
           x: {
             type: 'time',
             min: xMin ?? undefined,
             max: xMax ?? undefined,
-            time: { unit: 'week' },
+            time: {
+              unit: 'week',
+              displayFormats: { day: 'M월 d일', week: 'M월 d일', month: 'M월' },
+              tooltipFormat: 'yyyy년 M월 d일',
+            },
             ticks: { color: '#64748b' },
             grid: { color: '#1e293b' },
           },
