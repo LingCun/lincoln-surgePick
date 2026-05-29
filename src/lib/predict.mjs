@@ -91,7 +91,14 @@ export function predict({ prices, regime, ctx, today, horizon }) {
       .filter((r) => r.market === ctx.market && r.label === ctx.label);
     fallback = true;
   }
-  if (cases.length < 5) {
+  // 3차 fallback: label 도 드롭하고 market 만 매칭 (regime 적재 초기 표본 부족 대응)
+  if (cases.length < 3) {
+    cases = regime
+      .filter((r) => r.market === ctx.market && r.date <= addDays(today, -horizon))
+      .sort((a, b) => (a.date < b.date ? 1 : -1));
+    fallback = true;
+  }
+  if (cases.length < 3) {
     return { forecast: [], case_count: cases.length, fallback, error: 'insufficient_cases' };
   }
 
@@ -99,7 +106,7 @@ export function predict({ prices, regime, ctx, today, horizon }) {
     .map((c) => normalizeTrajectory(prices, c.date, horizon))
     .filter((t) => t != null);
 
-  if (trajectories.length < 5) {
+  if (trajectories.length < 3) {
     return { forecast: [], case_count: trajectories.length, fallback, error: 'insufficient_trajectories' };
   }
 

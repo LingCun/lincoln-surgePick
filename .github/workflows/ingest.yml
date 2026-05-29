@@ -38,6 +38,12 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=2048
         run: npm run backfill:prices
 
+      - name: Backfill 5y regime (KOSPI + S&P 500 daily, ~30s)
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: npm run backfill:regime
+
       - name: Ingest today's regime
         env:
           TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}

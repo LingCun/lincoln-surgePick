@@ -1,0 +1,28 @@
+name: Backfill regime (manual)
+
+# 1회성: ^KS11 + ^GSPC + ^VIX 5년치 일별 regime 을 Turso 에 적재.
+# Actions 탭 → Run workflow.
+on:
+  workflow_dispatch:
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Backfill 5y regime
+        env:
+          TURSO_DATABASE_URL: ${{ secrets.TURSO_DATABASE_URL }}
+          TURSO_AUTH_TOKEN: ${{ secrets.TURSO_AUTH_TOKEN }}
+        run: npm run backfill:regime
