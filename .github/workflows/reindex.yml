@@ -1,9 +1,12 @@
-name: Reindex (manual, ~30s)
+name: Reindex (daily + manual)
 
-# universe-*.json 만 새로 빌드 → ticker DB 재적재 → autocomplete index 재생성 + commit.
-# 가격 backfill 건너뜀 — autocomplete 만 필요한 빠른 경로.
+# universe-*.json 새로 빌드 → ticker DB 재적재 → 신규 종목 가격 backfill → autocomplete index → commit.
+# 매일 KST 17:00 (08:00 UTC) 자동 실행 + 수동 트리거 가능.
+# KOSPI 200 / S&P 500 / KOSDAQ 상위 / 수동 extras 모두 갱신.
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * *'   # daily 08:00 UTC = KST 17:00 / ET 03:00 (혹은 04:00 EDT)
 
 jobs:
   reindex:
