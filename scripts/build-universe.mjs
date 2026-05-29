@@ -40,31 +40,22 @@ async function fetchSP500() {
 
 // Korean Wikipedia "KOSPI 200" → ~200 tickers with Korean company names.
 // English Wikipedia has the same table but English names, which makes Korean autocomplete useless.
+// Parser: scan all <td>…</td><td>NNNNNN</td> adjacencies anywhere in the HTML
+// — robust to nested templates and wikitable class variations.
 async function fetchKospi200() {
   const res = await fetch('https://ko.wikipedia.org/wiki/KOSPI_200', {
     headers: { 'User-Agent': 'Mozilla/5.0 surgepick-builder' },
   });
   if (!res.ok) throw new Error(`KOSPI 200 fetch HTTP ${res.status}`);
   const html = await res.text();
-  // Find first wikitable containing 6-digit codes.
-  const tables = [...html.matchAll(/<table[^>]*class="[^"]*wikitable[^"]*"[^>]*>([\s\S]*?)<\/table>/g)];
+  const pattern = /<td[^>]*>([\s\S]*?)<\/td>\s*<td[^>]*>\s*(\d{6})\s*<\/td>/g;
   const seen = new Map();
-  for (const t of tables) {
-    const rows = [...t[1].matchAll(/<tr>([\s\S]*?)<\/tr>/g)];
-    for (const r of rows) {
-      const cells = [...r[1].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/g)];
-      if (cells.length < 2) continue;
-      const c0 = stripTags(cells[0][1]);
-      const c1 = stripTags(cells[1][1]);
-      // 표 헤더에 따라 (name, code) 또는 (code, name) 가능 — 6자리 코드 자동 인식.
-      let code = null;
-      let name = null;
-      if (/^\d{6}$/.test(c1)) { code = c1; name = c0; }
-      else if (/^\d{6}$/.test(c0)) { code = c0; name = c1; }
-      if (!code || !name) continue;
-      const ticker = `${code}.KS`;
-      if (!seen.has(ticker)) seen.set(ticker, { ticker, name, market: 'KOSPI' });
-    }
+  for (const m of html.matchAll(pattern)) {
+    const name = stripTags(m[1]);
+    const code = m[2];
+    if (!name) continue;
+    const ticker = `${code}.KS`;
+    if (!seen.has(ticker)) seen.set(ticker, { ticker, name, market: 'KOSPI' });
   }
   return [...seen.values()];
 }
