@@ -4,14 +4,14 @@ import TickerSearch from '../components/TickerSearch.astro';
 import SimController from '../components/SimController.astro';
 export const prerender = false;
 ---
-<Base title="surgePick — 종목 시뮬레이션">
+<Base title="surgePick — 예측">
   <section class="space-y-6">
     <div class="space-y-2">
       <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
-        <span class="bg-gradient-to-r from-cyan-300 to-sky-500 bg-clip-text text-transparent">종목 시뮬레이션</span>
+        <span class="bg-gradient-to-r from-cyan-300 to-sky-500 bg-clip-text text-transparent">종목 예측</span>
       </h1>
       <p class="text-sm text-slate-400 leading-relaxed">
-        종목 + 예측 기간 선택 → 과거 1달 실제 + 과거 유사 regime 평균 기반 예측선.
+        종목과 예측 기간을 고르면, 과거 1달 실제 차트와 함께 비슷한 시장 상황의 평균 궤적으로 1·2·3개월 예측선을 그려줘요.
       </p>
     </div>
 
