@@ -5,6 +5,12 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// KOSPI 200 / S&P 500 외 추가 종목 (수동 관리). 자동 빌드 후에도 살아남음.
+const EXTRAS_KR = [
+  { ticker: '163730.KQ', name: '핑거', market: 'KOSDAQ' },
+];
+const EXTRAS_US = [];
+
 const stripTags = (s) =>
   s
     .replace(/<[^>]*>/g, '')
@@ -73,9 +79,19 @@ async function main() {
   console.log(`  → ${kr.length} tickers`);
   if (kr.length < 100) throw new Error(`KOSPI 200 too small: ${kr.length}`);
 
-  writeFileSync(resolve(__dirname, 'universe-us.json'), JSON.stringify(us, null, 2) + '\n');
-  writeFileSync(resolve(__dirname, 'universe-kr.json'), JSON.stringify(kr, null, 2) + '\n');
-  console.log(`✓ wrote universe-us.json (${us.length}) + universe-kr.json (${kr.length})`);
+  // 자동 빌드 결과에 수동 extras 머지 (중복은 ticker 기준 dedup).
+  const usMerged = dedupByTicker([...us, ...EXTRAS_US]);
+  const krMerged = dedupByTicker([...kr, ...EXTRAS_KR]);
+
+  writeFileSync(resolve(__dirname, 'universe-us.json'), JSON.stringify(usMerged, null, 2) + '\n');
+  writeFileSync(resolve(__dirname, 'universe-kr.json'), JSON.stringify(krMerged, null, 2) + '\n');
+  console.log(`✓ wrote universe-us.json (${usMerged.length}) + universe-kr.json (${krMerged.length})`);
+}
+
+function dedupByTicker(arr) {
+  const seen = new Map();
+  for (const x of arr) if (!seen.has(x.ticker)) seen.set(x.ticker, x);
+  return [...seen.values()];
 }
 
 main().catch((err) => {
