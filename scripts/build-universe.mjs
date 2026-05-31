@@ -121,7 +121,7 @@ const stripTags = (s) =>
 // Wikipedia "List of S&P 500 companies" → ~500 tickers.
 async function fetchSP500() {
   const res = await fetch('https://en.wikipedia.org/wiki/List_of_S%26P_500_companies', {
-    headers: { 'User-Agent': 'Mozilla/5.0 surgepick-builder' },
+    headers: { 'User-Agent': 'Mozilla/5.0 lincoln-surgepick-builder' },
   });
   if (!res.ok) throw new Error(`SP500 fetch HTTP ${res.status}`);
   const html = await res.text();
@@ -145,7 +145,7 @@ async function fetchSP500() {
 // Korean Wikipedia "KOSPI 200" → ~200 tickers with Korean company names.
 async function fetchKospi200() {
   const res = await fetch('https://ko.wikipedia.org/wiki/KOSPI_200', {
-    headers: { 'User-Agent': 'Mozilla/5.0 surgepick-builder' },
+    headers: { 'User-Agent': 'Mozilla/5.0 lincoln-surgepick-builder' },
   });
   if (!res.ok) throw new Error(`KOSPI 200 fetch HTTP ${res.status}`);
   const html = await res.text();

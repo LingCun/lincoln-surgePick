@@ -1,6 +1,6 @@
-# surgePick 인수인계
+# lincoln-surgePick 인수인계
 
-> 최종 작업일: **2026-05-29** · 브랜치: `main` · 라이브: https://surge-pick.vercel.app
+> 최종 작업일: **2026-05-29** · 브랜치: `main` · 라이브: https://lincoln-surgepick.vercel.app
 >
 > 상태: **종목 case-based 시뮬레이터 v1 라이브.** Turso DB에 712+ 종목 · 5y 가격 · 5y regime 적재 완료. UI/UX 폴리시 + 자동 데이터 cron (KR/US 분리) 가동 중. nav 활성 탭 강조 + per-market 갱신 시각 표시. `/schedule` 일정 탭 MVP (하드코딩) 추가.
 >
@@ -20,22 +20,22 @@
 
 ```powershell
 cd C:\claude          # 또는 임의 작업 폴더
-git clone https://github.com/LingCun/surgePick.git
-cd surgePick
+git clone https://github.com/LingCun/lincoln-surgePick.git
+cd lincoln-surgePick
 git checkout main
 npm install
 ```
 
 ### 2.2 `.env.local` 만들기
 
-[app.turso.tech](https://app.turso.tech) 로그인 → `surgepick` DB → **Connect** 탭:
+[app.turso.tech](https://app.turso.tech) 로그인 → `lincoln-surgepick` DB → **Connect** 탭:
 
 ```
-TURSO_DATABASE_URL=libsql://surgepick-<your-org>.turso.io
+TURSO_DATABASE_URL=libsql://lincoln-surgepick-<your-org>.turso.io
 TURSO_AUTH_TOKEN=eyJhbGciO...
 ```
 
-`C:\claude\surgePick\.env.local` 에 붙여넣기. (gitignore 됨)
+`C:\claude\lincoln-surgePick\.env.local` 에 붙여넣기. (gitignore 됨)
 
 Token 분실 시: 같은 DB 페이지 **Tokens** 탭 → **Create Token** → "Never" 만료. 기존 데이터에 영향 없음.
 
@@ -145,7 +145,7 @@ cron schedule 별 MARKET env 매핑은 `scan.yml`의 `Determine market from cron
 - 큰 1M/2M/3M horizon 카드 (활성시 글로우, `<style is:global>` 로 JS 토글 회피)
 - 검색 입력:
   - 돋보기 아이콘 + X 클리어 버튼
-  - "최근:" chip 5개 (localStorage `surgepick:recent`), 각 chip 우측 X로 개별 삭제
+  - "최근:" chip 5개 (localStorage `lincoln-surgepick:recent`), 각 chip 우측 X로 개별 삭제
   - URL 파라미터 (`?ticker=...&h=...`) 자동 적용
 - "시뮬레이션 시작" 버튼:
   - sim:run 트리거 직후 비활성화 + 텍스트 `시뮬레이션 실행 중` (중복 클릭 방지)
@@ -310,8 +310,8 @@ gh run list --workflow=reindex.yml --limit 3
 gh run view <run_id> --log
 
 # 라이브 검증
-curl -s "https://surge-pick.vercel.app/api/search?q=삼성" | head -c 500
-curl -s "https://surge-pick.vercel.app/api/ticker?id=005930.KS&horizon=30" | head -c 500
+curl -s "https://lincoln-surgepick.vercel.app/api/search?q=삼성" | head -c 500
+curl -s "https://lincoln-surgepick.vercel.app/api/ticker?id=005930.KS&horizon=30" | head -c 500
 ```
 
 ---

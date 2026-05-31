@@ -1,4 +1,4 @@
-# surgePick
+# lincoln-surgePick
 
 한국·미국 종목 case-based 시뮬레이터. 종목 하나를 선택하면 과거 차트 + 과거 유사 시장 사례 평균에 기반한 미래 1·2·3개월 예측선을 그려줍니다.
 
