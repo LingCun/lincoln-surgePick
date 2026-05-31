@@ -6,5 +6,5 @@ export default defineConfig({
   output: 'hybrid',
   adapter: vercel(),
   integrations: [tailwind()],
-  site: 'https://lincoln-surgepick.vercel.app',
+  site: 'https://surge-pick.vercel.app',
 });
