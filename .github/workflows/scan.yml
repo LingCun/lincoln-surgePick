@@ -7,6 +7,8 @@ on:
     # US: 10:30 KST = UTC 01:30 (after-hours 종료 EDT 09:00 / EST 10:00 KST + 버퍼)
     # KST 화~토 = US 정규장 월~금. UTC 요일도 화~토 (01:30 UTC = 10:30 KST 같은 날).
     - cron: '30 1 * * 2-6'
+    # US weekend 반영 확인: 월 08:00 KST = UTC 일 23:00
+    - cron: '0 23 * * 0'
   workflow_dispatch:
 
 jobs:
@@ -35,6 +37,7 @@ jobs:
           case "${{ github.event.schedule }}" in
             "30 9 * * 1-5")  echo "MARKET=kr"  >> $GITHUB_OUTPUT ;;
             "30 1 * * 2-6")  echo "MARKET=us"  >> $GITHUB_OUTPUT ;;
+            "0 23 * * 0")    echo "MARKET=us"  >> $GITHUB_OUTPUT ;;
             *)               echo "MARKET=all" >> $GITHUB_OUTPUT ;;
           esac
 
