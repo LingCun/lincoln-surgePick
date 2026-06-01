@@ -6,6 +6,7 @@ import MarketMoodCard from '../components/MarketMoodCard.astro';
 import OverallCard from '../components/OverallCard.astro';
 import ThemeTabs from '../components/ThemeTabs.astro';
 import ThemeCarousel from '../components/ThemeCarousel.astro';
+import MethodNote from '../components/MethodNote.astro';
 import regimeData from '../data/regime.json';
 import themesData from '../data/themes.json';
 
@@ -25,6 +26,19 @@ const { kr: krThemes = { popular: [], value: [] }, us: usThemes = { popular: [],
     <FearGaugeCard {...fearGauge} />
     {markets.map((m) => <MarketMoodCard {...m} />)}
     <OverallCard {...overall} />
+
+    <MethodNote summary="이 라벨은 어떻게 정해지나요?">
+      <p>
+        매일 KOSPI와 S&amp;P 500의 추세·모멘텀·변동성·VIX를 종합해 그날의 시장 국면을 라벨링합니다.
+        <span class="text-emerald-400">강세장(bull)</span> ·
+        <span class="text-slate-300">횡보(neutral)</span> ·
+        <span class="text-rose-400">약세장(bear)</span> 셋 중 하나로 분류하고,
+        변동성 밴드는 <span class="text-slate-300">낮음·보통·높음</span> 셋으로 나눕니다.
+      </p>
+      <p class="text-xs text-slate-500">
+        이 국면 라벨이 <a href="/sim" class="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline">시뮬레이션</a>의 유사 사례 매칭 기준이 됩니다.
+      </p>
+    </MethodNote>
 
     <hr class="border-slate-800 my-6" />
 

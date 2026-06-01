@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import TickerSearch from '../components/TickerSearch.astro';
 import SimController from '../components/SimController.astro';
+import MethodNote from '../components/MethodNote.astro';
 import regimeData from '../data/regime.json';
 export const prerender = false;
 const { asOf: regimeAsOf, asOfKR, asOfUS } = regimeData as any;
@@ -39,6 +40,35 @@ const { asOf: regimeAsOf, asOfKR, asOfUS } = regimeData as any;
 
     <div id="sim-result" class="hidden space-y-6"></div>
     <SimController />
+
+    <MethodNote summary="예측선은 어떻게 그려지나요?">
+      <div class="space-y-1">
+        <h3 class="text-sm font-semibold text-cyan-300">1. 유사 사례 추출</h3>
+        <p>
+          현재 국면과 똑같은 (시장 + 라벨 + 변동성 밴드) 조합이 과거 5년 안에 있던 날짜들을 모두 뽑아옵니다.
+          예: 오늘이 <em class="text-emerald-300 not-italic">KR · bull · 변동성 높음</em>이면, 2021~2025년 중 같은 조건이었던 모든 날짜.
+          표본이 부족하면 변동성 밴드 → 라벨 순으로 조건을 풀어 더 많은 사례를 매칭합니다(폴백).
+        </p>
+      </div>
+      <div class="space-y-1">
+        <h3 class="text-sm font-semibold text-cyan-300">2. 궤적 평균</h3>
+        <p>
+          매칭된 각 과거 날짜의 종가를 0%로 잡고, 선택한 종목의 +1일, +2일, …, +N일 수익률 곡선을 그려요.
+          이 곡선들의 <span class="font-semibold text-amber-300">메디안(p50)</span>이 예측선,
+          <span class="font-semibold text-amber-200">p25~p75 구간</span>이 신뢰 밴드입니다.
+        </p>
+      </div>
+      <div class="space-y-1">
+        <h3 class="text-sm font-semibold text-cyan-300">한계 — 꼭 알아두세요</h3>
+        <ul class="list-disc list-inside space-y-1.5 marker:text-slate-500">
+          <li>과거 패턴이 미래에도 반복된다는 보장은 없습니다. <strong>상관 ≠ 인과.</strong></li>
+          <li>매칭 차원은 시장 regime + VIX 밴드뿐. <strong>섹터·시총·실적·뉴스는 반영하지 않습니다.</strong></li>
+          <li>표본이 30건 미만이면 메디안이 한쪽으로 치우치기 쉽습니다. 신뢰도 워닝을 확인하세요.</li>
+          <li>소형주는 자체 변동성이 커서 밴드가 매우 넓어집니다. 예측선만 보고 판단하지 마세요.</li>
+          <li>모든 가격은 EOD(종가) 기준. 실시간 가격이 아닙니다.</li>
+        </ul>
+      </div>
+    </MethodNote>
   </section>
 </Base>
 
