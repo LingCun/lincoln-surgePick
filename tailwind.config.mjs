@@ -9,11 +9,12 @@ export default {
           mood: '#f59e0b',
         },
         fear: {
-          extremeGreed: '#dc2626',
-          greed: '#f97316',
+          // 표준 공포·탐욕 스펙트럼: 탐욕=초록(좋음) → 중립=노랑 → 공포=빨강(나쁨)
+          extremeGreed: '#15803d',
+          greed: '#22c55e',
           neutral: '#facc15',
-          fear: '#3b82f6',
-          extremeFear: '#7c3aed',
+          fear: '#f97316',
+          extremeFear: '#dc2626',
         },
         horizon: {
           short: '#facc15',
