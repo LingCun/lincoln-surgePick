@@ -4,21 +4,25 @@ import Base from '../layouts/Base.astro';
 import MethodNote from '../components/MethodNote.astro';
 import regimeData from '../data/regime.json';
 import scheduleData from '../data/schedule.json';
+import { indexEvents, isEventOver, CATEGORY_EMOJI, CATEGORY_LABEL, type ScheduleEvent } from '../lib/schedule';
 
 const { asOf: regimeAsOf, asOfKR, asOfUS } = regimeData as any;
-const { events = [], note } = scheduleData as { events: any[]; note?: string };
+const { events = [], note } = scheduleData as { events: ScheduleEvent[]; note?: string };
 
-// 오늘 이후 + 중요(high) 일정만 + 날짜순 정렬
+const now = Date.now();
 const today = new Date().toISOString().slice(0, 10);
-const upcoming = events
-  .filter((e) => e.date >= today && e.importance === 'high')
-  .sort((a, b) => (a.date === b.date ? (a.time ?? '').localeCompare(b.time ?? '') : a.date.localeCompare(b.date)));
+
+// 중요 일정만 + 시각까지 계산하여 끝나지 않은 이벤트만
+const indexed = indexEvents(events).filter(
+  ({ event }) => event.importance === 'high' && !isEventOver(event, now),
+);
 
 // 날짜별 그룹
-const byDate = new Map<string, any[]>();
-for (const e of upcoming) {
-  if (!byDate.has(e.date)) byDate.set(e.date, []);
-  byDate.get(e.date)!.push(e);
+const byDate = new Map<string, typeof indexed>();
+for (const item of indexed) {
+  const arr = byDate.get(item.event.date) ?? [];
+  arr.push(item);
+  byDate.set(item.event.date, arr);
 }
 
 const fmtDate = (d: string) => {
@@ -34,24 +38,10 @@ const isThisWeek = (d: string) => {
   return diff >= 0 && diff < 7;
 };
 
-const importanceColor = {
+const importanceColor: Record<string, string> = {
   high: 'bg-rose-950/40 border-rose-700/50 text-rose-300',
   mid:  'bg-amber-950/40 border-amber-700/50 text-amber-300',
   low:  'bg-slate-800/40 border-slate-700/50 text-slate-300',
-};
-const categoryEmoji = {
-  fed: '🏛️',
-  bok: '🏦',
-  macro: '📊',
-  earnings: '💼',
-  other: '📌',
-};
-const categoryLabel = {
-  fed: 'Fed',
-  bok: 'BOK',
-  macro: '거시',
-  earnings: '실적',
-  other: '기타',
 };
 ---
 <Base title="lincoln-surgePick — 일정" asOf={regimeAsOf} asOfKR={asOfKR} asOfUS={asOfUS}>
@@ -61,7 +51,7 @@ const categoryLabel = {
         <span class="bg-gradient-to-r from-cyan-300 to-sky-500 bg-clip-text text-transparent">일정</span>
       </h1>
       <p class="text-sm text-slate-400 leading-relaxed">
-        한국·미국 증시에 영향이 큰 <span class="text-rose-300">중요 일정만</span> 추려서 보여줍니다. 모든 시각은 <span class="text-slate-200 font-medium">한국시간(KST)</span> 기준이에요. {note}
+        한국·미국 증시에 영향이 큰 <span class="text-rose-300">중요 일정만</span> 추려서 보여줍니다. 모든 시각은 <span class="text-slate-200 font-medium">한국시간(KST)</span> 기준이에요. 지나간 일정은 자동으로 가려집니다. {note}
       </p>
     </div>
 
@@ -74,7 +64,7 @@ const categoryLabel = {
       </span>
     </div>
 
-    {upcoming.length === 0 && (
+    {indexed.length === 0 && (
       <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-8 text-center text-slate-400 text-sm">
         예정된 일정이 없습니다. 다음 라운드에 갱신될 예정입니다.
       </div>
@@ -84,7 +74,7 @@ const categoryLabel = {
       {[...byDate.entries()].map(([date, items]) => (
         <section
           data-day
-          data-markets={[...new Set(items.map((i) => i.market))].join(',')}
+          data-markets={[...new Set(items.map((i) => i.event.market))].join(',')}
           class={`bg-slate-900/40 border ${isToday(date) ? 'border-cyan-700/60 shadow-lg shadow-cyan-900/20' : 'border-slate-800'} rounded-xl overflow-hidden`}
         >
           <header class={`px-4 py-2.5 flex items-center justify-between ${isToday(date) ? 'bg-cyan-900/30' : 'bg-slate-900/40'}`}>
@@ -96,22 +86,23 @@ const categoryLabel = {
             <span class="text-[10px] text-slate-500">{items.length}건</span>
           </header>
           <ul class="divide-y divide-slate-800/40">
-            {items.map((e) => (
-              <li data-event data-market={e.market} class="px-4 py-3 flex items-start gap-3">
-                <div class="text-xs text-slate-400 font-mono tabular-nums w-12 shrink-0 pt-0.5">{e.time ?? '—'}</div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <span class="text-xs">{categoryEmoji[e.category] ?? '📌'}</span>
-                    <span class={`px-1.5 py-0.5 text-[10px] rounded border ${importanceColor[e.importance] ?? importanceColor.low}`}>{categoryLabel[e.category] ?? e.category}</span>
-                    <span class="text-[10px] text-slate-500">{e.market === 'KR' ? '🇰🇷' : '🇺🇸'}</span>
+            {items.map(({ id, event: e }) => (
+              <li data-event data-market={e.market}>
+                <a
+                  href={`/schedule/${id}`}
+                  class="px-4 py-3 flex items-start gap-3 hover:bg-slate-800/40 transition-colors"
+                >
+                  <div class="text-xs text-slate-400 font-mono tabular-nums w-12 shrink-0 pt-0.5">{e.time ?? '—'}</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="text-xs">{CATEGORY_EMOJI[e.category] ?? '📌'}</span>
+                      <span class={`px-1.5 py-0.5 text-[10px] rounded border ${importanceColor[e.importance] ?? importanceColor.low}`}>{CATEGORY_LABEL[e.category] ?? e.category}</span>
+                      <span class="text-[10px] text-slate-500">{e.market === 'KR' ? '🇰🇷' : '🇺🇸'}</span>
+                    </div>
+                    <div class="text-sm text-slate-200 mt-1 leading-snug">{e.title}</div>
                   </div>
-                  <div class="text-sm text-slate-200 mt-1 leading-snug">{e.title}</div>
-                  {e.ticker && (
-                    <a href={`/sim?ticker=${e.ticker}`} class="inline-block mt-1 text-[11px] text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline">
-                      {e.ticker.replace(/\.[A-Z]+$/, '')} 시뮬레이션 보기 →
-                    </a>
-                  )}
-                </div>
+                  <span class="text-slate-500 text-xs pt-0.5 shrink-0" aria-hidden="true">›</span>
+                </a>
               </li>
             ))}
           </ul>
@@ -123,7 +114,8 @@ const categoryLabel = {
       <ul class="list-disc list-inside space-y-1.5 marker:text-slate-500">
         <li>가격 / 지수 / VIX: <a href="https://finance.yahoo.com" class="text-cyan-400 hover:text-cyan-300 underline-offset-2 hover:underline">Yahoo Finance</a></li>
         <li>KOSPI 200 / KOSDAQ 상위 / S&amp;P 500 / 주요 ETF 약 700여 종목</li>
-        <li>한국 마감 후 매일 17시 KST, 미국 마감 후 매일 05시 KST 자동 갱신</li>
+        <li>한국 마감 후 매일 16~18시 KST, 미국 마감 후 매일 05~10시 KST 자동 갱신 (본장 + 애프터 두 번)</li>
+        <li>일정은 매 배치 실행마다 지나간 항목 자동 제거</li>
       </ul>
       <p class="text-xs text-slate-500">
         일정은 변경될 수 있으며, 공식 발표(Fed/BOK/KOSTAT/IR)를 우선 참고하세요. 모든 가격은 EOD(종가) 기준입니다.

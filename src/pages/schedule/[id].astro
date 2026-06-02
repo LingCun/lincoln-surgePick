@@ -1,0 +1,134 @@
+---
+export const prerender = true;
+import Base from '../../layouts/Base.astro';
+import regimeData from '../../data/regime.json';
+import scheduleData from '../../data/schedule.json';
+import {
+  indexEvents,
+  eventDateTimeUtc,
+  CATEGORY_EMOJI,
+  CATEGORY_LABEL,
+  CATEGORY_DESC,
+  type ScheduleEvent,
+  type IndexedEvent,
+} from '../../lib/schedule';
+
+export async function getStaticPaths() {
+  const data = (await import('../../data/schedule.json')).default as {
+    events: ScheduleEvent[];
+  };
+  const items = indexEvents(data.events ?? []);
+  return items.map(({ id, event }) => ({ params: { id }, props: { event, id } }));
+}
+
+interface Props { event: ScheduleEvent; id: string }
+const { event, id } = Astro.props;
+const { asOf: regimeAsOf, asOfKR, asOfUS } = regimeData as any;
+
+const eventDate = new Date(event.date + 'T00:00:00Z');
+const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+const dateLabel = `${eventDate.getUTCFullYear()}년 ${eventDate.getUTCMonth() + 1}월 ${eventDate.getUTCDate()}일 (${weekdays[eventDate.getUTCDay()]})`;
+
+const eventUtc = eventDateTimeUtc(event);
+const now = Date.now();
+const diffMs = eventUtc.getTime() - now;
+const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+const diffHours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
+const countdown =
+  diffMs < 0
+    ? '이미 발표됨'
+    : diffDays > 0
+    ? `D-${diffDays} (${diffHours}시간 후)`
+    : diffHours > 0
+    ? `${diffHours}시간 후`
+    : '곳 발표';
+
+const importanceLabel: Record<string, string> = {
+  high: '상',
+  mid: '중',
+  low: '하',
+};
+const importanceColor: Record<string, string> = {
+  high: 'bg-rose-950/40 border-rose-700/50 text-rose-300',
+  mid: 'bg-amber-950/40 border-amber-700/50 text-amber-300',
+  low: 'bg-slate-800/40 border-slate-700/50 text-slate-300',
+};
+
+// 관련 일정: 같은 카테고리 + 가까운 날짜 top 3 (자기 제외, 미래만)
+const allIndexed = indexEvents((scheduleData as any).events ?? []);
+const related = allIndexed
+  .filter((it: IndexedEvent) => it.id !== id && it.event.category === event.category)
+  .filter((it: IndexedEvent) => eventDateTimeUtc(it.event).getTime() >= now)
+  .slice(0, 3);
+
+const desc = CATEGORY_DESC[event.category] ?? CATEGORY_DESC.other;
+---
+<Base title={`${event.title} — lincoln-surgePick`} asOf={regimeAsOf} asOfKR={asOfKR} asOfUS={asOfUS}>
+  <section class="space-y-6">
+    <a href="/schedule" class="inline-flex items-center gap-1 text-sm text-cyan-400 hover:text-cyan-300">
+      <span aria-hidden="true">←</span> 일정 목록
+    </a>
+
+    <header class="space-y-3">
+      <div class="flex items-center gap-2 flex-wrap text-xs">
+        <span class="text-lg">{CATEGORY_EMOJI[event.category] ?? '📌'}</span>
+        <span class={`px-2 py-0.5 rounded border ${importanceColor[event.importance] ?? importanceColor.low}`}>
+          {CATEGORY_LABEL[event.category] ?? event.category} · 중요도 {importanceLabel[event.importance] ?? event.importance}
+        </span>
+        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+          {event.market === 'KR' ? '🇰🇷 한국' : '🇺🇸 미국'}
+        </span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-slate-100 leading-snug">
+        {event.title}
+      </h1>
+    </header>
+
+    <div class="grid grid-cols-2 gap-3">
+      <div class="rounded-xl bg-slate-900 border border-slate-800 p-4">
+        <div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">발표 일시 (KST)</div>
+        <div class="text-base font-semibold text-slate-100">{dateLabel}</div>
+        <div class="text-sm text-slate-300 tabular-nums mt-0.5">{event.time ?? '시각 미정'}</div>
+      </div>
+      <div class="rounded-xl bg-slate-900 border border-slate-800 p-4">
+        <div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">남은 시간</div>
+        <div class={`text-base font-semibold ${diffMs < 0 ? 'text-slate-500' : 'text-cyan-300'}`}>{countdown}</div>
+      </div>
+    </div>
+
+    <div class="rounded-xl bg-slate-900 border border-slate-800 p-5 space-y-2">
+      <h2 class="text-sm font-semibold text-slate-300">이 이벤트는 왜 중요한가요?</h2>
+      <p class="text-sm text-slate-200 leading-relaxed">{desc}</p>
+    </div>
+
+    {event.ticker && (
+      <div class="rounded-xl bg-slate-900 border border-slate-800 p-5 space-y-2">
+        <h2 class="text-sm font-semibold text-slate-300">관련 종목</h2>
+        <a
+          href={`/sim?ticker=${event.ticker}`}
+          class="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-mono text-sm"
+        >
+          {event.ticker.replace(/\.[A-Z]+$/, '')}
+          <span class="text-xs text-slate-500">시뮬레이션 →</span>
+        </a>
+      </div>
+    )}
+
+    {related.length > 0 && (
+      <div class="space-y-2">
+        <h2 class="text-sm font-semibold text-slate-300">같은 카테고리 다음 일정</h2>
+        <ul class="rounded-xl bg-slate-900 border border-slate-800 divide-y divide-slate-800">
+          {related.map(({ id: rid, event: re }) => (
+            <li>
+              <a href={`/schedule/${rid}`} class="px-4 py-3 flex items-start gap-3 hover:bg-slate-800/40 transition-colors">
+                <div class="text-xs text-slate-400 font-mono w-24 shrink-0 pt-0.5">{re.date}</div>
+                <div class="flex-1 text-sm text-slate-200">{re.title}</div>
+                <span class="text-slate-500 text-xs pt-0.5" aria-hidden="true">›</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </section>
+</Base>
