@@ -8,35 +8,99 @@ interface Props {
 }
 const { vix, level, step, color, comment } = Astro.props;
 
-const colorClass = {
-  extremeGreed: 'text-fear-extremeGreed',
-  greed: 'text-fear-greed',
-  neutral: 'text-fear-neutral',
-  fear: 'text-fear-fear',
-  extremeFear: 'text-fear-extremeFear',
-}[color] ?? 'text-slate-300';
+const safeStep = Math.min(5, Math.max(1, Number(step) || 3));
 
-const dotBg = {
-  extremeGreed: 'bg-fear-extremeGreed',
-  greed: 'bg-fear-greed',
-  neutral: 'bg-fear-neutral',
-  fear: 'bg-fear-fear',
-  extremeFear: 'bg-fear-extremeFear',
-}[color] ?? 'bg-slate-500';
+const segments = [
+  { from: 180, to: 144, color: '#dc2626', label: '극단 공포' },
+  { from: 144, to: 108, color: '#f97316', label: '공포' },
+  { from: 108, to:  72, color: '#facc15', label: '중립' },
+  { from:  72, to:  36, color: '#22c55e', label: '탐욕' },
+  { from:  36, to:   0, color: '#15803d', label: '극단 탐욕' },
+];
+
+const CX = 100, CY = 100, R_OUT = 80, R_NEEDLE = 70;
+
+const pt = (deg: number) => ({
+  x: CX + R_OUT * Math.cos((deg * Math.PI) / 180),
+  y: CY - R_OUT * Math.sin((deg * Math.PI) / 180),
+});
+
+const segPaths = segments.map((s, idx) => {
+  const a = pt(s.from);
+  const b = pt(s.to);
+  const dimmed = (5 - idx) !== safeStep;
+  return {
+    d: `M ${a.x.toFixed(2)} ${a.y.toFixed(2)} A ${R_OUT} ${R_OUT} 0 0 1 ${b.x.toFixed(2)} ${b.y.toFixed(2)}`,
+    color: s.color,
+    label: s.label,
+    dimmed,
+  };
+});
+
+const needleAngle = safeStep * 36 - 18;
+const needleRad = (needleAngle * Math.PI) / 180;
+const needleEnd = {
+  x: CX + R_NEEDLE * Math.cos(needleRad),
+  y: CY - R_NEEDLE * Math.sin(needleRad),
+};
+
+const activeColor = segments[5 - safeStep]?.color ?? '#facc15';
+
+const tickAngles = [180, 144, 108, 72, 36, 0];
+const tickPts = tickAngles.map((a) => ({
+  inner: {
+    x: CX + (R_OUT - 8) * Math.cos((a * Math.PI) / 180),
+    y: CY - (R_OUT - 8) * Math.sin((a * Math.PI) / 180),
+  },
+  outer: {
+    x: CX + (R_OUT + 4) * Math.cos((a * Math.PI) / 180),
+    y: CY - (R_OUT + 4) * Math.sin((a * Math.PI) / 180),
+  },
+}));
 ---
 <article class="rounded-2xl bg-slate-900 border border-slate-800 p-5 space-y-3">
   <header class="flex items-center justify-between">
-    <h3 class="text-sm uppercase tracking-wider text-slate-400">🌡️ 공포지수</h3>
-    <span class="text-xs text-slate-500">VIX</span>
+    <h3 class="text-sm uppercase tracking-wider text-slate-400">🌡️ 공포·탐욕 지수</h3>
+    <span class="text-xs text-slate-500">VIX 기반</span>
   </header>
-  <div class="flex items-baseline gap-3">
-    <span class="text-4xl font-bold">{vix?.toFixed(1) ?? '—'}</span>
-    <span class={`text-lg font-semibold ${colorClass}`}>{level}</span>
+
+  <div class="relative w-full max-w-[280px] mx-auto">
+    <svg viewBox="0 0 200 130" class="w-full h-auto" role="img" aria-label={`공포탐욕지수: ${level}`}>
+      {segPaths.map((s) => (
+        <path
+          d={s.d}
+          stroke={s.color}
+          stroke-width="14"
+          fill="none"
+          stroke-linecap="butt"
+          opacity={s.dimmed ? '0.28' : '1'}
+        />
+      ))}
+      {tickPts.map((t) => (
+        <line x1={t.inner.x} y1={t.inner.y} x2={t.outer.x} y2={t.outer.y} stroke="#1e293b" stroke-width="1.5" />
+      ))}
+      <line
+        x1={CX}
+        y1={CY}
+        x2={needleEnd.x.toFixed(2)}
+        y2={needleEnd.y.toFixed(2)}
+        stroke="#e2e8f0"
+        stroke-width="2.5"
+        stroke-linecap="round"
+      />
+      <circle cx={CX} cy={CY} r="7" fill="#0f172a" stroke="#e2e8f0" stroke-width="2" />
+      <circle cx={CX} cy={CY} r="2.5" fill={activeColor} />
+    </svg>
+    <div class="absolute inset-x-0 -bottom-1 flex justify-between px-1 text-[9px] uppercase tracking-wider text-slate-500">
+      <span>공포</span>
+      <span>탐욕</span>
+    </div>
   </div>
-  <div class="flex gap-2" role="presentation">
-    {[1, 2, 3, 4, 5].map((s) => (
-      <span class={`h-2 flex-1 rounded-full ${s <= step ? dotBg : 'bg-slate-700'}`} />
-    ))}
+
+  <div class="flex items-baseline justify-center gap-3 pt-2">
+    <span class="text-3xl font-bold tabular-nums">{vix?.toFixed(1) ?? '—'}</span>
+    <span class="text-base font-semibold" style={`color: ${activeColor}`}>{level}</span>
   </div>
-  <p class="text-sm text-slate-200 leading-relaxed">{comment}</p>
+
+  <p class="text-sm text-slate-300 leading-relaxed text-center">{comment}</p>
 </article>
