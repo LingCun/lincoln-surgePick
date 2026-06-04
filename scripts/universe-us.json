@@ -875,11 +875,6 @@
     "market": "SP500"
   },
   {
-    "ticker": "EPAM",
-    "name": "EPAM Systems",
-    "market": "SP500"
-  },
-  {
     "ticker": "EQT",
     "name": "EQT Corporation",
     "market": "SP500"
@@ -987,6 +982,11 @@
   {
     "ticker": "FDX",
     "name": "FedEx",
+    "market": "SP500"
+  },
+  {
+    "ticker": "FDXF",
+    "name": "FedEx Freight",
     "market": "SP500"
   },
   {
