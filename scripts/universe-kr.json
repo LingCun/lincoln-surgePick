@@ -35,6 +35,11 @@
     "market": "KOSPI"
   },
   {
+    "ticker": "000990.KS",
+    "name": "DB하이텍",
+    "market": "KOSPI"
+  },
+  {
     "ticker": "000210.KS",
     "name": "DL",
     "market": "KOSPI"
@@ -55,18 +60,8 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "114090.KS",
-    "name": "GKL",
-    "market": "KOSPI"
-  },
-  {
     "ticker": "078930.KS",
     "name": "GS",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "006360.KS",
-    "name": "GS건설",
     "market": "KOSPI"
   },
   {
@@ -75,13 +70,18 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "267250.KS",
-    "name": "HD현대",
+    "ticker": "267270.KS",
+    "name": "HD건설기계",
     "market": "KOSPI"
   },
   {
     "ticker": "009540.KS",
     "name": "HD한국조선해양",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "267250.KS",
+    "name": "HD현대",
     "market": "KOSPI"
   },
   {
@@ -120,23 +120,18 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "139130.KS",
-    "name": "iM금융지주",
-    "market": "KOSPI"
-  },
-  {
     "ticker": "175330.KS",
     "name": "JB금융지주",
     "market": "KOSPI"
   },
   {
-    "ticker": "002380.KS",
-    "name": "KCC",
+    "ticker": "105560.KS",
+    "name": "KB금융",
     "market": "KOSPI"
   },
   {
-    "ticker": "105560.KS",
-    "name": "KB금융",
+    "ticker": "002380.KS",
+    "name": "KCC",
     "market": "KOSPI"
   },
   {
@@ -196,7 +191,7 @@
   },
   {
     "ticker": "079550.KS",
-    "name": "LIG넥스원",
+    "name": "LIG디펜스앤에어로스페이스",
     "market": "KOSPI"
   },
   {
@@ -206,7 +201,7 @@
   },
   {
     "ticker": "010120.KS",
-    "name": "LS일렉트릭",
+    "name": "LS ELECTRIC",
     "market": "KOSPI"
   },
   {
@@ -215,8 +210,18 @@
     "market": "KOSPI"
   },
   {
+    "ticker": "036570.KS",
+    "name": "NC",
+    "market": "KOSPI"
+  },
+  {
     "ticker": "005940.KS",
     "name": "NH투자증권",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "456040.KS",
+    "name": "OCI",
     "market": "KOSPI"
   },
   {
@@ -290,6 +295,11 @@
     "market": "KOSPI"
   },
   {
+    "ticker": "139130.KS",
+    "name": "iM금융지주",
+    "market": "KOSPI"
+  },
+  {
     "ticker": "035250.KS",
     "name": "강원랜드",
     "market": "KOSPI"
@@ -325,18 +335,18 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "004370.KS",
-    "name": "농심",
-    "market": "KOSPI"
-  },
-  {
     "ticker": "006280.KS",
     "name": "녹십자",
     "market": "KOSPI"
   },
   {
-    "ticker": "005250.KS",
-    "name": "녹십자홀딩스",
+    "ticker": "004370.KS",
+    "name": "농심",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "483650.KS",
+    "name": "달바글로벌",
     "market": "KOSPI"
   },
   {
@@ -360,13 +370,13 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "001440.KS",
-    "name": "대한전선",
+    "ticker": "006650.KS",
+    "name": "대한유화",
     "market": "KOSPI"
   },
   {
-    "ticker": "006650.KS",
-    "name": "대한유화",
+    "ticker": "001440.KS",
+    "name": "대한전선",
     "market": "KOSPI"
   },
   {
@@ -435,13 +445,13 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "011170.KS",
-    "name": "롯데케미칼",
+    "ticker": "005300.KS",
+    "name": "롯데칠성",
     "market": "KOSPI"
   },
   {
-    "ticker": "005300.KS",
-    "name": "롯데칠성",
+    "ticker": "011170.KS",
+    "name": "롯데케미칼",
     "market": "KOSPI"
   },
   {
@@ -485,11 +495,6 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "018260.KS",
-    "name": "삼성SDS",
-    "market": "KOSPI"
-  },
-  {
     "ticker": "028260.KS",
     "name": "삼성물산",
     "market": "KOSPI"
@@ -500,8 +505,13 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "016360.KS",
-    "name": "삼성증권",
+    "ticker": "032830.KS",
+    "name": "삼성생명",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "018260.KS",
+    "name": "삼성에스디에스",
     "market": "KOSPI"
   },
   {
@@ -520,8 +530,8 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "032830.KS",
-    "name": "삼성생명",
+    "ticker": "016360.KS",
+    "name": "삼성증권",
     "market": "KOSPI"
   },
   {
@@ -540,11 +550,6 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "004490.KS",
-    "name": "세방전지",
-    "market": "KOSPI"
-  },
-  {
     "ticker": "001430.KS",
     "name": "세아베스틸지주",
     "market": "KOSPI"
@@ -552,11 +557,6 @@
   {
     "ticker": "003030.KS",
     "name": "세아제강지주",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "112610.KS",
-    "name": "씨에스윈드",
     "market": "KOSPI"
   },
   {
@@ -575,6 +575,11 @@
     "market": "KOSPI"
   },
   {
+    "ticker": "112610.KS",
+    "name": "씨에스윈드",
+    "market": "KOSPI"
+  },
+  {
     "ticker": "090430.KS",
     "name": "아모레퍼시픽",
     "market": "KOSPI"
@@ -590,13 +595,13 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "005850.KS",
-    "name": "에스엘",
+    "ticker": "137310.KS",
+    "name": "에스디바이오센서",
     "market": "KOSPI"
   },
   {
-    "ticker": "137310.KS",
-    "name": "에스디바이오센서",
+    "ticker": "005850.KS",
+    "name": "에스엘",
     "market": "KOSPI"
   },
   {
@@ -612,11 +617,6 @@
   {
     "ticker": "450080.KS",
     "name": "에코프로머티",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "036570.KS",
-    "name": "엔씨소프트",
     "market": "KOSPI"
   },
   {
@@ -795,6 +795,11 @@
     "market": "KOSPI"
   },
   {
+    "ticker": "071050.KS",
+    "name": "한국금융지주",
+    "market": "KOSPI"
+  },
+  {
     "ticker": "000240.KS",
     "name": "한국앤컴퍼니",
     "market": "KOSPI"
@@ -805,16 +810,6 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "161390.KS",
-    "name": "한국타이어앤테크놀로지",
-    "market": "KOSPI"
-  },
-  {
-    "ticker": "071050.KS",
-    "name": "한국금융지주",
-    "market": "KOSPI"
-  },
-  {
     "ticker": "017960.KS",
     "name": "한국카본",
     "market": "KOSPI"
@@ -822,6 +817,11 @@
   {
     "ticker": "161890.KS",
     "name": "한국콜마",
+    "market": "KOSPI"
+  },
+  {
+    "ticker": "161390.KS",
+    "name": "한국타이어앤테크놀로지",
     "market": "KOSPI"
   },
   {
@@ -930,13 +930,13 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "012330.KS",
-    "name": "현대모비스",
+    "ticker": "064350.KS",
+    "name": "현대로템",
     "market": "KOSPI"
   },
   {
-    "ticker": "064350.KS",
-    "name": "현대로템",
+    "ticker": "012330.KS",
+    "name": "현대모비스",
     "market": "KOSPI"
   },
   {
@@ -960,13 +960,13 @@
     "market": "KOSPI"
   },
   {
-    "ticker": "005380.KS",
-    "name": "현대차",
+    "ticker": "004020.KS",
+    "name": "현대제철",
     "market": "KOSPI"
   },
   {
-    "ticker": "004020.KS",
-    "name": "현대제철",
+    "ticker": "005380.KS",
+    "name": "현대차",
     "market": "KOSPI"
   },
   {
