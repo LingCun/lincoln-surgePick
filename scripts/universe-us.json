@@ -415,11 +415,6 @@
     "market": "SP500"
   },
   {
-    "ticker": "CPB",
-    "name": "Campbell's Company (The)",
-    "market": "SP500"
-  },
-  {
     "ticker": "COF",
     "name": "Capital One",
     "market": "SP500"
@@ -1015,6 +1010,11 @@
     "market": "SP500"
   },
   {
+    "ticker": "FLEX",
+    "name": "Flex Ltd.",
+    "market": "SP500"
+  },
+  {
     "ticker": "F",
     "name": "Ford Motor Company",
     "market": "SP500"
@@ -1510,6 +1510,11 @@
     "market": "SP500"
   },
   {
+    "ticker": "MRVL",
+    "name": "Marvell Technology",
+    "market": "SP500"
+  },
+  {
     "ticker": "MAS",
     "name": "Masco",
     "market": "SP500"
@@ -1847,11 +1852,6 @@
   {
     "ticker": "PNC",
     "name": "PNC Financial Services",
-    "market": "SP500"
-  },
-  {
-    "ticker": "POOL",
-    "name": "Pool Corporation",
     "market": "SP500"
   },
   {
