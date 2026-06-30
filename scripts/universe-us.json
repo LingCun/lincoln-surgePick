@@ -605,11 +605,6 @@
     "market": "SP500"
   },
   {
-    "ticker": "CAG",
-    "name": "Conagra Brands",
-    "market": "SP500"
-  },
-  {
     "ticker": "COP",
     "name": "ConocoPhillips",
     "market": "SP500"
@@ -1180,8 +1175,13 @@
     "market": "SP500"
   },
   {
+    "ticker": "HONA",
+    "name": "Honeywell Aerospace",
+    "market": "SP500"
+  },
+  {
     "ticker": "HON",
-    "name": "Honeywell",
+    "name": "Honeywell Technologies",
     "market": "SP500"
   },
   {
