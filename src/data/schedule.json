@@ -1,15 +1,7 @@
 {
-  "asOf": "2026-07-21",
+  "asOf": "2026-07-23",
   "note": "공식 캘린더(Fed/BOK/BEA/BLS/ECB/ISM/KOSTAT) 기준. 거시지표는 1년치 확정 일정, 실적은 회사 IR 공시 직전 확정이라 추정. 한국시간(KST) 기준.",
   "events": [
-    {
-      "date": "2026-07-23",
-      "time": "21:15",
-      "market": "US",
-      "category": "macro",
-      "title": "ECB 통화정책회의 결과",
-      "importance": "high"
-    },
     {
       "date": "2026-07-24",
       "time": "08:00",
