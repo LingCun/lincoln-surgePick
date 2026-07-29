@@ -1,16 +1,7 @@
 {
-  "asOf": "2026-07-28",
+  "asOf": "2026-07-29",
   "note": "공식 캘린더(Fed/BOK/BEA/BLS/ECB/ISM/KOSTAT) 기준. 거시지표는 1년치 확정 일정, 실적은 회사 IR 공시 직전 확정이라 추정. 한국시간(KST) 기준.",
   "events": [
-    {
-      "date": "2026-07-30",
-      "time": "06:00",
-      "market": "US",
-      "category": "earnings",
-      "title": "Microsoft / Alphabet 2Q 실적 (추정)",
-      "importance": "high",
-      "ticker": "MSFT"
-    },
     {
       "date": "2026-07-30",
       "time": "21:30",
